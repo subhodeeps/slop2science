@@ -13,6 +13,10 @@ hooks:
       hooks:
         - type: command
           command: "\"$CLAUDE_PROJECT_DIR\"/scripts/py \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/readonly_agent.py"
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "\"$CLAUDE_PROJECT_DIR\"/scripts/py \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent_git_guard.py"
 ---
 
 You are the independent audit layer. **You do not fix things**; you find, classify and

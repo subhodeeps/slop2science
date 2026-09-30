@@ -37,6 +37,12 @@ the hard way are recorded in `docs/failure_modes.md`.
 | `docs/reproduction_and_extension.md` | "how much of the paper have we reproduced, and what have we actually added?" being unanswerable |
 | PI authority written into the charter, including language and interoperation choices | Claude quietly deciding something that was the researcher's to decide |
 | Two-tier `Makefile` and CI | checks that only run when someone remembers |
+| `handoff.md` injected at session start **with its age** | a new session starting cold, or trusting a three-month-old note |
+| A snapshot before every compaction | losing a judgement mid-session that was never written down |
+| Condensed transcripts kept **outside** the repository | half-formed reasoning travelling with a shared repo |
+| A git guard on every subagent | an agent with a fresh context rewriting history it cannot see |
+| arXiv **LaTeX source** preferred over the PDF | equations mis-transcribed from a PDF text layer; figures and data lost |
+| Local Zotero/Calibre searched, never browsed | a session spending its context enumerating a 10,000-item library |
 
 ## Quick start
 
@@ -96,8 +102,29 @@ appears on the repository page and every new paper project starts from a clean h
   laptop, or in a cloud container with none of Mathematica, Julia or Python's scientific
   stack present.
 
-## Provenance
+## Provenance and prior art
 
 The pattern is extracted from a working physics paper-reproduction project.
-Every rule in `docs/failure_modes.md` corresponds to something that actually went wrong
-there. The physics is gone; the scar tissue is the valuable part.
+Every entry in `docs/failure_modes.md` Part 1 corresponds to something that actually went
+wrong there. The physics is gone; the scar tissue is the valuable part.
+
+Several mechanisms were taken or adapted from other people's work, and are better for it:
+
+- [benning-lab/agentic-starter](https://github.com/benning-lab/agentic-starter) — the
+  handoff-with-age idea, the argument for keeping transcripts outside the project folder, and
+  the "prefer source formats; PDF extraction is a reconstruction" rule.
+- [mitevpi/claude-project-scaffold](https://github.com/mitevpi/claude-project-scaffold) — the
+  subagent git guard, the partition rules behind `parallel-safety`, and checking the
+  instruction file's own size budget.
+- [josipjelic/orchestrated-project-template](https://github.com/josipjelic/orchestrated-project-template)
+  — `/checkpoint` and `/sync-template`.
+- [scotthavird/claude-code-template](https://github.com/scotthavird/claude-code-template) —
+  the `PreCompact` checkpoint.
+- [shinpr/ai-coding-project-boilerplate](https://github.com/shinpr/ai-coding-project-boilerplate)
+  — independently frames its instruction file as "what Claude can decide and when it should
+  ask you", which is this template's §1 reached from the other direction.
+- Barba, *Reproducibility in the Age of Agentic AI*
+  ([barbagroup/agentic-reproducibility](https://github.com/barbagroup/agentic-reproducibility))
+  — the argument that reproducible-research practice *is* context engineering for coding
+  agents, with the caveat this template is built around: researchers remain responsible for
+  verifying these artifacts and the scientific judgements they encode.

@@ -204,6 +204,23 @@ Guarded by: `Kind:` / `Judged against:` at the point of use; the `judged_against
 required in every record; and `docs/validation_protocol.md` §8 stating what an extension may
 rest on when no independent benchmark exists.
 
+### C2. A transcript travelling with a shared repository
+
+A session transcript is near-verbatim: it holds half-formed reasoning, dead ends, and whatever
+was said about a result before anyone was sure of it. A repository gets shared — with a
+collaborator, a supervisor, a journal, eventually the world — and **sharing permissions
+inherit downward and cannot be subtracted from a subfolder.** A leading dot does not help:
+`.claude/` is hidden in a file browser and an ordinary visible folder in a web UI.
+
+Guarded by: `capture_session.py` writing to `$RESEARCH_RECORDS_DIR` (default
+`~/.claude-research-records`), **never inside the repository**, with the hook self-tests
+asserting that nothing leaked in. The property relied on is *never shared*, not *not in the
+repo*. `handoff.md` is the artifact meant to be read by other people, and it is committed.
+
+Credit: this argument, and the mechanism, are from
+[benning-lab/agentic-starter](https://github.com/benning-lab/agentic-starter). This template
+originally committed its prompt logs into the tree, which was wrong for the same reason.
+
 ### D. A default silently supplied for a decision that was the PI's
 
 An assistant asked to proceed will proceed. The missing convention, the unstated scope

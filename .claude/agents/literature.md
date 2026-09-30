@@ -7,6 +7,12 @@ skills:
   - literature-audit
 memory: project
 color: green
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "\"$CLAUDE_PROJECT_DIR\"/scripts/py \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent_git_guard.py"
 ---
 
 You audit the literature for this project. You are the only agent with web access and the

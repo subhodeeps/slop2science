@@ -8,6 +8,12 @@ skills:
   - toolchain
 memory: project
 color: purple
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "\"$CLAUDE_PROJECT_DIR\"/scripts/py \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent_git_guard.py"
 ---
 
 You derive and audit this project's equations.

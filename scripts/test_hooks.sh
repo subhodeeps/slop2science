@@ -86,12 +86,105 @@ else
 fi
 rm -f "docs/prompts/log/${tmp_session:0:8}.md" docs/prompts/auto/*_${tmp_session:0:8}_*.md
 
+echo "subagent_git_guard.py — reads allowed, history/remote blocked"
+G2=".claude/hooks/subagent_git_guard.py"
+gitcase() { # description expected_rc command
+  printf '{"tool_input":{"command":%s}}' \
+    "$("$PY" -c 'import json,sys; print(json.dumps(sys.argv[1]))' "$3")" \
+    | "$PY" "$G2" >/dev/null 2>&1
+  local got=$?
+  if [ "$got" -eq "$2" ]; then pass=$((pass+1)); printf '  ok   %s\n' "$1"
+  else fail=$((fail+1)); printf '  FAIL %s (expected %s, got %s)\n' "$1" "$2" "$got"; fi
+}
+gitcase "allows git status"                       0 "git status"
+gitcase "allows git log"                          0 "git log --oneline -5"
+gitcase "allows git add of an explicit path"      0 "git add src/python/x.py"
+gitcase "blocks git push"                         2 "git push origin main"
+gitcase "blocks git commit"                       2 "git commit -m x"
+gitcase "blocks git rebase"                       2 "git rebase -i HEAD~2"
+gitcase "blocks git reset --hard"                 2 "git reset --hard"
+gitcase "blocks git add -A"                       2 "git add -A"
+gitcase "blocks git nested in bash -c"            2 "bash -c 'git commit -m x'"
+gitcase "blocks git after && in a chain"          2 "make test && git push"
+gitcase "blocks git behind an env prefix"         2 "env FOO=1 /usr/bin/git reset --hard"
+gitcase "ignores a non-git command"               0 "ls -la"
+gitcase "does not block on malformed input"       0 ""
+
+echo "precompact_checkpoint.sh"
+records=$(mktemp -d)
+if RESEARCH_RECORDS_DIR="$records" CLAUDE_PROJECT_DIR="$ROOT" \
+     ./.claude/hooks/precompact_checkpoint.sh 2>/dev/null | grep -q '^\[precompact\]' \
+   && [ -n "$(find "$records" -name 'precompact-*.md' 2>/dev/null)" ]; then
+  pass=$((pass+1)); echo "  ok   writes a snapshot outside the repo and prints an instruction"
+else
+  fail=$((fail+1)); echo "  FAIL did not write a snapshot or print an instruction"
+fi
+snap=$(find "$records" -name 'precompact-*.md' 2>/dev/null | head -1)
+if [ -n "$snap" ] && grep -q '^## git' "$snap" && grep -q 'immediate next task' "$snap"; then
+  pass=$((pass+1)); echo "  ok   snapshot records git state and the next task"
+else
+  fail=$((fail+1)); echo "  FAIL snapshot is missing git state or the next task"
+fi
+if [ -z "$(find "$ROOT" -name 'precompact-*.md' -not -path '*/.git/*' 2>/dev/null)" ]; then
+  pass=$((pass+1)); echo "  ok   wrote NOTHING inside the repository"
+else
+  fail=$((fail+1)); echo "  FAIL leaked a snapshot into the repository"
+fi
+
+echo "condense_transcript.py + capture_session.py"
+tr_file="$records/fake-transcript.jsonl"
+cat > "$tr_file" <<'JSONL'
+{"message":{"role":"user","content":"derive the master equation"}}
+{"message":{"role":"assistant","content":[{"type":"thinking","thinking":"SECRET REASONING"},{"type":"text","text":"Running the stage."},{"type":"tool_use","name":"Bash","input":{"command":"scripts/run symbolic/t/stage_01.wls"}}]}}
+{"message":{"role":"user","content":[{"type":"tool_result","content":"HUGE TOOL OUTPUT"}]}}
+JSONL
+cond=$("$PY" .claude/hooks/condense_transcript.py "$tr_file" 2>/dev/null)
+if echo "$cond" | grep -q "derive the master equation" \
+   && echo "$cond" | grep -q "stage_01.wls" \
+   && ! echo "$cond" | grep -q "SECRET REASONING" \
+   && ! echo "$cond" | grep -q "HUGE TOOL OUTPUT"; then
+  pass=$((pass+1)); echo "  ok   keeps dialogue + tool summaries, drops thinking and tool output"
+else
+  fail=$((fail+1)); echo "  FAIL condensed transcript kept or dropped the wrong things"
+fi
+printf '{"transcript_path":"%s","cwd":"%s"}' "$tr_file" "$ROOT" \
+  | RESEARCH_RECORDS_DIR="$records" CLAUDE_PROJECT_DIR="$ROOT" \
+    "$PY" .claude/hooks/capture_session.py >/dev/null 2>&1
+rc=$?
+sleep 2
+if [ "$rc" -eq 0 ] && [ -f "$records/$(basename "$ROOT")/last-session.md" ]; then
+  pass=$((pass+1)); echo "  ok   writes the record outside the repo and exits 0"
+else
+  fail=$((fail+1)); echo "  FAIL did not write the session record (rc=$rc)"
+fi
+if [ -z "$(find "$ROOT" -name 'last-session.md' -not -path '*/.git/*' 2>/dev/null)" ]; then
+  pass=$((pass+1)); echo "  ok   wrote NO transcript inside the repository"
+else
+  fail=$((fail+1)); echo "  FAIL leaked a transcript into the repository"
+fi
+"$PY" -c "import shutil,sys; shutil.rmtree(sys.argv[1], ignore_errors=True)" "$records"
+
 echo "session_context.sh"
 if out=$(CLAUDE_PROJECT_DIR="$ROOT" ./.claude/hooks/session_context.sh 2>/dev/null) \
    && echo "$out" | grep -q '^\[project\]'; then
   pass=$((pass+1)); echo "  ok   prints project context"
 else
   fail=$((fail+1)); echo "  FAIL produced no project context"
+fi
+if echo "$out" | grep -q 'handoff from the previous session'; then
+  pass=$((pass+1)); echo "  ok   injects handoff.md with its age"
+else
+  fail=$((fail+1)); echo "  FAIL did not inject the handoff"
+fi
+if ! echo "$out" | grep -q '<!--'; then
+  pass=$((pass+1)); echo "  ok   strips handoff HTML comments (they would cost context every session)"
+else
+  fail=$((fail+1)); echo "  FAIL leaked handoff HTML comments into context"
+fi
+if echo "$out" | grep -q '^\[project\] git:'; then
+  pass=$((pass+1)); echo "  ok   reports git branch and uncommitted work at session start"
+else
+  fail=$((fail+1)); echo "  FAIL did not report git state"
 fi
 
 echo

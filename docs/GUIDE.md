@@ -23,7 +23,8 @@ record**, like a derivation script.
 | `.claude/rules/*.md` | automatically, when Claude reads a file matching the rule's `paths:` | Narrow, path-scoped constraints. You never invoke these; touching a matching file loads them. |
 | `.claude/skills/*/SKILL.md` | when its `description`/`when_to_use` matches the task, or by name (`/skill-name`) | Procedures: how to do a category of work. Each under ~100 lines; occasional detail sits in the skill's `reference/`, loaded only if needed. |
 | `.claude/agents/*.md` | dispatched by you, or by the session judging a subtask fits | Subagents: separate context windows with their own tools, skills and model. |
-| `.claude/hooks/*` | on the tool-use or session event named in `.claude/settings.json` | Enforcement that does **not** depend on the model following an instruction. |
+| `.claude/hooks/*` | on the tool-use or session event named in `.claude/settings.json`, or in a subagent's own frontmatter | Enforcement that does **not** depend on the model following an instruction. Also the continuity machinery: the handoff injected at session start with its age, a snapshot written before compaction, and a condensed transcript kept outside the repository. |
+| `handoff.md` | read into the opening context at every session start, **with its age** | Prose from the last session to the next: what was in progress, what is suspected but unshown, what to watch out for. Written at `/checkpoint` and `/session-close`. Committed and shareable — unlike the transcript. |
 | `.claude/settings.json` | every session | Permissions, environment, hook registration. |
 | `.claude/models.md` | read by you and by agent frontmatter | The one place model choices are recorded. |
 | `Makefile` | on demand | The canonical commands. Skills and the session protocol invoke these rather than raw tool calls. |
@@ -96,7 +97,13 @@ stop and derive and export it — never to write it by hand "for now".
   `.claude/guard_paths.json`.
 - An existing derivation stage or export script cannot be overwritten by `Write` — same hook.
 - The `verification` subagent cannot write project files — `readonly_agent.py`.
+- **No subagent can push, commit, rebase, reset, branch or stage-everything** —
+  `subagent_git_guard.py`, registered in each Bash-capable subagent's frontmatter. Reading git
+  is allowed; changing history or the remote is not. A subagent has a fresh context and cannot
+  see what else is in flight, so the commit is the main session's to propose.
 - Every prompt is captured — `log_prompt.py`.
+- A state snapshot is written before every compaction — `precompact_checkpoint.sh`.
+- A condensed transcript is kept **outside the repository** — `capture_session.py`.
 
 **Checked on demand, with no scientific toolchain needed**: `make check` runs the hook
 self-tests (synthetic payloads through each hook, so a broken guard is noticed), reference

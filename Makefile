@@ -9,8 +9,8 @@ PY          ?= scripts/py
 TOPIC       ?= {{DEFAULT_TOPIC}}
 
 .PHONY: help check-env setup test test-julia test-python stages codegen codegen-check \
-        check check-refs check-evidence check-docs test-hooks status fetch-source \
-        report new-record clean-logs
+        check check-refs check-evidence check-docs check-init test-hooks status fetch-source \
+        libraries search-library report new-record clean-logs
 
 help: ## list targets
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  %-16s %s\n",$$1,$$2}'
@@ -18,6 +18,9 @@ help: ## list targets
 # --- tool-free tier ----------------------------------------------------------------
 
 check: test-hooks check-refs check-evidence check-docs ## all repository checks (no scientific toolchain needed)
+
+check-init: ## fail if {{PLACEHOLDERS}} remain (expected to fail in the template itself)
+	@$(PY) scripts/check_docs.py init
 
 test-hooks: ## self-test the Claude Code hooks with synthetic payloads
 	@scripts/test_hooks.sh
@@ -37,15 +40,22 @@ status: ## print docs/STATUS.md
 new-record: ## scaffold a validation record with the required provenance fields
 	@$(PY) scripts/new_record.py
 
-fetch-source: ## fetch a source into papers/ (ID=<arxiv-id|doi> LABEL=<firstauthor><year>)
-	@$(PY) scripts/fetch_source.py "$(ID)" "$(LABEL)"
+fetch-source: ## fetch a source: arXiv LaTeX SOURCE + figures + PDF (ID=<arxiv-id|doi> LABEL=<name>)
+	@$(PY) scripts/fetch_source.py "$(ID)" "$(LABEL)" $(FETCH_FLAGS)
+
+libraries: ## report the PI's local Zotero/Calibre libraries (read-only)
+	@$(PY) scripts/library.py status
+
+search-library: ## targeted search of the local libraries (AUTHOR=... or TITLE=... or DOI=...)
+	@$(PY) scripts/library.py search \
+	  $(if $(AUTHOR),--author "$(AUTHOR)") $(if $(TITLE),--title "$(TITLE)") $(if $(DOI),--doi "$(DOI)")
 
 clean-logs: ## remove tool logs
 	rm -rf logs/*
 
 # --- toolchain tier ----------------------------------------------------------------
 
-check-env: ## report which scientific tools are present, with versions (never fails by default)
+check-env: ## report which tools and local libraries are present (never fails by default)
 	@scripts/check_env.sh
 
 setup: ## create/instantiate the language environments that are present

@@ -35,4 +35,4 @@ jobs:
       - name: Uninitialized-template check
         # Fails only on a real project: a repository that still contains {{PLACEHOLDERS}}
         # outside the template's own documentation has not been through /init-paper.
-        run: scripts/check_initialized.sh || echo "::notice::template not yet initialized (expected in the template repository itself)"
+        run: make check-init || echo "::notice::template not yet initialized (expected in the template repository itself)"

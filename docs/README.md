@@ -28,6 +28,10 @@ One owner per fact. If two files would say the same thing, one of them links ins
 | `literature/` | per-topic literature notes and convention reconciliations |
 | `prompts/` | session prompt records — curated, plus machine captures |
 
+The handoff (`../handoff.md`) sits at the repository root rather than here: it is read into
+every session's opening context by a hook, and it is prose for the next session rather than a
+record. Where it disagrees with the files above, **they win**.
+
 ## Where a new document goes
 
 Before adding one, check whether it belongs in an existing file. A new document that restates

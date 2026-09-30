@@ -8,6 +8,12 @@ skills:
   - toolchain
 memory: project
 color: blue
+hooks:
+  PreToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "\"$CLAUDE_PROJECT_DIR\"/scripts/py \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent_git_guard.py"
 ---
 
 You implement and test this project's production numerics.

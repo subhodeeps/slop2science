@@ -10,7 +10,7 @@ machine that has the owning tool, **[lit]** a source, **[doc]** documentation on
 
 ## Infrastructure
 
-- [ ] Repository initialized from the template (`/init-paper`, `scripts/check_initialized.sh` passes)
+- [ ] Repository initialized from the template (`/init-paper`, `make check-init` passes)
 - [ ] `make check` passes (hooks self-test, references, evidence tags, staleness)
 - [ ] CI running the tool-free tier on every push
 - [ ] `make check-env` run; which tools are present on which machine recorded in STATUS

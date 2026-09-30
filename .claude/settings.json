@@ -14,7 +14,11 @@
       "Bash(git diff *)",
       "Bash(git log *)",
       "Bash(git show *)",
-      "Bash(git ls-files *)"
+      "Bash(git ls-files *)",
+      "Bash(scripts/library.py *)",
+      "Bash(scripts/py scripts/library.py *)",
+      "Bash(make libraries)",
+      "Bash(make fetch-source *)"
     ],
     "ask": [
       "Bash(git commit *)",
@@ -32,7 +36,8 @@
   "env": {
     "JULIA_PROJECT": "@.",
     "JULIA_NUM_THREADS": "auto",
-    "SYMBOLIC_TIMEOUT": "1800"
+    "SYMBOLIC_TIMEOUT": "1800",
+    "RESEARCH_RECORDS_DIR": "$HOME/.claude-research-records"
   },
   "hooks": {
     "PreToolUse": [
@@ -63,6 +68,26 @@
           {
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/py \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/log_prompt.py"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/precompact_checkpoint.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/py \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/capture_session.py"
           }
         ]
       }

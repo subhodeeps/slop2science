@@ -92,7 +92,7 @@ subtly-wrong one:
 
 - Delete `.claude/skills/init-paper/` — it has done its job, and leaving it invites a
   destructive re-run. (Keep `TEMPLATE_GUIDE.md`: it explains the design you are inheriting.)
-- Run `make check` and `scripts/check_initialized.sh`; both must pass.
+- Run `make check` and `make check-init`; both must pass.
 - Run `make check-env` and report which of the project's chosen tools are missing here.
 
 ## 4. Report

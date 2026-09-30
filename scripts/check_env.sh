@@ -48,6 +48,11 @@ done
 echo "  (pandoc + xelatex are needed only for: make report)"
 
 echo
+echo "--- local reference libraries (read-only) ---"
+"$ROOT/scripts/py" "$ROOT/scripts/library.py" status 2>/dev/null \
+  || echo "  scripts/library.py unavailable"
+
+echo
 echo "--- ownership registry ---"
 if grep -q '{{' docs/toolchain.md 2>/dev/null; then
   echo "  docs/toolchain.md still has placeholders: run /init-paper"

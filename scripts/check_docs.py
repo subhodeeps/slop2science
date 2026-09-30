@@ -5,7 +5,8 @@
     scripts/check_docs.py evidence   every [E: file, "label"] tag cites a label that exists
     scripts/check_docs.py stale      ownership declared, records self-consistent, the
                                      every-session context budget, and write-ups not older
-                                     than the scripts they cite (the last two as warnings)
+                                     than the scripts they cite (the last as a warning)
+    scripts/check_docs.py init       fail while {{PLACEHOLDERS}} remain (uninitialized)
     scripts/check_docs.py all        all three
 
 Why this exists. A write-up whose cited script was renamed, or a claim whose check label was
@@ -268,7 +269,9 @@ def check_stale():
     #    These have a stated size discipline because their cost is paid on every prompt, and
     #    they grow by accretion -- the project this template came from let its status file
     #    reach 504 lines of history before anyone measured it (docs/failure_modes.md entry 10).
-    #    Warnings, not errors: going over is a prompt to move detail out, not a build failure.
+    #    An ERROR, not a warning: a budget that only warns is a budget that is ignored until
+    #    the file is 500 lines of history (docs/failure_modes.md entry 10). Going over means
+    #    move detail into a skill, a rule or a referenced doc -- not trim wording.
     BUDGETS = {"CLAUDE.md": 220, "docs/STATUS.md": 100, "docs/conventions.md": 60}
     for rel, budget in BUDGETS.items():
         path = ROOT / rel
@@ -276,10 +279,10 @@ def check_stale():
             continue
         lines = len(path.read_text(encoding="utf-8", errors="replace").splitlines())
         if lines > budget:
-            warnings.append(
-                f"WARNING context budget: {rel} is {lines} lines, over its {budget}-line "
-                f"budget. It loads every session -- move detail into a skill, a rule, or a "
-                f"referenced doc rather than trimming wording.")
+            errors.append(
+                f"{rel}: {lines} lines, over its {budget}-line context budget. This file "
+                f"loads into every session. Move detail into a skill, a rule, or a "
+                f"referenced doc; do not compress the wording.")
 
     # 5. Warnings: a write-up older than a script it cites.
     def last_commit(rel):
@@ -309,7 +312,30 @@ def check_stale():
     return len(errors)
 
 
-CHECKS = {"refs": check_refs, "evidence": check_evidence, "stale": check_stale}
+def check_init():
+    """Fail while {{PLACEHOLDERS}} remain outside the template's own documentation.
+
+    Expected to FAIL in the template repository itself, and to pass in any project that has
+    been through /init-paper. Excluded: the template's own docs, the init skill, and the three
+    files whose job is to detect or mention placeholders (including this checker).
+    """
+    out = git("grep", "-l", "-E", r"\{\{[A-Z_]+\}\}", "--",
+              ":!TEMPLATE_GUIDE.md", ":!README.md", ":!.claude/skills/init-paper/**",
+              ":!.claude/hooks/session_context.sh", ":!.github/workflows/checks.yml",
+              ":!scripts/check_docs.py", ":!Makefile")
+    hits = [line for line in out.splitlines() if line.strip()]
+    for hit in hits:
+        print(f"uninitialized placeholders: {hit}")
+    if hits:
+        print("check-init: run /init-paper in a Claude Code session "
+              "(expected to fail in the template repository itself)")
+    else:
+        print("check-init: no placeholders outside the template's own documentation")
+    return len(hits)
+
+
+CHECKS = {"refs": check_refs, "evidence": check_evidence, "stale": check_stale,
+          "init": check_init}
 
 
 def main():

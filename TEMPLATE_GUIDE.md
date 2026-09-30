@@ -85,12 +85,43 @@ your call, not the template's. `make fetch-source ID=<arxiv-id>` retrieves them 
 then cited as if it were real evidence. The cost is that the pipeline is unexercised until
 your first stage — which is what `make check` and the hook self-tests are for.
 
+## 4a. Continuity across sessions, and what each piece is for
+
+Four mechanisms, deliberately distinct — conflating them is how a project ends up with one
+file that is simultaneously a record, a note and a log, and therefore none of them:
+
+| Artifact | Written by | Read by | Committed? |
+|---|---|---|---|
+| `docs/STATUS.md` | `/session-close` | every session, automatically | yes — the authoritative current state |
+| `handoff.md` | `/checkpoint`, `/session-close` | every session, **with its age** | yes — prose for the next session, shareable |
+| `docs/status_history.md` | `/session-close` | on demand | yes — the log, not auto-loaded |
+| session transcript | a `Stop` hook, condensed | the next session, on demand | **no — outside the repository entirely** |
+
+The last row matters most and is the one people get wrong. A transcript holds half-formed
+reasoning and dead ends; repository sharing permissions inherit downward and cannot be
+subtracted from a subfolder, and a dot-prefixed folder is not hidden in a web UI
+(`docs/failure_modes.md` C2). The property relied on is *never shared*.
+
+`handoff.md` carries its **age** into context on purpose: at three days old it is context, at
+three months it describes a project that has moved on, and silently believing it is worse than
+having none.
+
 ## 5. Keeping the harness healthy
 
 ```bash
 make check         # every session: hooks self-test, references, evidence tags, staleness
-make check-env     # when a tool seems missing
+make check-env     # when a tool or a local library seems missing
+make check-init    # fail while {{PLACEHOLDERS}} remain (passes once initialized)
+make libraries     # what is in the PI's local Zotero/Calibre, if anything
 ```
+
+`make check` includes the **context budget**: `CLAUDE.md`, `docs/STATUS.md` and
+`docs/conventions.md` have line limits and exceeding one is an error, not a warning. A budget
+that only warns is a budget ignored until the file is 500 lines of history. When it fires,
+move detail into a skill, a rule or a referenced doc — do not compress the wording.
+
+`/sync-template` pulls harness improvements from upstream without touching any scientific
+content; it diffs only the reusable layer and applies nothing unapproved.
 
 In a Claude Code session, `/doctor prompt-audit` reviews `CLAUDE.md`, the rules, skills and
 agents for instructions that contradict each other or cite files that no longer exist. Run it
