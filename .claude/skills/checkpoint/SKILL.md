@@ -36,11 +36,12 @@ is a session whose orphan check is already going to be hard.
    code changed. `make codegen-check TOPIC=…` if an export changed. Report actual output.
    **A failing check means no commit is proposed**, only a report of what failed.
 
-5. **Refresh `handoff.md`.** Overwrite it with where the work actually stands right now: what
-   is in progress, what you believe but have not established, what to watch out for, and the
-   one next action. This is the step that makes a checkpoint worth doing even when nothing
-   gets committed — the next session's opening context comes from this file, with its age
-   (`.claude/hooks/session_context.sh`).
+5. **Refresh `handoff.md`.** Overwrite it with where the work actually stands right now
+   (`docs/handoff_guide.md` — the four headings, and what not to put in it). This is the step
+   that makes a checkpoint worth doing even when nothing gets committed: the next session's
+   opening context comes from this file, with its age
+   (`.claude/hooks/session_context.sh`). If the work is mid-edit, say so here — that is the
+   single most useful line a returning session can read.
 
 6. **Propose a commit**: conventional, scoped, listing the checks actually run and their
    results. **Do not commit or push** unless the PI says so (CLAUDE.md §1).

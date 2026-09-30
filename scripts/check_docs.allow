@@ -19,3 +19,6 @@ data/README.md: data/tmp/
 
 # A personal, gitignored settings file. Referenced as a place the PI may set something.
 docs/toolchain.md: .claude/settings.local.json
+
+# Created by the first `make fetch-source` and gitignored, like data/raw and data/tmp.
+.claude/skills/literature-audit/reference/corpus.md: papers/source/

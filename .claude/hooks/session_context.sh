@@ -35,10 +35,11 @@ except Exception:
     ''|'?') age_note="age unknown" ;;
     *)  age_note="${age_days} days old" ;;
   esac
-  # HTML comments are stripped: handoff.md carries ~25 lines of guidance for whoever writes
-  # it, and paying that in context on every single session start is exactly the accretion
-  # this hook is supposed to prevent. (Claude Code strips them from CLAUDE.md itself; a hook
-  # that cats a file has to do it by hand.) Silent if only comments remain.
+  # HTML comments are stripped. The guidance for whoever writes a handoff lives in
+  # docs/handoff_guide.md, where it costs nothing until it is read; what is left in the file
+  # itself is a pointer, and paying even that in context on every session start is the
+  # accretion this hook exists to prevent. (Claude Code strips comments from CLAUDE.md
+  # itself; a hook that cats a file has to do it by hand.) Silent if only comments remain.
   body=$(scripts/py -c "
 import re, sys
 text = open('handoff.md', encoding='utf-8').read()

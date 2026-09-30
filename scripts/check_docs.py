@@ -155,12 +155,13 @@ def check_evidence():
     tag; every backticked bare word after a JSON glob must appear as a "word": key in a file
     the glob matches. Label presence only -- not that the check proves the claim.
 
-    Skipped: `.claude/**` (instructions that show the syntax by necessity), and any tag
-    inside a code block or HTML comment anywhere (an example, not a claim).
+    Skipped: `.claude/**` and `.github/**` (instructions and forms, which show the tag
+    syntax by necessity), and any tag inside a code block or HTML comment anywhere (an
+    example, not a claim).
     """
     allow, problems, checked = load_allow(), [], 0
     for rel in tracked("*.md"):
-        if rel.startswith(".claude/"):
+        if rel.startswith((".claude/", ".github/")):
             continue
         text = strip_examples((ROOT / rel).read_text(encoding="utf-8", errors="replace"))
         for m in EVIDENCE.finditer(text):

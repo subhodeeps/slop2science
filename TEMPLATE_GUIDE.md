@@ -106,6 +106,11 @@ subtracted from a subfolder, and a dot-prefixed folder is not hidden in a web UI
 three months it describes a project that has moved on, and silently believing it is worse than
 having none.
 
+How to write one — the four headings, a worked good example, a bad one annotated line by
+line, and a checklist — is `docs/handoff_guide.md`. It is a separate file rather than comments
+inside `handoff.md` because it only matters while a handoff is being written, and anything
+left inside that file is paid for in context at every session start.
+
 ## 5. Keeping the harness healthy
 
 ```bash

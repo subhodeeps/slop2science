@@ -55,9 +55,10 @@ limit is near or the session was interrupted (CLAUDE.md §8a).
 
 6a. **Write `handoff.md`.** Overwrite it — do not append — with what the records cannot hold:
    what was in progress, what you believe but have not established, what cost time this
-   session, and the one next action. The next session reads this into its opening context
-   *with its age*, so write it for someone who has none of your context and may arrive in
-   three months. Keep it short; the log is `docs/status_history.md`.
+   session, and the one next action. **How to write one, with worked good and bad examples
+   and a checklist: `docs/handoff_guide.md`.** Read it if you have not written a handoff
+   before; the failure mode is a cheerful paragraph claiming results, which is worse than an
+   empty file.
 
 7. **Checklist.** Tick completed boxes in `docs/implementation_checklist.md` — only with
    evidence.

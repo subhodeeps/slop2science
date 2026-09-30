@@ -83,6 +83,11 @@ subtly-wrong one:
 9. `src/julia/Project.toml` and/or `src/python/pyproject.toml` — the package name. Delete the
    directory for any language this project will not use.
 10. `Makefile` — `{{DEFAULT_TOPIC}}` = the first topic.
+10a. `handoff.md` — the first real handoff, replacing the "not initialized" placeholder: where
+    the project stands (initialized, nothing derived), what the PI still has to supply (the
+    paper, missing tools, any convention left `OPEN`), and `Next` = the source audit, matching
+    `docs/STATUS.md`. Follow `docs/handoff_guide.md`; this is the note the next session opens
+    with, so it is the first chance to get the habit right.
 11. Agent and skill `description` / `when_to_use` lines — add this project's vocabulary
     (its domain terms, method names, and the source's own terminology) so that automatic
     skill and agent selection actually triggers. This step is easy to skip and it is the
