@@ -61,6 +61,17 @@ it, verify its identifiers, register it in `papers/sources.yaml` with its role, 
 `papers/` or `papers/background/`, and leave the drop folder empty. Never leave a source in
 the drop folder "for now" — an unregistered source that gets cited later has no provenance.
 
+## Quote before you cite
+
+**Quote the passage verbatim from the local file before citing it.** Not a paraphrase from
+memory of having read it, and not a summary: the actual words, from the actual file on disk,
+in the record. A citation produced without re-reading the source is a recalled citation, and
+recall is where a plausible-but-wrong equation number, page or attribution comes from.
+
+This is cheap — the source is in `papers/` or `papers/source/` — and it is the single most
+effective guard against a fabricated reference, because a quote either exists in the file or
+it does not.
+
 ## Never
 
 - Invent a citation, DOI, page, equation number or value. If you cannot find it, say so.

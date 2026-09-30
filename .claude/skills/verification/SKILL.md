@@ -41,6 +41,23 @@ files for that reason.
 - an independent-method benchmark with the conversion written out;
 - the record exists and is complete (`docs/validation_protocol.md` §12).
 
+## Adversarial verification
+
+For a claim that carries real weight, do not "check" it — **attack it.** One agent proves and
+a second attacks the proof, seeing **only the numbered artifact**, never the prover's
+reasoning or the dispatcher's expectation. Protocol, including when it is worth the two
+dispatches and when the script is the better verifier:
+`reference/adversarial_protocol.md`.
+
+Two points that decide whether it works:
+
+- **The verifier must not be told what you hope it finds.** "Check that this is right" and
+  "attack this" produce different behaviour from the same model, and the first is sycophancy
+  waiting to happen (`docs/failure_modes.md` 0c).
+- **Two runs of the same model on the same input are not independent.** Where a claim really
+  matters, a verifier from a different model family shares fewer failure modes. Never report
+  two runs of one model as independent confirmation.
+
 ## Failure taxonomy
 
 Every finding gets exactly one class:

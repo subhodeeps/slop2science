@@ -47,6 +47,29 @@ tolerance but has not been through the acceptance protocol. For that last case t
 asymptotic expression looks like for three sessions before an independent re-derivation
 catches the dropped term.
 
+## 3a. The ladder of rigour
+
+"Verified" is not one thing. A claim sits somewhere on a ladder, and **saying where is part of
+reporting it** (adapted from *How to Train Your Slop Cannon*):
+
+| Rung | What it means | Good for |
+|---|---|---|
+| 1. prose | an argument in paragraphs | orientation; never a result |
+| 2. **structured proof** | numbered hierarchy, each step justified or an explicit gap (`.claude/skills/derivation-workflow/reference/structured_proofs.md`) | anything a reviewer would question |
+| 3. **adversarially verified** | rung 2, attacked by an independent agent that never saw the prover's reasoning (`.claude/skills/verification/reference/adversarial_protocol.md`) | a claim that changes a convention or closes a discrepancy |
+| 4. **script-checked** | a printed, labelled, re-runnable assertion in a committed script | algebra, identities, limits, reproductions |
+| 5. **numerically accepted** | every applicable criterion in `docs/validation_protocol.md`, at stated resolution and precision, with a record | a reported number |
+| 6. machine-checked | a proof assistant decides | a load-bearing step worth the cost |
+
+**No single rung is trustworthy alone, and they fail in different places** — which is the
+point of having several. A script-checked identity can be the wrong identity; an
+adversarially verified argument can rest on a mis-transcribed premise; a converged number can
+solve the wrong problem. Layering them is what makes the result solid, so compose rungs rather
+than picking the highest one reached.
+
+Report the rung honestly. "Script-checked" and "adversarially verified" are different claims,
+and neither is "machine-checked".
+
 **What the automated checks can and cannot do.** `make check` verifies that a reference
 *resolves* — to a file, a check label, a column, a commit. It cannot verify that the
 statement built on it is *true*. A citation that resolves cleanly to a real script whose

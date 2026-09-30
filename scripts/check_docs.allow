@@ -28,3 +28,4 @@ docs/toolchain.md: .claude/settings.local.json
 docs/handoff_guide.md: papers/source/2504.01234v2/ms.tex
 docs/handoff_guide.md: symbolic/topic1/stage_04_reduce.wls
 docs/handoff_guide.md: derivation/topic1/04_reduce.md
+.claude/skills/literature-audit/SKILL.md: papers/source/

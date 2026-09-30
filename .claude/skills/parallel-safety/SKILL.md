@@ -48,6 +48,14 @@ artifact.** This skill is the constructive half of `docs/failure_modes.md` entry
 5. **Reconcile in one pass, by one author**, before anything is committed. Parallel work
    produces material; a single pass turns it into the record.
 6. **One commit, after reconciliation.** Never a commit per agent.
+7. **Commit before dispatching.** A clean tree before an agent runs makes any mistake a
+   one-command undo, and the diff afterwards is a complete, compact record of what the agent
+   actually did — which is usually easier to review than its transcript. `/checkpoint` exists
+   for this.
+8. **Separate worktrees when two agents must touch the same tree.** `git worktree` gives each
+   one its own checkout of its own branch, so a concurrent write cannot collide; land the
+   branches in sequence, reconciled by one author. Subagents cannot create worktrees
+   themselves (the git guard blocks it) — the main session sets them up.
 
 ## The honest test
 

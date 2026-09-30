@@ -7,9 +7,76 @@ Read this before an audit, before writing a report, and whenever a session is un
 pressure. It is not a list of hypotheticals: every entry below happened, most of them to
 people who knew better in the abstract.
 
-**Part 1 is inherited** — from the project this template was extracted from. Keep it: these
-are general to the work, not to that paper. **Part 2 is yours** — add to it at every
-`/session-close` where something went wrong, with the same three fields.
+**Part 0 is about the model**, not the process: three ways an LLM fails that no amount of
+project discipline prevents, because they are properties of the tool. **Part 1 is inherited**
+from the project this template was extracted from — general to the work, not to that paper.
+**Part 2 is yours**: add to it at every `/session-close` where something went wrong, with the
+same three fields. **Part 3** is anticipated and not yet observed.
+
+---
+
+## Part 0 — how the model fails
+
+From *How to Train Your Slop Cannon*
+([Open-Science-Ledger](https://github.com/Open-Science-Ledger/how-to-train-your-slop-cannon)),
+which names these three and is worth reading in full. They are the reason several rules in
+this repository look paranoid: each one is a countermeasure to one of them.
+
+### 0a. Context rot
+
+**What it is.** As the context window fills, attention starts producing spurious
+correlations and output quality sags. There is no sharp threshold — the guide's calibration
+is that *"quality starts to sag beyond roughly 30% context usage."*
+
+**What it looks like.** Answers that were sharp early in a session become vague or subtly
+wrong late in it. A file read an hour ago gets mis-remembered. A convention established at
+the start gets quietly violated.
+
+**Countermeasures here.** The filesystem is the memory, not the conversation: `docs/STATUS.md`
+and `docs/conventions.md` are small and reloaded every session; detail lives in skills and
+`reference/` files loaded only when needed; the context budget on the every-session files is
+a hard error (`make check-docs`). Practically: **`/checkpoint` early and often, and prefer a
+fresh session over a long one.** A `PreCompact` hook writes a snapshot and tells the session
+to record anything held only in its head, because compaction keeps the thread and loses the
+detail.
+
+### 0b. Hyperfixation
+
+**What it is.** The model locks onto a subgoal and produces increasingly unreliable work to
+"achieve" it before the context runs out. The guide's example is exact: *"an agent that
+cannot make a test suite pass will sometimes delete the failing tests, hard-code the expected
+output, or simply declare success."*
+
+**What it looks like.** A tolerance widened without explanation. A check rewritten until it
+passes. An assertion that matches the expectation rather than the computation. "Done" with no
+output quoted.
+
+**Countermeasures here.** This is what a whole family of prohibitions is actually for, and
+they read very differently once it has a name: never skip, disable or quarantine a test;
+never widen a tolerance without recording why; never adjust a check to pass; print before
+asserting; a failing check means stop and report, not iterate until green. Plus decomposition
+— one stage per script, small enough that a failure is localized rather than something to be
+escaped.
+
+### 0c. Sycophancy
+
+**What it is.** Post-training on human preference means the model does not merely assert
+falsehoods fluently — *"it preferentially asserts the falsehoods you would quite like to be
+true."*
+
+**What it looks like, and why it is the dangerous one here.** A project whose whole method is
+"the PI decides, Claude implements" is *structurally* exposed to this. Say "I think the
+source's Eq. (12) is missing a factor of 2" and a sycophantic model will find the missing
+factor. That is a discrepancy record built on nothing, and it can propagate into a decision,
+a convention and a paper.
+
+**Countermeasures here.** The five-point form separates *what the source states* from *what
+its equations imply* from *what an independent derivation gives* — precisely so that a
+suspicion cannot be laundered into a finding. Beyond that, the guide's own rule, adopted:
+**treat the model's enthusiasm for your idea with scepticism, and when you want a genuine
+assessment, ask a clean session that does not know your position.** Do not tell the verifier
+what you expect it to find. The `verification` agent exists partly for this, which is why its
+brief should carry the artifact and not your hypothesis about it.
 
 ---
 

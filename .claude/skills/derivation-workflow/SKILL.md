@@ -35,7 +35,18 @@ Checks worth having at every stage:
 
 **3. Write up** — `derivation/<topic>/NN_<what>.md`: conventions used, assumptions, the
 displayed equations, and for every displayed equation an evidence tag naming the script and
-the exact check label:
+the exact check label.
+
+For an argument that is **not** a mechanical computation — a uniqueness, exhaustiveness,
+limiting, gauge or regularity argument — write it as a **structured proof**: a numbered
+hierarchy where each step is justified by a cited result, by earlier steps, or by child steps,
+and where a step with neither children nor justification is an explicit, labelled gap
+(`reference/structured_proofs.md`). Prose hides exactly the step that is wrong; "after some
+algebra it follows that" is unfalsifiable at the level of the step. For algebra a script
+checks coefficient by coefficient, the script is the proof — cite its label and do not add a
+hierarchy.
+
+Evidence tags look like:
 
     [E: `symbolic/<topic>/stage_04_reduce.wls`, "reduced system matches source Eq. (9)"]
 

@@ -77,11 +77,10 @@ Published tables and any method the PI has designated a *benchmark* are validati
 never the production method. No manual result guesses and no hard-coded known answers in
 solvers.
 
-The derivations are a primary deliverable of this project, not a byproduct of the numerics:
-for each topic, `derivation/<topic>/` must accumulate into a complete, self-contained,
-re-runnable derivation — publishable as an appendix or a standalone methods paper in its own
-right. Retention and one-stage-per-file rules: `.claude/rules/derivation.md`;
-deliverable statement and per-topic index: `derivation/README.md`.
+The derivations are a primary deliverable, not a byproduct of the numerics: each topic's
+`derivation/<topic>/` must accumulate into a complete, re-runnable derivation, publishable as
+an appendix or a methods paper in its own right (`.claude/rules/derivation.md`,
+`derivation/README.md`).
 
 ## 3. Primary source and source-first discipline
 
@@ -106,6 +105,11 @@ each other — record **five things separately**:
 
 This is the one canonical form. It is stated here and nowhere else; every other file points
 here. Use it verbatim.
+
+**Do not let a suspicion become a finding.** A model preferentially asserts what you would
+like to be true (`docs/failure_modes.md` 0c), so a discrepancy the PI has already guessed at
+is the easiest kind to "confirm". Parts 2 and 3 are established independently of part 1, and
+where it matters, by a session that has not been told what to expect.
 
 ## 4. Method and formalism labels
 
@@ -202,14 +206,12 @@ unknown and which calculation would resolve it.
 
 ## 12. Where the rest lives
 
-- Directory map: `README.md` "Layout" and `docs/GUIDE.md` §2. `papers/**` is read-only and
-  `symbolic/generated/**` is machine-written; both are hook-guarded via
+- Layout and the hook-guarded paths: `README.md`, `docs/GUIDE.md` §2,
   `.claude/guard_paths.json`.
-- Current state: `docs/STATUS.md` (loaded). History and evidence: `docs/status_history.md`.
-- What has been reproduced and what new work has been established, claim by claim:
-  `docs/reproduction_and_extension.md`.
-- Path-scoped rules: `.claude/rules/`. Skills: `.claude/skills/README.md`.
-  Subagents and model routing: `.claude/models.md`.
-- How the setup works: `docs/GUIDE.md`. How to do a piece of work: `docs/WORKFLOW.md`.
-- Failures this project (and the project this template came from) has actually hit, and what
-  changed because of them: `docs/failure_modes.md`. Read it before an audit or a report.
+- State: `docs/STATUS.md` (loaded); history `docs/status_history.md`; claim by claim,
+  reproduction and new work, `docs/reproduction_and_extension.md`.
+- Rules `.claude/rules/`; skills `.claude/skills/README.md`; agents and models
+  `.claude/models.md`.
+- Mechanism `docs/GUIDE.md`; practice, and the ladder of rigour, `docs/WORKFLOW.md`.
+- **How the model fails, and what has actually gone wrong here: `docs/failure_modes.md`.**
+  Read it before an audit or a report.
