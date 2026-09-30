@@ -1,15 +1,25 @@
 # claude_code_ai_research_scholar
 
-A **Claude Code template for reproducing and extending a scientific paper.** It is the
-reusable engineering harness — instructions, subagents, skills, hooks, prompt records,
-validation protocol and audit workflow — with no paper-specific content in it.
+A **Claude Code template for reproducing a scientific paper and then building new work on
+top of it.** It is the reusable engineering harness — instructions, subagents, skills, hooks,
+prompt records, validation protocol and audit workflow — with no paper-specific content in it.
 
-It exists because reproducing a paper with an AI assistant fails in specific, repeatable
-ways: the assistant silently "fixes" the source, calls something verified that was never
-checked, loses the reasoning between sessions, hand-transcribes an expression and introduces
-a sign error, or produces a result nobody can trace back to a script. Every mechanism here
-answers one of those failures. The ones that were learned the hard way are recorded in
-`docs/failure_modes.md`.
+**Two halves of equal standing.** Reproducing the source establishes that the machinery is
+sound; the extension built on that foundation is the point, and it ends in a paper of the
+project's own. The template tracks both side by side and holds them to different standards of
+evidence, because the source can validate a reproduction and cannot validate an extension.
+
+**The PI is the final authority.** The researcher decides the question, the conventions, the
+scope, what is claimed — and, specifically, *what is implemented in which language and how the
+tools interoperate*. Claude advises, asks when a decision has not been made, and implements.
+That is written into the charter rather than left to etiquette.
+
+It exists because this kind of work with an AI assistant fails in specific, repeatable ways:
+the assistant silently "fixes" the source, calls something verified that was never checked,
+loses the reasoning between sessions, hand-transcribes an expression and introduces a sign
+error, quietly picks a language or a default nobody chose, or produces a result nobody can
+trace back to a script. Every mechanism here answers one of those failures. The ones learned
+the hard way are recorded in `docs/failure_modes.md`.
 
 ## What you get
 
@@ -24,7 +34,8 @@ answers one of those failures. The ones that were learned the hard way are recor
 | A `verification` subagent made read-only **by a hook** | the auditor fixing what it is supposed to be auditing |
 | Declared tool ownership + codegen-not-transcription | two divergent records of the same equation |
 | Machine-readable result records + validation protocol | numbers nobody can reproduce |
-| `docs/reproduction_matrix.md` | "how much of the paper have we actually reproduced?" being unanswerable |
+| `docs/reproduction_and_extension.md` | "how much of the paper have we reproduced, and what have we actually added?" being unanswerable |
+| PI authority written into the charter, including language and interoperation choices | Claude quietly deciding something that was the researcher's to decide |
 | Two-tier `Makefile` and CI | checks that only run when someone remembers |
 
 ## Quick start
@@ -78,8 +89,9 @@ appears on the repository page and every new paper project starts from a clean h
 
 - No scientific content, no example project, no sample derivation. The template ships empty
   so nothing paper-specific can be copied by accident into the next project.
-- No opinion about your physics, your CAS, or your numerics. Tool ownership is declared per
-  topic (`docs/toolchain.md`), and `/init-paper` asks.
+- No opinion about your physics, your CAS, or your numerics. **You** decide what is
+  implemented in which language and how the tools interoperate; `/init-paper` asks, records
+  each answer as a decision, and the registry in `docs/toolchain.md` is the standing answer.
 - No dependency on any tool being installed: the entire `make check` tier runs in CI, on a
   laptop, or in a cloud container with none of Mathematica, Julia or Python's scientific
   stack present.

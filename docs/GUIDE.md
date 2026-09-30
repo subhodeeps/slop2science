@@ -18,8 +18,8 @@ record**, like a derivation script.
 
 | Piece | Fires | Purpose |
 |---|---|---|
-| `CLAUDE.md` | every session, always | The charter: role and authority, the objective, source-first discipline, the five-point discrepancy form, toolchain rules, session protocol, the interruption guardrail. Kept under ~200 lines on purpose — detail is referenced, never restated. |
-| `docs/STATUS.md`, `docs/conventions.md` | every session (`@`-imported by `CLAUDE.md`) | Current state only, and the conventions register. Under ~100 lines each because they load every time; history lives in `docs/status_history.md`, which does not. |
+| `CLAUDE.md` | every session, always | The charter: **the PI's authority and what is the PI's to decide** (including which language implements what, and how the tools interoperate), the project's two halves — reproduction and new work — source-first discipline, the five-point discrepancy form, toolchain rules, session protocol, the interruption guardrail. Kept deliberately short — detail is referenced, never restated — and its size budget is checked by `make check-docs`, because a file that loads every session grows by accretion. |
+| `docs/STATUS.md`, `docs/conventions.md` | every session (`@`-imported by `CLAUDE.md`) | Current state only (reproduction **and** extension), and the conventions register. Budgeted and checked, because they load every time; history lives in `docs/status_history.md`, which does not. |
 | `.claude/rules/*.md` | automatically, when Claude reads a file matching the rule's `paths:` | Narrow, path-scoped constraints. You never invoke these; touching a matching file loads them. |
 | `.claude/skills/*/SKILL.md` | when its `description`/`when_to_use` matches the task, or by name (`/skill-name`) | Procedures: how to do a category of work. Each under ~100 lines; occasional detail sits in the skill's `reference/`, loaded only if needed. |
 | `.claude/agents/*.md` | dispatched by you, or by the session judging a subtask fits | Subagents: separate context windows with their own tools, skills and model. |
@@ -106,6 +106,7 @@ every push.
 **Depends on the prompt, and on the model actually following it**: the five-point form being
 used correctly; "verified" being claimed only for what a re-runnable procedure checked;
 print-before-assert in a new script; a session actually stopping at a usage limit rather than
-rushing. These are process, not code. `docs/WORKFLOW.md` §8 and `docs/failure_modes.md` cover
+rushing; and **asking the PI rather than defaulting** when a decision is the PI's — the one
+guarantee here that no hook can enforce, and the one the rest depends on. These are process, not code. `docs/WORKFLOW.md` §8 and `docs/failure_modes.md` cover
 what to watch for — and if an instruction here keeps being missed, the fix is usually to move
 it from prose into a rule, a skill, or a hook, in that order of strength.

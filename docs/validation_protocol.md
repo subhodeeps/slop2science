@@ -68,6 +68,14 @@ time-domain or direct simulation; another group's implementation.
 Same-method agreement is a consistency check and cannot validate the method — reporting it as
 though it can is a real and easy error.
 
+**For an extension there is no source table to check against**, and that raises the bar rather
+than lowering it (CLAUDE.md §2). An extension result is accepted on: an exact limiting case
+the project has already verified; an independent-method benchmark where one exists; internal
+consistency across resolution, precision and continuation; and a physical requirement it must
+satisfy. Where none of those is available, say so explicitly in the record and in the report —
+an extension resting only on its own convergence is a *candidate*, however clean that
+convergence looks (`docs/failure_modes.md` entry 4).
+
 ## 9. Required limits
 
 State each limit the project's results must satisfy, and test it where the claim is made —

@@ -3,8 +3,9 @@
 
     scripts/check_docs.py refs       every path cited in prose still resolves
     scripts/check_docs.py evidence   every [E: file, "label"] tag cites a label that exists
-    scripts/check_docs.py stale      ownership declared, records self-consistent, write-ups
-                                     not older than the scripts they cite (warnings)
+    scripts/check_docs.py stale      ownership declared, records self-consistent, the
+                                     every-session context budget, and write-ups not older
+                                     than the scripts they cite (the last two as warnings)
     scripts/check_docs.py all        all three
 
 Why this exists. A write-up whose cited script was renamed, or a claim whose check label was
@@ -263,7 +264,24 @@ def check_stale():
                 errors.append(f"{path.relative_to(ROOT)}: provenance header cites column "
                               f"`{m.group(1)}`, which is not one of its own columns")
 
-    # 4. Warnings: a write-up older than a script it cites.
+    # 4. Context budget: the files that load into EVERY session.
+    #    These have a stated size discipline because their cost is paid on every prompt, and
+    #    they grow by accretion -- the project this template came from let its status file
+    #    reach 504 lines of history before anyone measured it (docs/failure_modes.md entry 10).
+    #    Warnings, not errors: going over is a prompt to move detail out, not a build failure.
+    BUDGETS = {"CLAUDE.md": 220, "docs/STATUS.md": 100, "docs/conventions.md": 60}
+    for rel, budget in BUDGETS.items():
+        path = ROOT / rel
+        if not path.exists():
+            continue
+        lines = len(path.read_text(encoding="utf-8", errors="replace").splitlines())
+        if lines > budget:
+            warnings.append(
+                f"WARNING context budget: {rel} is {lines} lines, over its {budget}-line "
+                f"budget. It loads every session -- move detail into a skill, a rule, or a "
+                f"referenced doc rather than trimming wording.")
+
+    # 5. Warnings: a write-up older than a script it cites.
     def last_commit(rel):
         out = git("log", "-1", "--format=%ct", "--", rel).strip()
         return int(out) if out.isdigit() else 0

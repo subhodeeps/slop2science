@@ -120,5 +120,5 @@ an equivalent external source. Record that rather than leaving the cell blank.
 
 ## O. Reproduction targets
 
-The rows this audit contributes to `docs/reproduction_matrix.md`: every equation, table and
+The rows this audit contributes to `docs/reproduction_and_extension.md`: every equation, table and
 figure the project intends to reproduce, all `not attempted`.

@@ -32,7 +32,8 @@ limit is near or the session was interrupted (CLAUDE.md §8a).
 
 4. **History, then state.** Append this session's full record — what was done, the evidence,
    the commits — to the end of `docs/status_history.md`. *Then* update `docs/STATUS.md`,
-   which holds current state only, loads every session, and stays under ~100 lines:
+   which holds current state only, loads every session, and has a budget `make check-docs`
+   checks (if it warns, move detail to the history, do not compress wording):
 
    - current phase; one concrete immediate next task;
    - move an item between *Derived*, *Validated* and *Open* **only with the evidence**
@@ -42,8 +43,11 @@ limit is near or the session was interrupted (CLAUDE.md §8a).
      false picture;
    - last validation: date, command, outcome, commit.
 
-5. **Reproduction matrix.** Update `docs/reproduction_matrix.md` for anything reproduced,
-   attempted, or found discrepant this session. This is the row the PI actually looks at.
+5. **Reproduction and extension.** Update `docs/reproduction_and_extension.md` for anything
+   reproduced, established, attempted, found discrepant, or found not to work this session —
+   **both** tables, plus the new-work deliverables. This is what the PI actually reads.
+   A session that advanced the extension and only updated the reproduction table has
+   mis-recorded itself. A negative extension result is recorded, not dropped.
 
 6. **Decisions and prompts.** Append any PI decisions to `docs/decision_log.md` in the
    `D-NNN` form. Fill in the `## Outcome` section of this session's prompt record in

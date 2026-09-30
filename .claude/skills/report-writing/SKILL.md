@@ -8,6 +8,19 @@ paths:
 
 # Report writing
 
+Two documents can come out of a topic, and they are not the same document:
+
+- a **methods report** — the full verified derivation and validation chain, for the PI and
+  for whoever continues the work;
+- a **manuscript** — the project's own new work, written for publication, in which the
+  reproduction is background and the extension is the contribution (CLAUDE.md §2).
+
+The rules below apply to both. What differs is the weighting: a methods report shows every
+verified step; a manuscript states the reproduction compactly ("the source's Eqs. (1)–(9) were
+reconstructed independently; see the methods appendix") and spends its length on what is new.
+**The PI decides which document is being written, what it claims, its scope and its
+authorship** — ask if the brief does not say, and never decide a claim.
+
 **The reader is a researcher in the field, not an auditor.** They must be able to (a) follow
 and redo the algebra by hand and (b) reproduce the results. They do not know this project's
 internal vocabulary and should not have to learn it.
@@ -49,7 +62,12 @@ mechanical requirements where they serve that reader: in an appendix.
   briefly. Never invent, "clean up" or silently alter an equation or convention.
 - **Only recorded numbers.** Every digit traces to a record. No unsupported precision.
 - **Nothing softened.** Open issues stay open. Discrepancies are stated, not smoothed. Never
-  attribute the project's extensions to the source; never claim novelty or significance.
+  attribute the project's extensions to the source, or the source's results to this project —
+  in a manuscript this is not a bookkeeping slip but a misattribution.
+- **Novelty is the PI's to claim.** State plainly what is new and what is reproduction; do
+  not write significance, priority or novelty claims of your own. Where the extension rests
+  on something weaker than an independent benchmark, say what it rests on
+  (`docs/validation_protocol.md` §8).
 - **Never "after some algebra"** in place of the algebra. If it is long, put it in an appendix
   and point there.
 - **One author, in order.** Do not split the narrative across parallel writers: ten parallel

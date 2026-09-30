@@ -1,8 +1,13 @@
 # Toolchain and tool ownership
 
 Mathematica, Julia and Python are **co-equal** in this project. Neither symbolic work nor
-numerics belongs to a language by default. What matters is that for every topic and every
-solver, exactly one tool is the **record**, and that this is written down.
+numerics belongs to a language by default.
+
+**The PI decides what is implemented in which language, and how the tools interoperate**
+(CLAUDE.md §1, §5). Claude does not choose a language for a new piece of work, does not move
+work between languages, and does not add or change a hand-off between tools. Every assignment
+below is a PI decision with a `docs/decision_log.md` entry; where this file does not cover the
+work at hand, **stop and ask the PI** rather than picking the obvious option.
 
 Execution details (the common wrapper, environments, precision, hand-off): the `toolchain`
 skill. Rules a checker enforces: `.claude/rules/derivation.md`,
@@ -23,14 +28,37 @@ five-point form, not a choice to make silently.
 
 ## Ownership registry
 
+Filled by `/init-paper` from the PI's answers, and changed only by a PI decision. Every row
+cites the decision that put it there, so "why is this in Julia?" always has an answer.
+
 <!-- REGISTRY-START -->
 
-| Topic / solver | Owner tool | Kind | Cross-checked by | Notes |
-|---|---|---|---|---|
-| {{TOPIC_1}} | {{TOOL_A}} | derivation | — | |
-| {{TOPIC_1}} solver | {{TOOL_B}} | implementation | — | consumes `symbolic/generated/` only |
+| Topic / solver | Owner tool | Kind | Cross-checked by | Decision | Notes |
+|---|---|---|---|---|---|
+| {{TOPIC_1}} | {{TOOL_A}} | derivation | — | D-002 | |
+| {{TOPIC_1}} solver | {{TOOL_B}} | implementation | — | D-002 | consumes `symbolic/generated/` only |
 
 <!-- REGISTRY-END -->
+
+## Interoperation
+
+How results pass between the tools — **also the PI's decision**, and part of the registry
+rather than something each session settles for itself.
+
+| From | To | What crosses | Mechanism | Decision |
+|---|---|---|---|---|
+| {{TOOL_A}} | {{TOOL_B}} | coefficient functions | `export_NN_*` → `symbolic/generated/{{LANG_B}}/` | D-002 |
+
+Rules that hold for every route, whatever the PI chooses:
+
+- **Machine-generated, never hand-transcribed**, in any direction, however short, however
+  temporary. This is the rule a rushed session breaks first and that costs the most.
+- **One direction per fact.** If two tools both write the same quantity, one of them is the
+  record and the other is a cross-check — the registry says which.
+- **Text, not a tool-specific binary format**, so a hand-off is readable and diffable by
+  anything, and `make codegen-check` can compare it.
+- **Claude does not invent a route.** Needing a quantity in a tool the registry does not
+  deliver it to is a question for the PI, not an opportunity to add a converter.
 
 ## Division of labour
 

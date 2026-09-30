@@ -1,6 +1,7 @@
 # Research status
 
-**Current state only.** This file loads into every session, so it stays under ~100 lines.
+**Current state only.** This file loads into every session, so it has a line budget that
+`make check-docs` enforces.
 The session-by-session record and the evidence behind each line below go in
 `docs/status_history.md`, which is *not* auto-loaded.
 
@@ -37,7 +38,21 @@ and its write-up. A line here without a re-runnable script does not belong here.
 Nothing yet. One line per accepted result, each naming its record, resolution, precision and
 the benchmark it was judged against — with that benchmark's *method*.
 
-Reproduction status, claim by claim: `docs/reproduction_matrix.md`.
+## Reproduction
+
+Nothing yet. What of the source is reproduced, in one line. Judged against the source.
+
+## Extension / new work
+
+Nothing yet. What has been established **beyond** the source, in one line, and what the
+current new-work target is. Judged against physics and independent benchmarks, never against
+the source (CLAUDE.md §2).
+
+This section is not an afterthought to the one above it: the extension is half the project,
+and a STATUS that only tracks reproduction will quietly turn the project into a reproduction
+project.
+
+Both, claim by claim, with evidence: `docs/reproduction_and_extension.md`.
 
 ## Open questions
 

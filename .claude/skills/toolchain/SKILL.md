@@ -8,8 +8,14 @@ allowed-tools: Bash(scripts/run *) Bash(scripts/run_stages.sh *) Bash(scripts/ru
 # Toolchain
 
 Mathematica, Julia and Python are **co-equal** here. Which one is the record for a given topic
-or solver is declared in `docs/toolchain.md`'s ownership registry, not implied by the language.
-If the registry does not say, stop and ask — do not pick.
+or solver is **the PI's decision** (CLAUDE.md §1), recorded in `docs/toolchain.md`'s ownership
+registry — not implied by the language, and not yours to choose.
+
+If the registry does not cover the work in front of you, **stop and ask the PI.** Do not pick
+the obvious option, do not follow what another topic did, and do not move work into a
+different language because it would be easier there. The same applies to hand-offs: if you
+need a quantity in a tool the registry does not deliver it to, that is a question, not a
+converter to write.
 
 ## One invocation path
 

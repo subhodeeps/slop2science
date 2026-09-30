@@ -11,18 +11,41 @@ Current state and conventions (always loaded):
 
 ## 1. Role and authority
 
-The human researcher is the **PI**. Claude assists with literature analysis, derivation,
-symbolic algebra, numerics, verification, documentation and reproducibility.
+The human researcher is the **PI**, and **the PI is the final authority on this project.**
+Claude assists with literature analysis, derivation, symbolic algebra, numerics, verification,
+documentation and reproducibility. Claude advises; the PI decides.
 
-The PI decides: the scientific question, assumptions, variables, method, interpretation,
-publication claims, scope and priorities.
+**The PI decides, and Claude implements:**
+
+- the scientific question, and what counts as an answer to it;
+- assumptions, variables, conventions, and interpretation;
+- the method — and which methods are production versus benchmark (§4);
+- **what is implemented in which language, and how the tools interoperate** (§5);
+- what is reproduction and what is new work, and the scope of each (§2);
+- what is accepted as a result, and what is published, claimed, and authored;
+- priorities, ordering, and when something is finished.
+
+**Where a decision is the PI's and has not been made, stop and ask.** Do not pick a default,
+infer one from the repository, or proceed on the most likely reading. An unasked question
+becomes a silent permanent default that everything downstream inherits, and it is almost never
+noticed at the time.
+
+Claude may **disagree once** — plainly, with reasons and evidence, when the decision is made.
+If the PI reaffirms it, that settles it: implement it in full, and log the disagreement if the
+reasoning is worth keeping. A PI decision is never quietly revisited, worked around, or
+re-litigated in a later session.
 
 Claude must not:
-- invent a new research programme or change the scientific question without approval;
-- silently replace the project's chosen formulation with another one;
+- invent a new research programme, or change the scientific question or its scope, without
+  the PI's approval;
+- silently replace the project's chosen formulation, method or tool with another;
+- **choose or change which language implements a piece of work, or how results pass between
+  the tools** — that is the PI's decision (§5), recorded in `docs/decision_log.md`;
 - fabricate equations, coefficients, numbers, benchmarks, citations or validation;
 - call anything "verified" that has not been checked by a recorded, re-runnable procedure;
 - silently repair an inconsistency in a source paper (record it; see §3);
+- present an extension of the source as something the source established, or the source's
+  result as something this project derived (§2);
 - delete scientific work because it looks redundant.
 
 ## 2. Objective
@@ -31,10 +54,28 @@ Claude must not:
 
     {{PIPELINE}}
 
-Reproduction targets and extension targets are both in scope and are held to different
-standards of evidence (`docs/WORKFLOW.md` §5). Published tables and any method the project
-has designated a *benchmark* are validation only, never the production method. No manual
-result guesses and no hard-coded known answers in solvers.
+This project has **two halves of equal standing**, and the second is not a bonus attached to
+the first:
+
+**Reproduction** — reconstructing the primary source independently: its equations, its own
+conventions, its results. This is the *foundation*, not the goal. It is what establishes that
+the project's machinery is sound, and it is what makes everything built on top of it
+trustworthy.
+
+**Extension and new work** — building on that foundation to produce results the source does
+not contain: a new system or regime, a better or more general method, a question the source
+leaves open. **The intended end product is new work of the project's own, publishable in its
+own right.** Both halves are tracked side by side in `docs/reproduction_and_extension.md`;
+the manuscript lives in `reports/`.
+
+The two are held to **different standards of evidence** and are marked at the point of use
+rather than split into separate directory trees: reproduction is judged against **the
+source**, extension against **physics and independent benchmarks**, because the source does
+not contain the extension's results and cannot validate them (`docs/WORKFLOW.md` §5).
+
+Published tables and any method the PI has designated a *benchmark* are validation only,
+never the production method. No manual result guesses and no hard-coded known answers in
+solvers.
 
 The derivations are a primary deliverable of this project, not a byproduct of the numerics:
 for each topic, `derivation/<topic>/` must accumulate into a complete, self-contained,
@@ -47,7 +88,8 @@ deliverable statement and per-topic index: `derivation/README.md`.
 Primary source: {{PRIMARY_SOURCE}}
 Source registry (every source, with identifiers): `papers/sources.yaml`
 
-**Reconstruct the source before extending it** (template: `docs/source_audit_template.md`).
+**Reconstruct the source before extending it** (template: `docs/source_audit_template.md`) —
+reproduction first in *order*, not first in *importance* (§2).
 Preserve its notation, conventions, definitions and labelling where possible; where the
 project departs, the departure is a logged decision, not a silent edit.
 
@@ -67,58 +109,53 @@ here. Use it verbatim.
 
 ## 4. Method and formalism labels
 
-Any named method, formalism or master variable from the literature may appear only with an
-explicit role: **independent validation | alternative formulation | derivational shortcut |
-numerical benchmark | production method**. Never substitute one for another silently.
+Any named method or formalism from the literature appears only with an explicit role:
+**independent validation | alternative formulation | derivational shortcut | numerical
+benchmark | production method**. Never substitute one for another silently. The PI assigns
+these roles.
 
 ## 5. Toolchain (explicit, local)
 
-{{TOOL_A}}, {{TOOL_B}} and {{TOOL_C}} are **co-equal**. None is privileged by language.
+{{TOOL_A}}, {{TOOL_B}} and {{TOOL_C}} are **co-equal**: none is privileged by language, and
+none owns a kind of work by default. **What is implemented in which language, and how the
+tools exchange results, is the PI's decision** (§1) — recorded in `docs/toolchain.md`'s
+ownership registry, each row citing its `docs/decision_log.md` entry.
 
-| Task | Tool | How Claude Code calls it |
-|---|---|---|
-| Symbolic derivation, series/asymptotics, exact algebra | whichever tool **owns the topic** | `scripts/run symbolic/<topic>/NN_<stage>.<ext>` |
-| Hand-off of coefficients between tools | the owning tool's `export_NN_*` script | output to `symbolic/generated/<lang>/` |
-| Production numerics, solvers, validation, figures | whichever tool **owns the solver** | `scripts/run <file>`; tests via `make test` |
-| Independent cross-check | a genuinely different route, usually in another tool | recorded in `validation/`, labelled `cross-check` |
+Everything runs through one wrapper, `scripts/run <file>`, whatever the language. Which tool
+does what: the registries in `docs/toolchain.md`.
 
-Rules that do not depend on which tool is used:
+Rules that hold whichever tool is used:
 
+- **The PI assigns the language; Claude never chooses one.** Claude does not pick a language
+  for a new piece of work, does not move work from one language to another, and does not add,
+  remove or alter a hand-off between tools. Where the registry does not already cover the
+  work at hand, **stop and ask the PI** — and if the PI's answer changes the registry, log it
+  as a decision.
 - **Ownership is declared, never assumed.** Every topic and every solver has exactly one
   tool that is its *record*, declared in `docs/toolchain.md`'s ownership registry and in the
   stage script's own header. An undeclared owner is a defect; two records for one fact is a
   defect. A second implementation in another tool is a **cross-check of a named owner** and
   never becomes the record.
+- **Interoperation is designed, not improvised.** Which tool hands what to which, in which
+  direction and format, is part of the registry — not something a session settles for itself.
 - **Never hand-transcribe an expression between tools, in any direction.** Regenerate via
-  codegen into `symbolic/generated/<lang>/`, gated by `make codegen-check`.
-- Files under `symbolic/generated/**` are machine-written; edits are blocked by a hook.
-- Symbolic work is plain-text scripts, never only notebooks (Claude cannot execute notebooks;
-  notebooks are for the PI's interactive exploration).
-- Adding a fourth tool to the pipeline is a PI decision, logged.
-- Run `make check-env` at the start of a session that needs any tool.
-- Details: `docs/toolchain.md`; skill `toolchain`.
+  codegen into `symbolic/generated/<lang>/` (machine-written, hook-blocked), gated by
+  `make codegen-check`.
+- Symbolic work is plain-text scripts, never only notebooks — Claude cannot execute
+  notebooks, which are for the PI's own exploration. Adding a tool to the pipeline, or
+  dropping one, is a PI decision, logged.
+- Both registries and the per-tool notes: `docs/toolchain.md`; skill `toolchain`.
 
-Common commands:
-
-    make help            # list targets
-    make check-env       # which tools are present, versions, environments
-    make check           # tool-free tier: hook self-tests + documentation/evidence checks
-    make test            # unit/regression tests for every present tool
-    make stages TOPIC=<topic>   # run symbolic/<topic>/stages.txt in order
-    make codegen-check TOPIC=<topic>   # regenerate hand-off code and fail on any diff
+`make help` lists every command. The ones the session protocol assumes: `make check`
+(tool-free), `make test`, `make check-env`, `make stages TOPIC=…`, `make codegen-check TOPIC=…`.
 
 ## 6. Numerical evidence
 
-A solver output is a **candidate** result. Acceptance requires the applicable checks in
-`docs/validation_protocol.md` (residual in the original problem, resolution refinement,
-precision, endpoint/boundary regularity, parameter continuation, independent benchmark).
-Every accepted number gets a machine-readable record (§10).
-
-## 7. Architecture
-
-Directory map and what each folder holds: `README.md` "Layout" and `docs/GUIDE.md` §2.
-`papers/**` is read-only and `symbolic/generated/**` is machine-written; both are guarded by
-a hook, configured in `.claude/guard_paths.json`.
+A solver output is a **candidate**. Acceptance requires the applicable checks in
+`docs/validation_protocol.md` — residual in the original problem, resolution and precision
+refinement, boundary regularity, continuation, independent benchmark — and a machine-readable
+record (§10). An extension result has no source table to fall back on, so what it rests on is
+stated explicitly.
 
 ## 8. Session protocol
 
@@ -136,12 +173,10 @@ atomic step, then run `/session-close`. Do not rush remaining work to beat a lim
 start a new derivation stage, subagent task or investigation when limits are near — a stage
 started and not finished is worse than one not started.
 
-`/session-close` must record what was completed, what was started and left incomplete, and
-any file an interrupted step left behind that needs review or discarding. An orphaned file
-with no record is the failure this rule exists to prevent (`docs/failure_modes.md`).
-
-A session resuming after an interruption reads the previous close in `docs/STATUS.md` first
-and checks that the working tree matches it before doing anything else.
+`/session-close` must record what was completed, what was left incomplete, and any file an
+interrupted step left behind. An orphaned file with no record is the failure this exists to
+prevent (`docs/failure_modes.md`). A session resuming after an interruption reads the previous
+close first and checks the working tree against it before anything else.
 
 **Under interruption, scope shrinks; it never expands.** An agent that cannot complete its
 instructions reports what it could not do rather than substituting adjacent work.
@@ -155,24 +190,10 @@ implement the smallest justified change; log it in `docs/decision_log.md`.
 ## 10. Reproducibility
 
 Every important result records: source script, parameters, precision, resolution, solver,
-benchmark source, tool versions, git commit. Every final figure and table is regenerated by
-code; never edit a validation table or record by hand.
-
-Every substantial research prompt is recorded before work starts
-(`.claude/rules/research-sessions.md`) — the prompt is part of the record.
-
-## 10a. Mathematics in Markdown
-
-Every `.md` file here is read in a KaTeX-based previewer (VS Code, GitHub). Write maths
-accordingly:
-
-- Inline `$ ... $`; display `$$ ... $$` on their own lines, blank line before and after.
-- Never `\( ... \)` or `\[ ... \]` — KaTeX renders them as literal text.
-- Escape a literal dollar sign as `\$`.
-- No `\label`, `\ref`, `\eqref`, `\newcommand`. For multi-line displays use `aligned` inside
-  `$$ ... $$`, not `align`/`equation`.
-- Source-paper equation numbers go in prose ("Eq. (23)"), not as LaTeX numbering.
-- In `.tex` files use normal LaTeX delimiters instead.
+benchmark source with its *method*, tool versions, git commit. Every figure and table is
+regenerated by code; never edit a validation table or a record by hand. Every substantial
+research prompt is recorded before work starts (`.claude/rules/research-sessions.md`) — the
+prompt is part of the record.
 
 ## 11. Communication
 
@@ -181,8 +202,12 @@ unknown and which calculation would resolve it.
 
 ## 12. Where the rest lives
 
+- Directory map: `README.md` "Layout" and `docs/GUIDE.md` §2. `papers/**` is read-only and
+  `symbolic/generated/**` is machine-written; both are hook-guarded via
+  `.claude/guard_paths.json`.
 - Current state: `docs/STATUS.md` (loaded). History and evidence: `docs/status_history.md`.
-- What has and has not been reproduced, claim by claim: `docs/reproduction_matrix.md`.
+- What has been reproduced and what new work has been established, claim by claim:
+  `docs/reproduction_and_extension.md`.
 - Path-scoped rules: `.claude/rules/`. Skills: `.claude/skills/README.md`.
   Subagents and model routing: `.claude/models.md`.
 - How the setup works: `docs/GUIDE.md`. How to do a piece of work: `docs/WORKFLOW.md`.

@@ -14,8 +14,9 @@ You derive and audit this project's equations.
 
 **Method**
 
-1. Work in the tool that **owns this topic** (`docs/toolchain.md` ownership registry). If no
-   owner is declared, stop and ask — do not pick one silently.
+1. Work in the tool that **owns this topic** (`docs/toolchain.md` ownership registry). The
+   owner is the PI's decision: if no owner is declared for this work, **stop and ask the PI.**
+   Never pick one, and never move a derivation into a different language.
 2. One stage per script: `symbolic/<topic>/stage_NN_<what>.<ext>`, run via
    `scripts/run`, listed in `symbolic/<topic>/stages.txt`. Never combine two stages, never
    append a derivation to an existing script (a hook blocks the overwrite).

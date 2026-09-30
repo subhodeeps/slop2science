@@ -160,3 +160,59 @@ cost**, **what changed as a result**. If nothing changed, the entry is still wor
 "we decided to accept this risk" is a finding.
 
 (none yet)
+
+---
+
+## Part 3 — anticipated, not yet observed
+
+Distinguished from Part 1 on purpose: **these have not happened here.** They are the failure
+modes this project's structure is shaped against, written down so that the reason for a rule
+survives even when the rule looks like bureaucracy. If one of them does happen, move it to
+Part 2 with what it actually cost.
+
+### A. A language chosen by convenience, then two records for one fact
+
+Three co-equal tools make it easy to derive something in one, re-derive it in another during a
+debugging session, commit both, and have nothing say which is authoritative. **Neither tool's
+own checks can detect this** — each passes.
+
+Guarded by: the PI decides what is implemented where (CLAUDE.md §1, §5); the ownership and
+interoperation registries in `docs/toolchain.md`, each row citing its decision;
+`make check-docs` failing when a topic has stage scripts and no registry row; and the rule
+that a second implementation is a labelled `CROSS-CHECK`, never a co-record.
+
+### B. The project quietly becoming a reproduction project
+
+Reproduction has clear targets, visible progress and an obvious stopping condition. Extension
+has none of those. The path of least resistance is to keep reproducing, report that as
+progress, and never start the new work — which is the half the project is actually for
+(CLAUDE.md §2).
+
+Guarded by: separate, equally weighted sections in `docs/STATUS.md` and
+`docs/reproduction_and_extension.md`; the source audit being required to list what the source
+*does not* do, not only what it does; an extension phase in the checklist; and
+`status-reporter` being told never to let reproduction progress stand in for the project's.
+
+### C. An extension validated against the source
+
+The source does not contain the extension's results, so it cannot validate them — but "this
+agrees with the paper" is such a reassuring sentence that it gets written anyway, usually
+about a limiting case that genuinely does agree, in a way that reads as though the whole
+extension were checked.
+
+Guarded by: `Kind:` / `Judged against:` at the point of use; the `judged_against` field being
+required in every record; and `docs/validation_protocol.md` §8 stating what an extension may
+rest on when no independent benchmark exists.
+
+### D. A default silently supplied for a decision that was the PI's
+
+An assistant asked to proceed will proceed. The missing convention, the unstated scope
+boundary, the unassigned language: each has an obvious-looking answer, and supplying it is
+faster than asking. The cost is not the wrong answer — it is that nobody knows a choice was
+made.
+
+Guarded by: the instruction to **stop and ask** rather than default (CLAUDE.md §1); `OPEN` as
+a first-class status in `docs/conventions.md`; `/init-paper` recording unanswered questions as
+open rather than filling them; and the decision log's `Options:` field, which is impossible to
+fill honestly for a decision nobody made. No hook can enforce this one, which is why it is
+written in the charter's first section rather than its last.

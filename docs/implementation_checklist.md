@@ -16,7 +16,8 @@ machine that has the owning tool, **[lit]** a source, **[doc]** documentation on
 - [ ] `make check-env` run; which tools are present on which machine recorded in STATUS
 - [ ] Language environments created and their lock files committed (`make setup`)
 - [ ] `make test` runs (even if it only skips absent languages)
-- [ ] Tool-ownership registry filled in `docs/toolchain.md`
+- [ ] [PI] Tool ownership **and interoperation** decided, logged (D-002), and registered in
+      `docs/toolchain.md`
 - [ ] Shared helper code and its self-tests in place (`symbolic/common/`)
 - [ ] Prompt recording working (a curated record exists for the first real session)
 
@@ -29,7 +30,8 @@ machine that has the owning tool, **[lit]** a source, **[doc]** documentation on
 - [ ] Every displayed equation in scope recorded with its number and role (§E)
 - [ ] What the source omits, listed in dependency order (§M) — this is the derivation plan
 - [ ] Discrepancies recorded in five-point form (§N); none silently resolved
-- [ ] `docs/reproduction_matrix.md` populated with every reproduction target
+- [ ] `docs/reproduction_and_extension.md` populated: reproduction targets, **and** the
+      candidate extensions the audit turned up for the PI to rule in or out
 
 ## Derivation — {{TOPIC_1}}
 
@@ -56,8 +58,28 @@ machine that has the owning tool, **[lit]** a source, **[doc]** documentation on
 - [ ] Records written by the driver, complete per `docs/validation_protocol.md` §12
 - [ ] Results moved to `Validated` in STATUS with evidence
 
+## Extension — new work beyond the source
+
+The second half of the project, not a follow-on (CLAUDE.md §2). Scope is the PI's decision;
+each item names what it is judged against, because the source cannot validate any of it.
+
+- [ ] [PI] Extension scope decided and logged; rows in `docs/reproduction_and_extension.md` §2
+- [ ] [PI] Language ownership and interoperation for the new work decided and registered
+      (`docs/toolchain.md`)
+- [ ] Reproduction gate passed for what the extension builds on — the extension does not
+      start on unverified foundations
+- [ ] [tool] Derivation stages for the new work, with checks, one stage per script
+- [ ] The already-verified case recovered as a **limiting case** of the extension, run as a check
+- [ ] [tool] Solver extended or written; known-answer test of the full chain still passes
+- [ ] Independent-method benchmark where one exists; where none exists, what the result rests
+      on stated explicitly in the record
+- [ ] Negative results recorded, not dropped (`docs/reproduction_and_extension.md`, `negative`)
+- [ ] Results moved to `Extension / new work` in STATUS with evidence and what each is
+      judged against
+
 ## Write-up
 
+- [ ] [PI] Which document is being written — methods report or manuscript — and what it claims
 - [ ] `reports/{{TOPIC_1}}_report.md` written as a paper, one author, in chunks
 - [ ] Every result equation cites a check; every number cites a record
 - [ ] Discrepancies in the text and in full in an appendix

@@ -18,25 +18,44 @@ Ask these as one batch (use `AskUserQuestion` where the answer is a choice). Do 
 any of them from the repository, and do not proceed with a placeholder still unanswered —
 an unanswered placeholder silently becomes a permanent wrong default.
 
+0. Confirm the framing before asking anything else, in one line each, so a wrong assumption
+   is corrected now rather than after ten files are written: **the PI is the final authority
+   here**, Claude asks rather than defaulting when a decision is the PI's, and this project is
+   a reproduction *and* an extension, not a reproduction alone (CLAUDE.md §1, §2).
 1. **Project name** — short, used in headings and the Makefile banner.
 2. **Primary source** — the paper being reproduced: authors, title, journal/preprint,
    identifier. If `$ARGUMENTS` gave an arXiv ID or DOI, offer it as the default.
 3. **Objective** — two or three sentences: what the project will have produced when it is
    done, and what the *production* method is (as opposed to what is only a benchmark).
+3a. **The new work** — what the project intends to establish **beyond** the source: the new
+   system, regime, method or open question, and what the eventual paper would claim. The
+   reproduction is the foundation; this is what it is a foundation for (CLAUDE.md §2). If the
+   PI does not yet know, record that explicitly as an open scope question rather than
+   implying the project is a reproduction project.
 4. **Pipeline** — the sequence of stages from source equations to final results, as an
    arrow chain. This becomes `CLAUDE.md` §2's indented block and the phase structure in
    `docs/implementation_checklist.md`.
 5. **Topics** — the units of work that each get their own `symbolic/<topic>/`,
    `derivation/<topic>/`, `validation/<topic>/`. Usually a progression of increasing
    difficulty. The first one is where work starts.
-6. **Tools** — which of Mathematica, Python and Julia this project will use, and **for each
-   topic and each solver, which tool is the record**. All are co-equal; what matters is that
-   ownership is declared. Ask explicitly rather than assuming the obvious split.
+6. **Tools — the PI's decision, in two parts.** All three are co-equal and Claude never
+   chooses (CLAUDE.md §1, §5), so ask both parts explicitly and do not offer a default split
+   as though it were obvious:
+   - **Ownership**: which of Mathematica, Python and Julia this project will use, and for
+     each topic and each solver, **which tool is the record**.
+   - **Interoperation**: which tool hands what to which, in which direction, by what
+     mechanism. Include the cases the PI expects to need later, not only the first one.
+
+   Record both as decision `D-002` in `docs/decision_log.md`, and write them into
+   `docs/toolchain.md`'s two registries with that reference. Anything the PI leaves open stays
+   open, and Claude asks again when the work reaches it.
 7. **Conventions to pin now** — units, notation, sign/orientation conventions, how results
    are labelled. Anything the PI does not yet know goes in as `OPEN`, not as a guess.
 8. **Reproduction targets** — which equations, tables and figures of the source the project
-   intends to reproduce. This seeds `docs/reproduction_matrix.md`, and it is the single most
-   useful answer in this interview: it turns "reproduce the paper" into a finite list.
+   intends to reproduce. This seeds `docs/reproduction_and_extension.md`, and it is the single
+   most useful answer in this interview: it turns "reproduce the paper" into a finite list.
+   Together with 3a it also fixes the boundary between the two halves, which is a scope
+   decision and therefore the PI's.
 
 ## 2. Write
 
@@ -52,8 +71,9 @@ subtly-wrong one:
    tools this project will not use.
 3. `docs/conventions.md` — one row per convention from answer 7, each tagged SOURCE /
    ADOPTED / OPEN / DERIVED, with where it is fixed.
-4. `docs/reproduction_matrix.md` — one row per reproduction target from answer 8, all with
-   status `not attempted`.
+4. `docs/reproduction_and_extension.md` — one row per reproduction target from answer 8, all
+   `not attempted`; the extension rows from answer 3a with what each will be judged against;
+   and the new-work deliverables the paper would need. All three tables, not only the first.
 5. `docs/STATUS.md` — phase 0; immediate next task = the source audit; nothing derived,
    nothing validated, no blockers.
 6. `docs/implementation_checklist.md` — the phase headings from answer 4, all unticked.
@@ -81,7 +101,8 @@ Print, in this order:
 
 1. Every file written, with a one-line summary of what it now says.
 2. **What only the PI can do**: fetch the paper (`make fetch-source ID=…`), install missing
-   tools, and decide each convention left `OPEN`.
+   tools, decide each convention left `OPEN`, and settle any language-ownership or
+   interoperation question left unanswered in 6.
 3. The first session to run: the source audit, via `docs/prompts/A1_source_audit.md`.
 4. A reminder that no code is written before the audit — that ordering is the point of this
    template, and every later gate assumes the audit exists.

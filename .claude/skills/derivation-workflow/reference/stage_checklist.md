@@ -43,7 +43,7 @@ failures it catches are the ones that look fine at the time.
       fresh checkout.
 - [ ] `make check` clean (references and evidence labels resolve).
 - [ ] Script and write-up committed together.
-- [ ] `docs/STATUS.md` and `docs/reproduction_matrix.md` updated with evidence.
+- [ ] `docs/STATUS.md` and `docs/reproduction_and_extension.md` updated with evidence.
 
 ## Smells
 

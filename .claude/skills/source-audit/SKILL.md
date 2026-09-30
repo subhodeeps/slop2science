@@ -35,15 +35,21 @@ template (`docs/source_audit_template.md`).
    PI decision, and it gets logged in `docs/decision_log.md`.
 6. **Populate `docs/conventions.md`**: one row per convention the source fixes, tagged
    SOURCE; one row per convention the source leaves ambiguous, tagged OPEN.
-7. **Populate `docs/reproduction_matrix.md`**: one row per equation, table and figure the
+7. **Populate `docs/reproduction_and_extension.md`**: one row per equation, table and figure the
    project intends to reproduce, status `not attempted`.
 8. **List what the source does not give you**: steps it calls standard, constants it states
    without derivation, numerical details it omits. This list is the derivation plan.
+9. **List what the source does not do** — the regimes it excludes, the cases it leaves open,
+   the generalizations it gestures at, the questions its own results raise. The PI decides
+   which of these the project will pursue; this list is where the **extension** starts, and
+   an audit that omits it has done half its job (CLAUDE.md §2).
 
 ## Output shape
 
 - `docs/<topic>_source_audit.md` — the audit.
-- Rows added to `docs/conventions.md` and `docs/reproduction_matrix.md`.
+- Rows added to `docs/conventions.md`, and to **both** tables of
+  `docs/reproduction_and_extension.md` — reproduction targets, and candidate extensions for
+  the PI to rule in or out.
 - Discrepancies in five-point form, each one either logged as a decision or left explicitly
   open with the validation that would decide it.
 - A short "what to derive first" section: the dependency order of the stages to come.

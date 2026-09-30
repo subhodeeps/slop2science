@@ -60,12 +60,18 @@ longer version for a particular write-up. Every file that needs it points there.
 
 ## 5. Reproduction vs. extension — same directories, marked at the point of use
 
-Two kinds of work with different standards of evidence:
+Two halves of equal standing, with different standards of evidence (CLAUDE.md §2):
 
 - **REPRODUCTION** — reconstructing the source itself: its equations, its own conventions,
-  its tables. Judged against: agreement with the source.
-- **EXTENSION** — anything beyond it: adopted conventions that differ, the production method,
-  new regimes. Judged against: agreement with independent benchmarks and with physics.
+  its tables. Judged against: agreement with the source. This is the foundation.
+- **EXTENSION** — the new work built on it: new systems, new regimes, a more general or
+  better method, questions the source left open. Judged against: independent benchmarks and
+  physics. **The source cannot validate an extension** — it does not contain the result.
+  This is what the project is for, and it ends in a paper of its own.
+
+The asymmetry is worth stating plainly, because it is the easiest thing in the project to get
+backwards: a reproduction that agrees with the source is *evidence the machinery works*; an
+extension that "looks consistent with the source" is **not evidence of anything**.
 
 They are **not** split into separate directory trees. They share derivation stages, share
 asymptotic analysis, and often share a single validation driver that tests both cases side by

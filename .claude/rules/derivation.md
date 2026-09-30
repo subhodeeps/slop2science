@@ -11,6 +11,8 @@ each one re-runnable and citable.
 
 ## Ownership
 
+- **The PI decides which language implements a topic** (CLAUDE.md §1, §5). Undeclared
+  ownership is a question for the PI, never a choice to make here.
 - Every topic has exactly one tool that is the **record** for it, declared in
   `docs/toolchain.md` and repeated in each stage script's header. Undeclared ownership is a
   defect. Two records for one fact is a defect.

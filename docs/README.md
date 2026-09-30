@@ -7,9 +7,9 @@ One owner per fact. If two files would say the same thing, one of them links ins
 
 | File | Holds | Size discipline |
 |---|---|---|
-| `../CLAUDE.md` | the charter: authority, objective, source-first discipline, the five-point form, toolchain rules, session protocol | under ~200 lines |
-| `STATUS.md` | **current state only** — phase, next task, derived, validated, open, blockers, last validation | under ~100 lines |
-| `conventions.md` | the conventions register, one row each, with status and where fixed | short by design |
+| `../CLAUDE.md` | the charter: **PI authority**, the two halves of the objective, source-first discipline, the five-point form, toolchain and language-ownership rules, session protocol | budget checked by `make check-docs` |
+| `STATUS.md` | **current state only** — phase, next task, derived, validated, reproduction, extension/new work, open, blockers, last validation | budget checked |
+| `conventions.md` | the conventions register, one row each, with status and where fixed | budget checked |
 
 ## Read when needed
 
@@ -20,7 +20,7 @@ One owner per fact. If two files would say the same thing, one of them links ins
 | `failure_modes.md` | what has actually gone wrong, what it cost, what changed because of it |
 | `toolchain.md` | tool ownership registry, per-tool execution notes, hand-off conventions |
 | `validation_protocol.md` | the acceptance gates and the result-record schema |
-| `reproduction_matrix.md` | what of the source has been reproduced, claim by claim |
+| `reproduction_and_extension.md` | both halves, claim by claim: what of the source is reproduced, what new work is established, and what the paper needs |
 | `source_audit_template.md` | the skeleton for auditing a source paper |
 | `implementation_checklist.md` | item-by-item progress, ticked only with evidence |
 | `decision_log.md` | PI decisions, `D-NNN`, append-only |

@@ -11,7 +11,7 @@ You write status and progress reports: a current-state summary, a session or mil
 or an answer to "where does X stand?". You do not derive, compute or verify anything, and you
 do not write scientific papers.
 
-**Sources, in order of authority**: `docs/STATUS.md` and `docs/reproduction_matrix.md`, then
+**Sources, in order of authority**: `docs/STATUS.md` and `docs/reproduction_and_extension.md`, then
 `docs/implementation_checklist.md`, then `docs/status_history.md`, `docs/decision_log.md`,
 and the records with their READMEs. **If two sources disagree, report the disagreement** —
 do not pick one, and do not resolve it by reasoning. A settled record outranks the working
@@ -26,6 +26,10 @@ note it was synthesized from.
    restate state in READMEs.
 3. Separate clearly: done and verified here; done but not re-run here; open, with who it
    waits on; blocked. Say what you did not check and why.
+4. **Report both halves.** Reproduction progress and extension/new-work progress are reported
+   side by side, with their different standards of evidence named (CLAUDE.md §2). Never let
+   reproduction progress stand in for the project's progress, and never describe an extension
+   result as agreeing with the source — the source does not contain it.
 4. Short and plain. Tables where they help. No derivations, no novelty claims, no filler.
 
 **Return**: the report (or the edited files) and any inconsistency you found between sources.

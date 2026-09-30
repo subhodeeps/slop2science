@@ -7,9 +7,9 @@ rewritten for your paper, which are meant to survive unchanged, and why.
 
 | Layer | Files | Change it? |
 |---|---|---|
-| **Charter and discipline** | `CLAUDE.md` §1, §3–§4, §6, §8–§11; `.claude/rules/`; `docs/WORKFLOW.md`; `docs/failure_modes.md`; the hooks | **No.** These encode failure modes, not preferences. Change them only after your project hits a failure they don't cover — and then log it in `docs/decision_log.md`. |
+| **Charter and discipline** | `CLAUDE.md` §1, §3–§4, §6, §8–§11; `.claude/rules/`; `docs/WORKFLOW.md`; `docs/failure_modes.md`; the hooks | **No.** These encode failure modes, not preferences — §1 in particular (PI authority, and asking rather than defaulting) is the one the rest rests on. Change them only after your project hits a failure they don't cover — and then log it in `docs/decision_log.md`. |
 | **Project parameters** | `CLAUDE.md` `{{PLACEHOLDERS}}`; `docs/conventions.md`; `docs/toolchain.md` ownership registry; `papers/sources.yaml`; agent/skill trigger phrases | **Yes, once**, via `/init-paper`, then as the project evolves. |
-| **Scientific content** | `derivation/`, `symbolic/`, `src/`, `tests/`, `validation/`, `reports/`, `docs/reproduction_matrix.md`, `docs/STATUS.md` | **Yes, continuously.** This is the work. Ships empty. |
+| **Scientific content** | `derivation/`, `symbolic/`, `src/`, `tests/`, `validation/`, `reports/`, `docs/reproduction_and_extension.md`, `docs/STATUS.md` | **Yes, continuously.** This is the work. Ships empty. |
 
 If you find yourself editing layer 1 in the first week, that is a signal the template is
 wrong for your problem — not that the rule is inconvenient. Say which rule and why in
@@ -59,9 +59,19 @@ If you need to invoke a rule, link to it.
 under ~100 lines. History goes to `docs/status_history.md`, which is *not* auto-loaded. In
 the source project STATUS reached 504 lines of history before this split.
 
-**Tool ownership is declared per topic, not per language.** All three tools are co-equal. The
-defect the registry prevents is not "using the wrong tool" — it is two tools each holding a
-slightly different version of the same equation, with nothing saying which is the record.
+**Tool ownership is a PI decision, declared per topic, not per language.** All three tools are
+co-equal, and Claude never picks one: not for new work, not to move existing work, not to add
+a hand-off between tools. The defect the registry prevents is not "using the wrong tool" — it
+is two tools each holding a slightly different version of the same equation, with nothing
+saying which is the record, and neither tool's own checks able to detect it. `docs/toolchain.md`
+carries both an ownership registry and an interoperation registry for that reason.
+
+**Reproduction and extension are equal halves, in one tree.** The template does not treat the
+extension as a follow-on: `docs/reproduction_and_extension.md` tracks both plus the
+new-work deliverables, `docs/STATUS.md` has a section for each, and the two are held to
+different standards of evidence at the point of use rather than separated by directory
+(`docs/WORKFLOW.md` §5). If you only ever fill in the reproduction table, the project will
+have quietly become a reproduction project.
 
 **Derivation scripts are append-only.** A hook blocks `Write` to an existing stage script; a
 new stage is a new numbered file. Supersede by adding, never by overwriting — the write-ups
