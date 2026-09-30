@@ -1,4 +1,6 @@
-# claude_code_ai_research_scholar
+# slop2science
+
+*From plausible output to established result.*
 
 A **Claude Code template for reproducing a scientific paper and then building new work on
 top of it.** It is the reusable engineering harness — instructions, subagents, skills, hooks,
@@ -85,30 +87,36 @@ audit — that ordering is the point of the template.
 
 Full account: `docs/GUIDE.md` §2. How to do a piece of work: `docs/WORKFLOW.md`.
 
-## Making this a GitHub template
+## What it leaves to you
 
-Creating the repository from the API cannot set the template flag, so do it once by hand:
-**Settings → General → check "Template repository"**. After that, "Use this template"
-appears on the repository page and every new paper project starts from a clean history.
+This is process, not content. It supplies the part that is the same in every project of this
+kind — the discipline, the provenance, and the machinery that ties a claim to the command
+that established it — and it deliberately decides nothing that is yours to decide:
 
-## What is deliberately *not* here
-
-- No scientific content, no example project, no sample derivation. The template ships empty
-  so nothing paper-specific can be copied by accident into the next project.
-- No opinion about your physics, your CAS, or your numerics. **You** decide what is
-  implemented in which language and how the tools interoperate; `/init-paper` asks, records
-  each answer as a decision, and the registry in `docs/toolchain.md` is the standing answer.
-- No dependency on any tool being installed: the entire `make check` tier runs in CI, on a
-  laptop, or in a cloud container with none of Mathematica, Julia or Python's scientific
-  stack present.
+- **The science.** It ships with no example project and no sample derivation. You start from
+  your paper, not from a specimen of someone else's, so there is nothing to copy by accident
+  and nothing that can later be mistaken for evidence of your own.
+- **The tools.** Mathematica, Python and Julia are equal here. Which one owns which piece of
+  work, and how results pass between them, is your call — `/init-paper` asks, records each
+  answer as a decision, and a registry keeps the standing answer where anyone can read it.
+- **The claims.** Claude derives, checks, records and drafts. What counts as a result, what
+  goes in a paper, and what is claimed for it stay with you.
 
 ## Provenance and prior art
 
-The pattern is extracted from a working physics paper-reproduction project.
-Every entry in `docs/failure_modes.md` Part 1 corresponds to something that actually went
-wrong there. The physics is gone; the scar tissue is the valuable part.
+The starting point was [Open-Science-Ledger/how-to-train-your-slop-cannon](https://github.com/Open-Science-Ledger/how-to-train-your-slop-cannon)
+— the guide that makes the case for doing research this way at all, and the reason this
+repository exists. Its framing is the one this template is built on: a model produces
+plausible output at scale, so *"staying afloat in this torrent of slop requires scrutinising
+everything the model produces."* Hence the name. Several of its ideas are implemented here
+directly — the adversarial prover/verifier split, Lamport-structured derivations, the ladder
+of rigour, and the three model failure modes in `docs/failure_modes.md` Part 0.
 
-Several mechanisms were taken or adapted from other people's work, and are better for it:
+The engineering pattern itself was extracted from a working physics paper-reproduction
+project. Every entry in `docs/failure_modes.md` Part 1 is something that actually went wrong
+there. The science is gone; the scar tissue is the valuable part.
+
+Other mechanisms were taken or adapted from other people's work, and are better for it:
 
 - [benning-lab/agentic-starter](https://github.com/benning-lab/agentic-starter) — the
   handoff-with-age idea, the argument for keeping transcripts outside the project folder, and

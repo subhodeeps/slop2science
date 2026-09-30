@@ -39,8 +39,9 @@ Re-running it on an initialized project is refused; to change one answer, edit t
 - **PI** — the human researcher who decides. If you are a solo researcher, you are the PI;
   the word exists so that "who decides this?" always has an answer in the text.
 - **topic** — one model, system, regime or chapter of the work: the unit that gets its own
-  `symbolic/<topic>/`, `derivation/<topic>/`, `validation/<topic>/`. Usually a progression
-  of increasing difficulty.
+  `symbolic/<topic>/`, `derivation/<topic>/`, `validation/<topic>/`. Usually a progression of
+  increasing difficulty — the simplest case first, then the one the paper is actually about,
+  then the extension.
 - **stage** — one derivation step: one script, one write-up, one number. Never two.
 - **record** — a machine-readable JSON result with its full provenance.
 - **REPRODUCTION vs EXTENSION** — see `docs/WORKFLOW.md` §5. Marked at the point of use, not
