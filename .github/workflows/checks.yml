@@ -1,0 +1,38 @@
+# Tool-free repository checks. Everything here runs without Mathematica, Julia or a
+# scientific Python stack, so the harness stays verifiable on every push even though the
+# science needs licensed or heavy tools locally (docs/GUIDE.md §6).
+name: checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  repository-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # check-docs compares commit times of write-ups vs. scripts
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Hook self-tests
+        run: make test-hooks
+
+      - name: Reference resolution
+        run: make check-refs
+
+      - name: Evidence tags
+        run: make check-evidence
+
+      - name: Staleness guard
+        run: make check-docs
+
+      - name: Uninitialized-template check
+        # Fails only on a real project: a repository that still contains {{PLACEHOLDERS}}
+        # outside the template's own documentation has not been through /init-paper.
+        run: scripts/check_initialized.sh || echo "::notice::template not yet initialized (expected in the template repository itself)"

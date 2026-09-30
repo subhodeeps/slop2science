@@ -1,0 +1,71 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(make *)",
+      "Bash(scripts/run *)",
+      "Bash(scripts/py *)",
+      "Bash(scripts/run_stages.sh *)",
+      "Bash(scripts/run_tests.sh *)",
+      "Bash(scripts/check_env.sh)",
+      "Bash(scripts/check_env.sh *)",
+      "Bash(scripts/test_hooks.sh)",
+      "Bash(git status)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git ls-files *)"
+    ],
+    "ask": [
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git add *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -fdx *)"
+    ]
+  },
+  "env": {
+    "JULIA_PROJECT": "@.",
+    "JULIA_NUM_THREADS": "auto",
+    "SYMBOLIC_TIMEOUT": "1800"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/py \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard_paths.py"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session_context.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/py \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/log_prompt.py"
+          }
+        ]
+      }
+    ]
+  }
+}

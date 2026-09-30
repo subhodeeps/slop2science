@@ -1,0 +1,73 @@
+# --- source PDFs: registry is committed, PDFs are not (TEMPLATE_GUIDE.md §4) -------
+papers/**/*.pdf
+papers/**/*.djvu
+!papers/sources.yaml
+
+# --- drop folders: transient, README only is tracked -------------------------------
+papers/_drop/*
+!papers/_drop/README.md
+code/_drop/*
+!code/_drop/README.md
+
+# --- automatic prompt captures -----------------------------------------------------
+# The raw per-session log and the auto-captured long prompts are machine-written.
+# Committing them is a project decision: uncomment to keep them out of history.
+# docs/prompts/log/
+# docs/prompts/auto/
+
+# --- Julia -------------------------------------------------------------------------
+# Manifest.toml IS committed: it pins the exact environment behind every result.
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+
+# --- Python ------------------------------------------------------------------------
+# The lock file IS committed, for the same reason.
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+*.egg-info/
+
+# --- Mathematica -------------------------------------------------------------------
+*.mx
+*.nb~
+*.nb.bak
+*.wxf
+*.wdx
+
+# --- Claude Code: personal/local only ----------------------------------------------
+CLAUDE.local.md
+.claude/settings.local.json
+.claude/agent-memory-local/
+
+# --- large or transient numerical output -------------------------------------------
+data/raw/
+data/tmp/
+*.h5
+*.jld2
+*.npz
+logs/
+
+# --- generated documents (source .md stays tracked) --------------------------------
+reports/*.pdf
+reports/*.tex
+reports/*.aux
+reports/*.log
+reports/*.out
+reports/*.toc
+reports/*.fls
+reports/*.fdb_latexmk
+reports/*.xdv
+reports/*.synctex.gz
+
+# --- editors / OS ------------------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+*~

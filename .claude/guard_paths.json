@@ -1,0 +1,50 @@
+{
+  "_comment": [
+    "Data for .claude/hooks/guard_paths.py (PreToolUse on Edit|Write). Editing this file",
+    "changes what the guard protects; the hook itself has no paths in it.",
+    "Patterns are repository-root-relative POSIX globs: '*' matches within one path",
+    "segment, '**' matches across segments. Self-tested by scripts/test_hooks.sh."
+  ],
+
+  "readonly": [
+    {
+      "glob": "papers/**",
+      "reason": "Sources are read-only (downloaded or supplied, not authored). Record findings in docs/ or notes/ instead."
+    },
+    {
+      "glob": "symbolic/generated/**",
+      "reason": "Machine-written hand-off code: change the exporting stage script and run `make codegen TOPIC=<topic>`."
+    },
+    {
+      "glob": "validation/**/records/**",
+      "reason": "Result records are written by validation scripts with full provenance; rerun the script rather than editing the record (CLAUDE.md §10)."
+    },
+    {
+      "glob": "validation/**/accepted/**",
+      "reason": "Accepted result tables are regenerated from records by a script, never edited."
+    },
+    {
+      "glob": "data/accepted/**",
+      "reason": "Accepted data is written only by validation scripts; rerun the script."
+    }
+  ],
+
+  "readonly_exempt": [
+    "papers/sources.yaml",
+    "papers/README.md",
+    "papers/background/README.md",
+    "papers/_drop/README.md",
+    "validation/README.md"
+  ],
+
+  "append_only": [
+    {
+      "glob": "symbolic/*/stage_*",
+      "reason": "Derivation stage scripts are the permanent record and are cited by name from the write-ups (CLAUDE.md §2, .claude/rules/derivation.md). Add a new numbered stage rather than replacing this one."
+    },
+    {
+      "glob": "symbolic/*/export_*",
+      "reason": "Export scripts are the permanent record of a tool hand-off. Add a new numbered export rather than replacing this one."
+    }
+  ]
+}

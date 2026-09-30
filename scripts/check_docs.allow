@@ -1,0 +1,21 @@
+# Deliberate references to files that do not exist (yet).
+# Format:  <citing file>: <target>      # why
+#
+# Add an entry only for a reference that is *meant* to be unresolved -- planned work, a
+# user-local path, an illustrative example. A reference that broke because something was
+# renamed is fixed at its source, not allow-listed.
+#
+# Example:
+# docs/STATUS.md: symbolic/topic2/stage_01_setup.wls   # planned next session, not written yet
+
+# /init-paper writes this file; the references to it are correct and deliberately forward-looking.
+.claude/skills/init-paper/SKILL.md: docs/prompts/A1_source_audit.md
+TEMPLATE_GUIDE.md: docs/prompts/A1_source_audit.md
+docs/STATUS.md: docs/prompts/A1_source_audit.md
+
+# Gitignored by design: created at runtime, never committed.
+data/README.md: data/raw/
+data/README.md: data/tmp/
+
+# A personal, gitignored settings file. Referenced as a place the PI may set something.
+docs/toolchain.md: .claude/settings.local.json

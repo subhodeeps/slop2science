@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# Run one script in whichever language it is written in, under one contract.
+#
+#   scripts/run symbolic/<topic>/stage_01_setup.wls [args...]
+#   scripts/run symbolic/<topic>/stage_02_reduce.py
+#   scripts/run validation/<topic>/run_benchmark.jl
+#
+# The contract, identical for every language, is what makes a mixed-language stage manifest
+# reproducible (CLAUDE.md §5):
+#   - runs from the repository root, with PROJECT_ROOT exported so scripts locate files
+#     without relative-path guessing;
+#   - serialises execution with flock, because CAS licences commonly cap concurrent kernels
+#     and parallel subagents would otherwise fail with licence errors;
+#   - applies a timeout (SYMBOLIC_TIMEOUT, default 1800s) and reports it distinctly;
+#   - tees all output to logs/<script>_<timestamp>.log.
+#
+# Env: WOLFRAMSCRIPT, JULIA, PYTHON to override interpreters; RUN_LOCK for the lock file;
+#      RUN_SERIAL=0 to disable serialisation.
+set -uo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TIMEOUT="${SYMBOLIC_TIMEOUT:-1800}"
+LOCK="${RUN_LOCK:-${TMPDIR:-/tmp}/$(basename "$ROOT")_run.lock}"
+
+[ $# -ge 1 ] || { echo "usage: scripts/run <script.wls|.jl|.py> [args...]" >&2; exit 64; }
+script="$1"; shift
+cd "$ROOT"
+[ -f "$script" ] || { echo "[run] no such file: $script" >&2; exit 66; }
+
+case "$script" in
+  *.wls|*.wl|*.m)
+      tool="${WOLFRAMSCRIPT:-wolframscript}"; cmd=("$tool" -file "$script") ;;
+  *.jl)
+      tool="${JULIA:-julia}"; cmd=("$tool" --project=src/julia --threads=auto "$script") ;;
+  *.py)
+      tool="$("$ROOT/scripts/py" -c 'import sys; print(sys.executable)' 2>/dev/null || echo python3)"
+      cmd=("$ROOT/scripts/py" "$script") ;;
+  *)  echo "[run] unknown extension: $script (expected .wls/.wl/.jl/.py)" >&2; exit 64 ;;
+esac
+
+if ! command -v "${tool%% *}" >/dev/null 2>&1 && [ ! -x "${tool%% *}" ]; then
+  echo "[run] interpreter not found for $script: ${tool}" >&2
+  echo "[run] see docs/toolchain.md, or set WOLFRAMSCRIPT/JULIA/PYTHON" >&2
+  exit 127
+fi
+
+export PROJECT_ROOT="$ROOT"
+mkdir -p "$ROOT/logs"
+log="$ROOT/logs/$(basename "${script%.*}")_$(date +%Y%m%dT%H%M%S).log"
+
+invoke() {
+  echo "[run] $(date -Iseconds) $script  timeout=${TIMEOUT}s  log=$log" >&2
+  timeout "$TIMEOUT" "${cmd[@]}" "$@" 2>&1 | tee "$log"
+  local status=${PIPESTATUS[0]}
+  [ "$status" -eq 124 ] && echo "[run] TIMEOUT after ${TIMEOUT}s" >&2
+  return "$status"
+}
+
+if [ "${RUN_SERIAL:-1}" = "1" ] && command -v flock >/dev/null 2>&1; then
+  exec 9>"$LOCK" || true
+  flock 9 || true
+fi
+invoke "$@"

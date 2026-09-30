@@ -1,0 +1,20 @@
+# Julia environment for this project. Both this file and Manifest.toml are COMMITTED:
+# the manifest pins the exact environment behind every result (CLAUDE.md §10).
+# `make setup` instantiates it. Rename by /init-paper.
+name = "{{PROJECT_PACKAGE}}"
+uuid = "00000000-0000-0000-0000-000000000000"   # replace: julia -e 'using UUIDs; println(uuid4())'
+version = "0.1.0"
+
+[deps]
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+# Add what the project actually needs, and record why in docs/decision_log.md. Typical
+# additions for extended precision and eigen/root work — left out here so the template
+# instantiates fast and nothing unused is pinned:
+#   DoubleFloats, GenericLinearAlgebra, GenericSchur, ArnoldiMethod, KrylovKit, SparseArrays
+
+[compat]
+julia = "1.10"

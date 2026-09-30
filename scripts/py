@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Python shim. Every hook and repository check goes through this rather than naming an
+# interpreter path, because a hardcoded /usr/bin/python3 breaks on Homebrew, pyenv, uv and
+# Windows installs -- and a hook that cannot start is a guard that silently does not guard.
+# Override with PYTHON=/path/to/python3.
+set -euo pipefail
+for cand in "${PYTHON:-}" python3 python py; do
+  [ -z "$cand" ] && continue
+  if command -v "$cand" >/dev/null 2>&1; then exec "$cand" "$@"; fi
+done
+echo "[py] no Python interpreter found (tried \$PYTHON, python3, python, py)" >&2
+exit 127

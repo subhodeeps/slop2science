@@ -1,0 +1,20 @@
+# Source registry. Every source this project uses, whether or not its file is committed.
+#
+# Rules: .claude/rules/sources.md and .claude/rules/bibliography.md
+#   - every identifier that exists for the work, verified against the work itself;
+#   - the exact version consulted (preprint vN vs. journal — they differ);
+#   - role: primary | benchmark | method-reference | background;
+#   - notes: what this project actually needs from it, specifically.
+#
+# `make fetch-source` appends entries here. Fill in role and notes by hand.
+
+sources: []
+  # - label: Author2024
+  #   doi: 10.1103/PhysRevD.000.000000
+  #   eprint: arXiv:2504.01234v1
+  #   archivePrefix: arXiv
+  #   primaryClass: gr-qc
+  #   version: v2 (preprint); journal version differs in Eq. (17)
+  #   file: 2504.01234v1.pdf        # or null if not committed
+  #   role: primary
+  #   notes: The paper being reproduced. Eqs. (1)-(9) and Table I are the targets.

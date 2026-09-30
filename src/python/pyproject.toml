@@ -1,0 +1,29 @@
+# Python environment for this project. This file AND a lock file are committed: the lock
+# pins the exact environment behind every result (CLAUDE.md §10). `make setup` installs it.
+# Renamed by /init-paper.
+[project]
+name = "{{PROJECT_PACKAGE}}"
+version = "0.1.0"
+description = "Production code for {{PROJECT_NAME}}"
+requires-python = ">=3.10"
+dependencies = [
+    # Add what the project actually needs, and record why in docs/decision_log.md.
+    # Typical, left out here so the template installs fast:
+    #   "numpy", "scipy", "sympy", "mpmath", "matplotlib"
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "ruff>=0.5"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["../../tests/python"]
