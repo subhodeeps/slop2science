@@ -22,3 +22,9 @@ docs/toolchain.md: .claude/settings.local.json
 
 # Created by the first `make fetch-source` and gitignored, like data/raw and data/tmp.
 .claude/skills/literature-audit/reference/corpus.md: papers/source/
+
+# Illustrative paths inside the worked example in docs/handoff_guide.md — a fictional
+# project's files, deliberately not real.
+docs/handoff_guide.md: papers/source/2504.01234v2/ms.tex
+docs/handoff_guide.md: symbolic/topic1/stage_04_reduce.wls
+docs/handoff_guide.md: derivation/topic1/04_reduce.md
