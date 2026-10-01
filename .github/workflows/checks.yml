@@ -44,6 +44,9 @@ jobs:
       - name: Staleness guard
         run: make check-docs
 
+      - name: Plot style
+        run: make check-plots
+
       - name: Uninitialized-template check
         # Fails only on a real project: a repository that still contains {{PLACEHOLDERS}}
         # outside the template's own documentation has not been through /init-paper.

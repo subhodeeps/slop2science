@@ -449,5 +449,26 @@ finally:
     os.chdir(old_cwd)
     probe.unlink()
 
+print("CI — each target of make check also runs in CI")
+
+check_deps = re.search(r"^check:([^#\n]*)", (R / "Makefile").read_text(encoding="utf-8"), re.M).group(1).split()
+ci_text = "".join(p.read_text(encoding="utf-8") for p in (R / ".github" / "workflows").glob("*.yml"))
+ci_targets = set(re.findall(r"run:\s*make\s+([\w-]+)", ci_text))
+expect("make check has targets (the check below is not vacuous)", len(check_deps) > 3, True)
+expect("each target of make check is a CI step", sorted(set(check_deps) - ci_targets), [])
+
+print("logs — the folder is in git, the log files are not")
+
+import subprocess  # noqa: E402
+tracked_logs = subprocess.run(["git", "-C", str(R), "ls-files", "logs"], capture_output=True,
+                              text=True).stdout.split()
+ignored = subprocess.run(["git", "-C", str(R), "check-ignore", "-q", "logs/x_20990101T000000.log"]).returncode
+kept = [p for p in ("logs/.gitkeep", "logs/README.md")
+        if subprocess.run(["git", "-C", str(R), "check-ignore", "-q", p]).returncode != 0]
+expect("git ignores a log file in logs/", ignored, 0)
+expect("git keeps logs/.gitkeep and logs/README.md (a fresh clone has the folder)",
+       kept, ["logs/.gitkeep", "logs/README.md"])
+expect("no log file is committed", sorted(set(tracked_logs) - {"logs/.gitkeep", "logs/README.md"}), [])
+
 print(f"\nchecks: {passed} passed, {failed} failed")
 sys.exit(1 if failed else 0)

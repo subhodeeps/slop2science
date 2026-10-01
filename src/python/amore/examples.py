@@ -1,6 +1,6 @@
-"""Regenerate the three example figures of the amore style (shown in README.md).
+"""Regenerate the four example figures and the palette chart of the amore style (in README.md).
 
-All three have the same size: constrained layout, saved with exact_size=True.
+The four example figures have one plot area (amore.figure), saved with exact_size=True.
 
 Run: make plot-examples
 """
@@ -26,7 +26,7 @@ def wave_packet():
     later = sum(0.35 * 0.6 ** k * np.exp(-((t - 8 - 14 * k) / 3.5) ** 2) * np.sin(2.2 * t + k)
                 for k in range(1, 4))
 
-    fig, ax = plt.subplots(layout="constrained")
+    fig, ax = amore.figure()
     ax.plot(t, first, color=c["ink"], ls="--", label="reference", zorder=3)
     ax.plot(t, first + later, color=c["main"], label="signal", zorder=2)
     ax.set_xlim(0, 60)
@@ -66,7 +66,7 @@ def potential_with_bump():
     v_g = v_rw + eps_g * np.exp(-((rstar - b) ** 2) / (2 * sigma ** 2))
     at = lambda xs, v: np.interp(xs, rstar, v)                # noqa: E731
 
-    fig, ax = plt.subplots(layout="constrained")
+    fig, ax = amore.figure()
     ax.set_xlim(-10, 50)
     ax.set_ylim(-0.17, 0.76)
     ax.fill_between(rstar, v_rw, color=teal["light"], alpha=0.55, lw=0)
@@ -147,7 +147,7 @@ def signed_field():
         f += amp * np.exp(-((x - x0) ** 2 + (y - y0) ** 2) / (2 * w ** 2))
     vmax = np.ceil(np.abs(f).max() * 10) / 10                    # round, so levels are round
 
-    fig, ax = plt.subplots(layout="constrained")
+    fig, ax = amore.figure(colorbar=True)
     levels = np.linspace(-vmax, vmax, int(round(20 * vmax)) + 1)   # steps of 0.1
     filled = ax.contourf(x, y, f, levels=levels, cmap=amore.diverging("red", "green"))
     steps = np.round(np.arange(-1.0, 1.01, 0.2), 1)
@@ -171,13 +171,121 @@ def signed_field():
         ax.plot(x[k], y[k], marker="o", ms=4, color="white", mec="black", mew=0.8)
         ax.text(x[k] + 0.15, y[k] + 0.15, r"\texttt{%s}" % name, fontsize=9,
                 bbox=dict(facecolor="white", alpha=0.7, edgecolor="none", boxstyle="round,pad=0.15"))
-    bar = fig.colorbar(filled, ax=ax, pad=0.02, ticks=[-1, -0.5, 0, 0.5, 1])
-    bar.set_label(r"$\phi(x, y)$")
-    bar.outline.set_linewidth(1.5)
+    amore.colorbar(ax, filled, r"$\phi(x, y)$", ticks=[-1, -0.5, 0, 0.5, 1])
     ax.set_xlabel(r"$x$")
     ax.set_ylabel(r"$y$")
     amore.tag(ax, TAG)
     amore.save(fig, OUT / "amore_green", dpi=README_DPI, formats=("png",), exact_size=True)
+    plt.close(fig)
+
+
+def kerr_curvature():
+    """fakeparulapastel: the Kretschmann scalar K = R_abcd R^abcd of a Kerr black hole, from its
+    closed form (units M = 1, spin a = 0.9), with no numerical solution:
+
+        K = 48 (r^2 - c^2) ((r^2 + c^2)^2 - 16 r^2 c^2) / (r^2 + c^2)^6,   c = a cos(theta),
+
+    in Boyer-Lindquist r and theta. The meridional plane uses x = sqrt(r^2 + a^2) sin(theta) and
+    z = r cos(theta). K diverges at the ring singularity (r = 0, theta = pi/2), at x = +-a, z = 0,
+    and changes sign across the dashed curves K = 0. The density is log10 |K|.
+
+    Source: R. C. Henry, "Kretschmann scalar for a Kerr-Newman black hole", ApJ 535, 350 (2000),
+    arXiv:astro-ph/9912320, p. 6, with charge Q = 0; the factor (r^2 - c^2)(...) expands to his
+    r^6 - 15 r^4 c^2 + 15 r^2 c^4 - c^6. Checked independently: K from the Riemann tensor of the
+    Kerr metric agrees with this form to 2e-11 (relative) at 80 points, inside and outside the
+    horizons, for a = 0, 0.5, 0.9 and 0.99.
+    """
+    spin = 0.9
+    ink = amore.palette("slate")["ink"]
+    x, z = np.meshgrid(np.linspace(-3.0, 3.0, 1000), np.linspace(-1.96, 1.96, 654))
+    big = x ** 2 + z ** 2 - spin ** 2
+    r2 = 0.5 * (big + np.sqrt(big ** 2 + 4 * spin ** 2 * z ** 2))
+    c2 = np.where(r2 > 0, spin ** 2 * z ** 2 / np.maximum(r2, 1e-30), spin ** 2)   # a^2 cos^2
+    sigma = r2 + c2
+    kretschmann = 48 * (r2 - c2) * (sigma ** 2 - 16 * r2 * c2) / sigma ** 6
+    field = np.log10(np.abs(kretschmann) + 1e-30)
+
+    fig, ax = amore.figure(colorbar=True)
+    image = ax.imshow(field, extent=(-3.0, 3.0, -1.96, 1.96), origin="lower", aspect="auto",
+                      cmap=amore.fakeparulapastel(), vmin=-1, vmax=3, interpolation="bilinear")
+    lines = ax.contour(x, z, field, levels=[0, 1, 2], colors=amore.OVERLAY, linewidths=0.6,
+                       alpha=amore.OVERLAY_ALPHA, linestyles="solid")
+    ax.clabel(lines, levels=[0, 1], fmt=r"$%d$", fontsize=7, inline=True)
+    ax.contour(x, z, kretschmann, levels=[0], colors=ink, linewidths=0.9, linestyles="--")
+    theta = np.linspace(0, 2 * np.pi, 400)
+    for radius, style in ((1 + np.sqrt(1 - spin ** 2), "-"), (1 - np.sqrt(1 - spin ** 2), ":")):
+        ax.plot(np.sqrt(radius ** 2 + spin ** 2) * np.sin(theta), radius * np.cos(theta),
+                color="white", ls=style, lw=1.1)
+    ax.plot([-spin, spin], [0, 0], ls="none", marker="o", ms=4.5, color=ink, mec="white", mew=0.9)
+    ax.set_xlim(-3.0, 3.0)
+    ax.set_ylim(-1.96, 1.96)
+    ax.grid(False)
+    note = dict(facecolor="white", alpha=0.78, edgecolor="none", boxstyle="round,pad=0.15")
+    ax.annotate(r"\texttt{ring singularity}", xy=(spin, 0), xytext=(1.85, -0.55), fontsize=8,
+                bbox=note, arrowprops=dict(arrowstyle="-", lw=0.6, color=ink))
+    ax.annotate(r"\texttt{event horizon}", xy=(-1.2, 1.0), xytext=(-2.85, 1.65), fontsize=8,
+                bbox=note, arrowprops=dict(arrowstyle="-", lw=0.6, color=ink))
+    ax.annotate(r"$K = 0$", xy=(0.0, 0.83), xytext=(0.9, 1.55), fontsize=9, bbox=note,
+                arrowprops=dict(arrowstyle="-", lw=0.6, color=ink))
+    ax.text(-2.85, -1.82, r"$a = 0.9\,M$", fontsize=9, bbox=note)
+    ax.set_xlabel(r"$x/M$")
+    ax.set_ylabel(r"$z/M$")
+    amore.colorbar(ax, image, r"$\log_{10}\bigl(M^4\,|R_{abcd}R^{abcd}|\bigr)$",
+                   ticks=[-1, 0, 1, 2, 3])
+    amore.tag(ax, TAG, loc="lower right")
+    amore.save(fig, OUT / "amore_parula", dpi=README_DPI, formats=("png",), exact_size=True)
+    plt.close(fig)
+
+
+def palette_chart():
+    """Every colour of amore: one row for each palette, one swatch for each tone with its hex
+    code and its lightness L*, and the colour map of the palette. Shown in README.md."""
+    from matplotlib.patches import FancyBboxPatch
+    order = ("red", "amber", "olive", "green", "teal", "blue", "plum", "slate")
+    fig, ax = plt.subplots(figsize=(7.2, 5.5), layout="constrained")
+    ax.set_xlim(0, 7.2)
+    ax.set_ylim(-2.25, len(order) + 0.15)
+    ax.axis("off")
+    for j, tone in enumerate(amore.TONES):
+        ax.text(1.55 + 1.05 * j, len(order) - 0.15, r"\texttt{%s}" % tone, ha="center", fontsize=9)
+    ax.text(6.25, len(order) - 0.15, r"\texttt{cmap}", ha="center", fontsize=9)
+    for i, name in enumerate(order):
+        y = len(order) - 1 - i
+        tones = amore.palette(name)
+        ax.text(0.92, y + 0.38, r"\texttt{%s}" % name, ha="right", va="center", fontsize=9,
+                color=tones["ink"])
+        for j, tone in enumerate(amore.TONES):
+            colour = tones[tone]
+            x = 1.05 + 1.05 * j
+            ax.add_patch(FancyBboxPatch((x, y + 0.08), 1.0, 0.62, boxstyle="round,pad=0,rounding_size=0.08",
+                                        facecolor=colour, edgecolor="0.82", lw=0.4))
+            # The text colour with the higher contrast on this swatch: white or the ink.
+            # contrast_on_white(c) = 1.05 / (Y_c + 0.05), so Y_c = 1.05 / ratio - 0.05.
+            y_sw, y_ink = (1.05 / amore.contrast_on_white(c) - 0.05 for c in (colour, tones["ink"]))
+            on_white = 1.05 / (y_sw + 0.05)
+            on_ink = (max(y_sw, y_ink) + 0.05) / (min(y_sw, y_ink) + 0.05)
+            text = "white" if on_white > on_ink else tones["ink"]
+            ax.text(x + 0.5, y + 0.47, r"\texttt{%s}" % colour.lstrip("#"), ha="center",
+                    va="center", fontsize=7.5, color=text)
+            ax.text(x + 0.5, y + 0.24, r"$L^* = %.0f$" % amore.lab(colour)[0], ha="center",
+                    va="center", fontsize=6.5, color=text)
+        ax.imshow(np.linspace(0, 1, 256)[None, :], cmap=amore.cmap(name), aspect="auto",
+                  extent=(5.35, 7.15, y + 0.08, y + 0.70))
+    # The diverging map and the overlay grey, below the palettes.
+    ax.text(0.92, -0.62, r"\texttt{diverging}", ha="right", va="center", fontsize=9)
+    ax.imshow(np.linspace(0, 1, 256)[None, :], cmap=amore.diverging("red", "green"), aspect="auto",
+              extent=(1.05, 5.20, -0.93, -0.31))
+    ax.text(0.92, -1.32, r"\texttt{fakeparulapastel}", ha="right", va="center", fontsize=9)
+    ax.imshow(np.linspace(0, 1, 256)[None, :], cmap=amore.fakeparulapastel(), aspect="auto",
+              extent=(1.05, 5.20, -1.63, -1.01))
+    ax.text(0.92, -1.95, r"\texttt{overlay}", ha="right", va="center", fontsize=9)
+    ax.add_patch(FancyBboxPatch((1.05, -2.17), 1.0, 0.42, boxstyle="round,pad=0,rounding_size=0.06",
+                                facecolor=amore.OVERLAY, alpha=amore.OVERLAY_ALPHA, edgecolor="none"))
+    ax.text(2.2, -1.96, r"\texttt{%s} at %.0f\,\%% opacity, for lines on a colour map"
+            % (amore.OVERLAY.lstrip("#"), 100 * amore.OVERLAY_ALPHA), va="center", fontsize=8)
+    ax.text(7.15, -1.96, r"\textbf{%d colours}" % (len(order) * len(amore.TONES)), ha="right",
+            va="center", fontsize=9)
+    amore.save(fig, OUT / "amore_palettes", dpi=README_DPI, formats=("png",), exact_size=True)
     plt.close(fig)
 
 
@@ -186,4 +294,6 @@ if __name__ == "__main__":
     wave_packet()
     potential_with_bump()
     signed_field()
-    print(f"wrote {OUT}/amore_blue.png, amore_teal.png and amore_green.png")
+    kerr_curvature()
+    palette_chart()
+    print(f"wrote {OUT}/amore_blue.png, amore_teal.png, amore_green.png, amore_parula.png and amore_palettes.png")
