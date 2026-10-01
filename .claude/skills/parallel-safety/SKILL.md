@@ -8,7 +8,7 @@ when_to_use: 'Trigger phrases: in parallel, at the same time, several agents, fa
 
 The rule of the project is not "never parallelise". The rule is this: **parallelism is safe for
 independent reading and checking. It is unsafe for anything that produces one coherent
-artifact.** This skill is the constructive half of `docs/failure_modes.md` entry 7.
+artifact.** This skill is the constructive half of `docs/failure_modes/inherited.md` entry 7.
 
 ## Safe to run concurrently
 

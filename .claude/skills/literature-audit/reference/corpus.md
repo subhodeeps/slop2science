@@ -38,7 +38,7 @@ PDF extraction reorders nested structure silently and with confidence. Ligatures
 fraction becomes two adjacent tokens. A stacked subscript and superscript lose their order.
 Table columns interleave. The result reads as plausible prose. The three most expensive
 documentation errors in the project that this template came from all had this cause
-(`docs/failure_modes.md` entry 2). The LaTeX source would have made two of them impossible.
+(`docs/failure_modes/inherited.md` entry 2). The LaTeX source would have made two of them impossible.
 
 Therefore:
 

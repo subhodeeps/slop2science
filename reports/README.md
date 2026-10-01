@@ -16,7 +16,7 @@ source omits. It is not a repository report, an activity log or a provenance led
 Put provenance in a verification appendix. For each equation that the report presents as a
 result, give the script, the check label and the result. For each number, give a record. Do not
 put provenance after every equation. That makes a document that nobody can read. This happened.
-The project rejected the report and rewrote it from the start (`docs/failure_modes.md` entry 8).
+The project rejected the report and rewrote it from the start (`docs/failure_modes/inherited.md` entry 8).
 
 One author writes the report, in order, in chunks (`.claude/skills/report-writing/SKILL.md`).
 Ten parallel writers finish faster. They also produce ten voices, and one person must rewrite

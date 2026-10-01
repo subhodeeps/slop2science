@@ -28,7 +28,7 @@ orphan check hard.
 2. **Account for each file**, as at `/session-close`. State which step produced the file and why
    you expect it. Report by name now each file that you cannot account for. Do not carry it
    forward. An unexplained file gets harder to explain with each hour that passes
-   (`docs/failure_modes.md` entry 5).
+   (`docs/failure_modes/inherited.md` entry 5).
 
 3. **Decide if the state is coherent.** A checkpoint commits work that stands on its own:
    - a stage script **and** its write-up, together. Never commit one without the other.
