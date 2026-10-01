@@ -1,17 +1,18 @@
 # symbolic/common — shared helper code
 
-Loaded by path from `PROJECT_ROOT`, never copy-pasted into a stage script. Lives here rather
-than inside a skill so that scripts can load it directly.
+Scripts load this code by path from `PROJECT_ROOT`. Never copy it into a stage script. It lives
+here, not inside a skill, so that scripts can load it directly.
 
     checks.wl / checks.py / checks.jl     the print-before-assert check helpers
-    selftest_checks.*                     self-tests for the above
+    selftest_checks.*                     self-tests for the check helpers
 
-One set of check helpers per language the project derives in, with the **same semantics**: a
-check prints what it found and then asserts it, records a labelled pass/fail, and the run exits
-non-zero if any check failed. Identical semantics matter because a stage's check count is
-compared across reruns, and a topic may be cross-checked in another tool.
+Each language in which the project derives has one set of check helpers. The sets have the
+**same semantics**. A check prints what it found and then asserts it. A check records a
+labelled pass or fail. The run exits with a non-zero code if any check failed. The semantics
+must be identical, because the project compares the check count of a stage across reruns. Also,
+another tool can cross-check a topic.
 
-Run the self-tests before relying on any of this:
+Run the self-tests before you rely on the helpers:
 
     scripts/run symbolic/common/selftest_checks.wls
     scripts/run symbolic/common/selftest_checks.py

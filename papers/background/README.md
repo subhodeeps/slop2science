@@ -1,10 +1,10 @@
 # papers/background — secondary literature
 
-Works cited by the primary source, method references and benchmark sources. **Fetched only
-against a stated need**, never speculatively: a folder of unregistered PDFs reads as though
-all of it has been consulted.
+This folder holds the works that the primary source cites, method references and benchmark
+sources. **Fetch a paper only if a stated need exists.** Never fetch speculatively. A folder of
+unregistered PDFs looks as if someone consulted all of it.
 
-Every file here has an entry in `../sources.yaml` with its role and a one-line note saying
-what this project needs from it. PDFs are gitignored by default; the registry is committed.
+Each file here has an entry in `../sources.yaml`. The entry gives its role and a one-line note
+about what this project needs from it. Git ignores PDFs by default. Commit the registry.
 
-Read-only, hook-guarded, like the rest of `papers/`.
+This folder is read-only and a hook guards it, like the rest of `papers/`.
