@@ -2,105 +2,116 @@
 
 ## 1. The general rule
 
-A computed output is a **candidate**. It becomes an accepted result only after passing every
-applicable check below, at a stated resolution and precision, with a record that says so.
+A computed output is a **candidate**. It becomes an accepted result only after it passes each
+applicable check below. The check must state the resolution and the precision. A record must
+say that the output passed.
 
-Say "candidate" until then — in code comments, in logs, in reports, and in conversation.
+Until then, say "candidate" in code comments, in logs, in reports and in conversation.
 
 ## 2. Algebraic checks
 
-For every newly derived operator or equation:
+For each newly derived operator or equation, do these checks:
 
-- direct substitution back into what it came from;
-- dimensional and scaling consistency;
-- a limiting or special case whose answer is known independently;
-- consistency with constraints not used in the derivation;
-- an independent derivation or formulation check where feasible.
+- Substitute the result back into what it came from.
+- Check the dimensions and the scaling.
+- Check a limiting or special case with an independently known answer.
+- Check consistency with constraints that the derivation did not use.
+- Where it is feasible, make an independent derivation or formulation check.
 
 ## 3. Residuals
 
-Evaluate the residual **in the original problem**, not only in the reformulation the solver
-uses internally (companion linearization, shifted system, preconditioned form). A small
-residual in the reformulation proves the reformulation was solved.
+Evaluate the residual **in the original problem**. Do not evaluate it only in the reformulation
+that the solver uses internally (companion linearization, shifted system, preconditioned form).
+A small residual in the reformulation proves only that the solver solved the reformulation.
 
-Use a documented, scaled norm, and state the scaling. An unscaled and a scaled residual for
-the same solution can differ by many orders of magnitude.
+Use a documented, scaled norm. State the scaling. A scaled and an unscaled residual for the
+same solution can differ by many orders of magnitude.
 
 ## 4. Resolution
 
-Compute at $N$ and $2N$, and record
+Compute at $N$ and $2N$. Record
 
 $$
 \Delta_N = |x_{2N} - x_N|.
 $$
 
-For near-zero quantities record the absolute change as well — a relative measure is
-meaningless there and will report success.
+For quantities near zero, also record the absolute change. A relative measure has no meaning
+there, and it reports success.
 
 ## 5. Solution shape
 
-Compare normalized solutions between resolutions, in the same variables and conventions:
-overlap, pointwise difference, boundary/asymptotic coefficients, and any derived observable.
-A scalar can be converged while the solution it came from is not.
+Compare the normalized solutions at different resolutions. Use the same variables and
+conventions. Compare these items: overlap, pointwise difference, boundary and asymptotic
+coefficients, and each derived observable. A scalar can converge while the solution that it
+came from does not converge.
 
 ## 6. Precision
 
-Repeat representative cases at higher precision, running **the same generic code path** — not
-a separate implementation. A result that moves appreciably with precision is unresolved,
-whatever its residual says. This check is the one most often skipped and most often decisive.
+Repeat representative cases at higher precision. Run **the same generic code path**. Do not use
+a separate implementation. If a result changes appreciably with precision, it has not converged,
+whatever its residual says. Teams skip this check most often. It is also the most often
+decisive check.
 
 ## 7. Parameter continuation
 
-Where the problem has a parameter:
+If the problem has a parameter, do these steps:
 
-- solve along a sequence in that parameter;
-- match by proximity **and** by solution overlap, never by ordering — ordering swaps at
-  near-degeneracies and mislabels everything downstream;
-- flag near-degenerate cases explicitly;
-- keep the whole continuation path, not just the endpoint.
+- Solve along a sequence in that parameter.
+- Match by proximity **and** by solution overlap. Never match by ordering. The ordering swaps
+  at near-degeneracies and gives all later results the wrong labels.
+- Flag near-degenerate cases explicitly.
+- Keep the whole continuation path. Do not keep only the end point.
 
 ## 8. Independent benchmarks
 
-As applicable: published tables; an independent method's results; a standard solver; a
-time-domain or direct simulation; another group's implementation.
+Use the benchmarks that apply. Examples: published tables, the results of an independent
+method, a standard solver, a time-domain or direct simulation, or the implementation of
+another group.
 
-**State every convention conversion explicitly**, and state the benchmark's *method*.
-Same-method agreement is a consistency check and cannot validate the method — reporting it as
-though it can is a real and easy error.
+**State each convention conversion explicitly.** State the *method* of the benchmark.
+Agreement with the same method is a consistency check. It cannot validate the method. To report
+it as validation is a real and easy error.
 
-**For an extension there is no source table to check against**, and that raises the bar rather
-than lowering it (CLAUDE.md §2). An extension result is accepted on: an exact limiting case
-the project has already verified; an independent-method benchmark where one exists; internal
-consistency across resolution, precision and continuation; and a physical requirement it must
-satisfy. Where none of those is available, say so explicitly in the record and in the report —
-an extension resting only on its own convergence is a *candidate*, however clean that
-convergence looks (`docs/failure_modes.md` entry 4).
+**An extension has no source table to check against.** This raises the standard. It does not
+lower it (CLAUDE.md §2). The project accepts an extension result on these grounds:
+
+- an exact limiting case that the project already verified
+- an independent-method benchmark, where one exists
+- internal consistency across resolution, precision and continuation
+- a physical requirement that the result must satisfy
+
+If none of these is available, say so explicitly in the record and in the report. An extension
+that rests only on its own convergence is a *candidate*, however clean the convergence looks
+(`docs/failure_modes.md` entry 4).
 
 ## 9. Required limits
 
-State each limit the project's results must satisfy, and test it where the claim is made —
-not once at the start. A limit that held for the first topic is not evidence for the third.
+State each limit that the results of the project must satisfy. Test it where the project makes
+the claim.
+Do not test it only at the start. A limit that held for the first topic is not evidence for the
+third topic.
 
 ## 10. Spurious outputs
 
-Flag: resolution-sensitive, precision-sensitive, poor-residual, boundary-irregular,
-non-continuable outputs, and obvious discretization artefacts.
+Flag these outputs: resolution-sensitive, precision-sensitive, poor-residual,
+boundary-irregular and non-continuable outputs, and obvious discretization artefacts.
 
-**Do not remove an unusual result without a diagnostic.** It is either an artefact you can
-name or a result you did not expect, and the difference matters. Record which, and why.
+**Do not remove an unusual result without a diagnostic.** It is an artefact that you can name.
+Or it is a result that you did not expect. The difference matters. Record which one it is, and
+why.
 
 ## 11. Reproducibility
 
-Every table and figure is generated from a script and records: parameters, resolution,
-precision, solver, tool versions, git commit, benchmark source. Never edit a generated table
-or a record by hand — a hook blocks it, and a changed number is a new run.
+A script generates each table and figure. Each one records these items: parameters, resolution,
+precision, solver, tool versions, git commit and benchmark source. Never edit a generated table
+or a record by hand. A hook blocks this. A changed number is a new run.
 
 ## 12. Result records
 
 Each candidate or accepted result is one JSON object at
-`validation/<topic>/records/<run-id>.json`. Scaffold the first one with
-`make new-record` (`scripts/new_record.py`); after that the driver writes them itself, so the
-number and its provenance are produced by the same run.
+`validation/<topic>/records/<run-id>.json`. Use `make new-record` (`scripts/new_record.py`) to
+create the first record. After that, the driver writes the records. Then the same run produces
+the number and its provenance.
 
     {
       "topic": "...", "run_id": "...",
@@ -120,19 +131,19 @@ number and its provenance are produced by the same run.
       "created": "...", "git": "<commit>"
     }
 
-`status`, `kind`, `judged_against` and `git` are required; `make check-docs` fails without
-them, and fails on a record whose `status` is `accepted` while any of its own `*flag` fields
-is true.
+`make check-docs` requires the fields `status`, `kind`, `judged_against` and `git`. It fails
+without them. It also fails on a record that has `status` equal to `accepted` while one of its
+own `*flag` fields is true.
 
-Accepted tables in `validation/<topic>/accepted/` are produced from records by a script, and
-are hook-protected against manual editing.
+A script produces the accepted tables in `validation/<topic>/accepted/` from the records. A
+hook protects them against manual editing.
 
 ## 13. Project-specific criteria
 
-<!-- After /init-paper: add this project's thresholds, the precision tiers it uses, the
-     benchmarks it will be judged against, and any criterion above that does not apply —
-     with the reason it does not. A criterion is never silently dropped.
-     Numerical thresholds live in ONE place in code, not duplicated across drivers:
-     duplicated tolerances drift, and then two runs "pass" against different bars. -->
+<!-- After /init-paper: add the thresholds of this project, the precision tiers that it uses,
+     the benchmarks that will judge it, and each criterion above that does not apply, with the
+     reason that it does not apply. Never drop a criterion silently.
+     Put the numerical thresholds in ONE place in the code. Do not duplicate them across
+     drivers. Duplicated tolerances drift. Then two runs "pass" against different bars. -->
 
-(to be filled in by `/init-paper` and refined as the project's methods settle)
+(`/init-paper` fills this section. Refine it when the methods of the project settle.)

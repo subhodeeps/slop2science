@@ -5,19 +5,20 @@ paths:
 
 # Mathematics in Markdown
 
-Every `.md` file in this repository is read in a KaTeX-based previewer (VS Code, GitHub).
-Write maths accordingly:
+A KaTeX-based previewer (VS Code, GitHub) displays each `.md` file in this repository. Write
+mathematics for that previewer:
 
-- Inline: `$ ... $`. Display: `$$ ... $$` on their own lines, blank line before and after.
-- **Never `\( ... \)` or `\[ ... \]`** — KaTeX does not render them, and they appear to the
-  reader as literal backslashes and brackets.
+- Inline: `$ ... $`. Display: `$$ ... $$` on their own lines, with a blank line before and
+  after.
+- **Never use `\( ... \)` or `\[ ... \]`.** KaTeX does not render them. The reader sees literal
+  backslashes and brackets.
 - Escape a literal dollar sign as `\$`.
-- KaTeX supports a subset of LaTeX: no `\label`, `\ref`, `\eqref` or `\newcommand`. For a
-  multi-line display use `aligned` inside `$$ ... $$`, not `align` or `equation`.
-- Source-paper equation numbers go in prose ("Eq. (23)"), never as LaTeX numbering — the
-  numbering would be this document's, and the reference is to the source's.
-- Define every symbol at first use, and use one notation throughout a document even where the
-  sources it draws on differ. State the conversions where they matter.
+- KaTeX supports a subset of LaTeX. It has no `\label`, `\ref`, `\eqref` or `\newcommand`. For a
+  multi-line display, use `aligned` inside `$$ ... $$`. Do not use `align` or `equation`.
+- Put the equation numbers of the source paper in prose ("Eq. (23)"). Never use LaTeX
+  numbering. The numbering would belong to this document, and the reference is to the source.
+- Define each symbol at its first use. Use one notation in a whole document, also if the
+  sources that it uses differ. State the conversions where they matter.
 
-In `.tex` files (a manuscript, an appendix) use normal LaTeX delimiters instead; this rule is
-about the Markdown that is read in a previewer.
+In `.tex` files (a manuscript, an appendix), use normal LaTeX delimiters. This rule applies to
+the Markdown that a previewer displays.

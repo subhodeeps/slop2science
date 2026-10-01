@@ -1,161 +1,176 @@
 # Workflow — how to do a piece of work here
 
-`docs/GUIDE.md` explains the mechanism; this is the practice. Written for whoever is handed
-this repository next, including the failure modes it is built to avoid
-(`docs/failure_modes.md` has the full account).
+`docs/GUIDE.md` explains the mechanism. This file explains the practice. It is for the next
+person who receives this repository. It also covers the failure modes that the repository
+prevents (`docs/failure_modes.md` has the full account).
 
-## 1. Writing a session prompt
+## 1. Write a session prompt
 
-One phase-step per session (CLAUDE.md §8). A substantial research prompt is recorded verbatim
-in `docs/prompts/<ID>_<topic>.md` **before** work starts
-(`.claude/rules/research-sessions.md`), never paraphrased.
+Use one phase-step for each session (CLAUDE.md §8). Record a substantial research prompt word
+for word in `docs/prompts/<ID>_<topic>.md` **before** the work starts
+(`.claude/rules/research-sessions.md`). Never paraphrase it.
 
-State explicitly: what is in scope, **what is out of scope**, which files to read first, and
-which subagent or skill the prompt expects. A prompt that is vague about scope is how an
-agent ends up producing an artefact nobody asked for and nobody can account for later.
+State what is in scope. State **what is out of scope**. State which files to read first. State
+which subagent or skill the prompt expects. A prompt that is vague about scope causes an agent
+to produce an artefact that nobody asked for and nobody can explain later.
 
-## 2. The derive → check → write up → commit cycle
+## 2. The cycle: derive, check, write up, commit
 
-1. **Derive** — one stage per script, `symbolic/<topic>/stage_NN_<what>.<ext>`, in the tool
-   that owns the topic. Never combine stages; never overwrite an old one (a hook blocks it).
-2. **Check, inside the same script** — every non-trivial step gets an explicit labelled
-   assertion, and **the value is printed before it is asserted.** A check that asserts without
-   ever printing what it found is how a false PASS survives a whole session.
-3. **Write up** in `derivation/<topic>/NN_<what>.md`, citing the verifying script and exact
-   check label for every displayed equation. A displayed equation with no citable check does
-   not go in the write-up.
-4. **Commit** script and write-up together, not deferred to a cleanup pass.
-5. **Export**, if the stage produces coefficients another tool needs — then
-   `make codegen-check`. Never hand-transcribe.
+1. **Derive.** Use one script for each stage: `symbolic/<topic>/stage_NN_<what>.<ext>`. Use the
+   tool that owns the topic. Never combine stages. Never overwrite an old stage (a hook blocks
+   this).
+2. **Check, inside the same script.** Give each non-trivial step an explicit, labelled
+   assertion. **Print the value before you assert it.** A check that asserts without a printed
+   value lets a false PASS survive a whole session.
+3. **Write up** in `derivation/<topic>/NN_<what>.md`. For each displayed equation, cite the
+   verifying script and the exact check label. If a displayed equation has no citable check, do
+   not put it in the write-up.
+4. **Commit** the script and the write-up together. Do not defer this to a cleanup pass.
+5. **Export**, if the stage produces coefficients that another tool needs. Then run
+   `make codegen-check`. Never transcribe by hand.
 
-Implementation follows the same shape in code (`src/`, tested by `make test`), consuming only
-`symbolic/generated/` — never inventing a coefficient because the export is missing.
+Implementation has the same shape in code (`src/`, tested by `make test`). It uses only
+`symbolic/generated/`. If the export is missing, never invent a coefficient.
 
-## 3. What "verified" means, and what it does not
+## 3. What "verified" means, and what it does not mean
 
-**Verified**: checked by an explicit, printed, re-runnable assertion in a committed script;
-or a numerical result that passed every applicable criterion in `docs/validation_protocol.md`
-at a stated resolution and precision. Cite the script and the check label, always.
+**Verified** means one of two things. An explicit, printed, re-runnable assertion in a committed
+script checked it. Or it is a numerical result that passed each applicable criterion in
+`docs/validation_protocol.md`, at a stated resolution and precision. Always cite the script and
+the check label.
 
-**Not verified** — say so plainly, do not soften and do not omit: a result that is merely
-plausible; a single-resolution spot check; a solver output with no convergence or benchmark
-check yet (that is a *candidate*, CLAUDE.md §6); a comparison that agrees within some
-tolerance but has not been through the acceptance protocol. For that last case the phrase is
-"consistent with", not "verified".
+**Not verified.** State this plainly. Do not soften it. Do not omit it. These items are not
+verified:
 
-**Never call something verified because it looks right.** "Looks right" is what a wrong
-asymptotic expression looks like for three sessions before an independent re-derivation
-catches the dropped term.
+- a result that is only plausible
+- a spot check at a single resolution
+- a solver output with no convergence or benchmark check (this is a *candidate*, CLAUDE.md §6)
+- a comparison that agrees within a tolerance but did not pass the acceptance protocol. For
+  this case, write "consistent with", not "verified".
+
+**Never call something verified because it looks right.** A wrong asymptotic expression looks
+right for three sessions. Then an independent derivation finds the dropped term.
 
 ## 3a. The ladder of rigour
 
-"Verified" is not one thing. A claim sits somewhere on a ladder, and **saying where is part of
-reporting it** (adapted from *How to Train Your Slop Cannon*):
+"Verified" is not one thing. A claim has a place on a ladder. **To state the place is part of
+the report** (adapted from *How to Train Your Slop Cannon*):
 
 | Rung | What it means | Good for |
 |---|---|---|
-| 1. prose | an argument in paragraphs | orientation; never a result |
-| 2. **structured proof** | numbered hierarchy, each step justified or an explicit gap (`.claude/skills/derivation-workflow/reference/structured_proofs.md`) | anything a reviewer would question |
-| 3. **adversarially verified** | rung 2, attacked by an independent agent that never saw the prover's reasoning (`.claude/skills/verification/reference/adversarial_protocol.md`) | a claim that changes a convention or closes a discrepancy |
+| 1. prose | an argument in paragraphs | orientation. Never a result. |
+| 2. **structured proof** | a numbered hierarchy. Each step has a justification or an explicit gap (`.claude/skills/derivation-workflow/reference/structured_proofs.md`) | anything that a reviewer can question |
+| 3. **adversarially verified** | rung 2, attacked by an independent agent that never saw the reasoning of the prover (`.claude/skills/verification/reference/adversarial_protocol.md`) | a claim that changes a convention or closes a discrepancy |
 | 4. **script-checked** | a printed, labelled, re-runnable assertion in a committed script | algebra, identities, limits, reproductions |
-| 5. **numerically accepted** | every applicable criterion in `docs/validation_protocol.md`, at stated resolution and precision, with a record | a reported number |
-| 6. machine-checked | a proof assistant decides | a load-bearing step worth the cost |
+| 5. **numerically accepted** | each applicable criterion in `docs/validation_protocol.md`, at a stated resolution and precision, with a record | a reported number |
+| 6. machine-checked | a proof assistant decides | a load-bearing step that is worth the cost |
 
-**No single rung is trustworthy alone, and they fail in different places** — which is the
-point of having several. A script-checked identity can be the wrong identity; an
-adversarially verified argument can rest on a mis-transcribed premise; a converged number can
-solve the wrong problem. Layering them is what makes the result solid, so compose rungs rather
-than picking the highest one reached.
+**No single rung is trustworthy alone. The rungs fail in different places.** This is the reason
+to have several rungs. A script-checked identity can be the wrong identity. An adversarially
+verified argument can rest on a premise that someone mis-transcribed. A converged number can
+solve the wrong problem. Layers make the result solid. Therefore combine rungs. Do not pick the
+highest rung that you reached.
 
-Report the rung honestly. "Script-checked" and "adversarially verified" are different claims,
-and neither is "machine-checked".
+Report the rung honestly. "Script-checked" and "adversarially verified" are different claims.
+Neither is "machine-checked".
 
-**What the automated checks can and cannot do.** `make check` verifies that a reference
-*resolves* — to a file, a check label, a column, a commit. It cannot verify that the
-statement built on it is *true*. A citation that resolves cleanly to a real script whose
-check does not establish what the entry claims passes every automated check in full. That
-gap is closed only by a human, or the `verification` agent, reading the script.
+**What the automated checks can do and cannot do.** `make check` verifies that a reference
+*resolves* to a file, a check label, a column or a commit. It cannot verify that the statement
+is *true*. A citation can resolve cleanly to a real script. The check in
+that script can fail to establish what the entry claims. Such a citation passes every
+automated check. Only a person, or the `verification` agent that reads the script, closes this
+gap.
 
-## 4. Recording a discrepancy
+## 4. Record a discrepancy
 
-The five-point form, stated once in CLAUDE.md §3. Use it verbatim; do not invent a shorter or
-longer version for a particular write-up. Every file that needs it points there.
+CLAUDE.md §3 states the five-item form one time. Use it exactly. Do not invent a shorter or
+longer version for one write-up. Every file that needs the form points there.
 
-## 5. Reproduction vs. extension — same directories, marked at the point of use
+## 5. Reproduction and extension — the same directories, marked where used
 
-Two halves of equal standing, with different standards of evidence (CLAUDE.md §2):
+The project has two parts of equal standing. They have different standards of evidence
+(CLAUDE.md §2):
 
-- **REPRODUCTION** — reconstructing the source itself: its equations, its own conventions,
-  its tables. Judged against: agreement with the source. This is the foundation.
-- **EXTENSION** — the new work built on it: new systems, new regimes, a more general or
-  better method, questions the source left open. Judged against: independent benchmarks and
-  physics. **The source cannot validate an extension** — it does not contain the result.
-  This is what the project is for, and it ends in a paper of its own.
+- **REPRODUCTION** reconstructs the source itself: its equations, its own conventions and its
+  tables. The standard is agreement with the source. This is the foundation.
+- **EXTENSION** is the new work built on the foundation: new systems, new regimes, a more
+  general or better method, and questions that the source left open. The standard is
+  independent benchmarks and physics. **The source cannot validate an extension.** The source
+  does not contain the result. This is the purpose of the project. It ends in a set of new
+  calculations that can go into a future publication.
 
-The asymmetry is worth stating plainly, because it is the easiest thing in the project to get
-backwards: a reproduction that agrees with the source is *evidence the machinery works*; an
-extension that "looks consistent with the source" is **not evidence of anything**.
+It is easy to get the asymmetry backwards. A reproduction that agrees with the source is
+*evidence that the machinery works*. An extension that "looks consistent with the source" is
+**not evidence of anything**.
 
-They are **not** split into separate directory trees. They share derivation stages, share
-asymptotic analysis, and often share a single validation driver that tests both cases side by
-side; splitting the tree would cut across working scripts for no benefit, and fragmenting a
-small topic costs more than a marker does.
+The project does **not** split the two parts into separate directory trees. They share
+derivation stages and asymptotic analysis. Often they share one validation driver that tests
+both cases side by side. A split cuts across working scripts and gives no benefit. To fragment
+a small topic costs more than a marker costs.
 
-Instead, **every script, write-up and record states which kind it is and what it is judged
-against**, near its top:
+Instead, **each script, write-up and record states its kind and its standard of judgement**,
+near the top:
 
     Kind:           REPRODUCTION | EXTENSION | CROSS-CHECK
     Judged against: <the source's Eq./Table N>  |  <benchmark/physics, named>
 
-This exists because of a specific, easy mistake: a write-up let an independent-method
-benchmark comparison — extension-grade evidence — read as though it validated the source's own
-reproduction. One `Judged against:` line at the point where the number is reported makes that
-impossible to misread.
+This rule exists because of a specific, easy mistake. In one write-up, a comparison with an
+independent-method benchmark looked as if it validated the reproduction of the source. That
+comparison is evidence of extension grade. One `Judged against:` line where the write-up reports
+the number makes this misreading impossible.
 
-Reports say the same thing in plain prose where it matters ("this reproduces the source's
-Eq. (16)"), not as marker lines: reports are written for a human reader.
+Reports state the same fact in plain prose where it matters ("this reproduces Eq. (16) of the
+source"). They do not use marker lines, because a human reader reads a report.
 
-## 6. Reading a validation record
+## 6. Read a validation record
 
-`validation/<topic>/records/*.json`, schema in `docs/validation_protocol.md` §12: resolution,
-precision, residuals, the benchmark compared against **with its method and provenance**,
-pass/fail per criterion, `kind`, `judged_against`, tool versions, commit.
+The schema of `validation/<topic>/records/*.json` is in `docs/validation_protocol.md` §12. A
+record contains these items:
 
-A record with no benchmark provenance is incomplete — ask where the comparison number came
-from before trusting it. Benchmark provenance headers name the *actual* method behind a
-published number: read the source's own caption yourself, rather than inferring it from a
-previous header or the source's reputation.
+- resolution and precision
+- residuals
+- the benchmark that the record compares against, **with its method and provenance**
+- pass or fail for each criterion
+- `kind` and `judged_against`
+- tool versions and commit
+
+A record with no benchmark provenance is incomplete. Ask where the comparison number came from
+before you trust it. A benchmark provenance header names the *real* method behind a published
+number. Read the caption of the source yourself. Do not infer the method from an earlier header
+or from the reputation of the source.
 
 ## 7. When a check fails
 
-Stop. Report the failing check, its exact output, and its class
-(`.claude/skills/verification/SKILL.md`). Do not adjust the check to pass, silently change an
-expected value, or widen a tolerance without recording why. If the fix is not obviously
-correct, record it as an open discrepancy rather than guessing.
+Stop. Report the failing check, its exact output and its class
+(`.claude/skills/verification/SKILL.md`). Do not change the check to make it pass. Do not change
+an expected value silently. Do not widen a tolerance without a recorded reason. If you are not
+sure that the fix is correct, record it as an open discrepancy. Do not guess.
 
 ## 8. Process problems
 
-These are watched for, not ruled against — a rule that gets read past does not help. The full
-account, with what each one cost, is `docs/failure_modes.md`. In brief:
+The project watches for these problems. It does not write rules against them, because people
+read past a rule. `docs/failure_modes.md` has the full account and the cost of each problem.
+In brief:
 
-- **Audits spawning audits.** Stop when an independent route confirms the result and the
-  literature agrees or demonstrably cannot be consulted.
-- **Claims asserted before being checked.** Print, then assert. Always, not only when
-  suspicious.
-- **The same equation misread from a PDF twice.** Read the `.tex` if there is one, the
-  rendered page if there is not, never the text layer
-  (`.claude/skills/literature-audit/reference/corpus.md`). Require a second source before a
-  single paper's equation changes a project convention.
-- **Scope creep under interruption.** Scope shrinks under pressure; it never expands. The
-  session-close orphan check is the backstop.
-- **Long agent outputs stalling silently.** Write in chunks; check the file's line count and
-  the transcript before declaring an agent stuck, because restarting a working agent throws
-  its work away.
-- **Parallel authors do not make one document.** Split reading and checking, never a
-  narrative.
-- **A brief followed faithfully can still produce the wrong thing.** Start a brief with who
-  the reader is and what they must be able to do.
-- **Working notes versus the settled record.** The decision log and the audit rows outrank
-  the notes they were synthesized from. Where they disagree, record the inconsistency; do not
-  quietly pick one.
-- **STATUS drifts.** When a session changes a fact STATUS states, it updates that line.
+- **Audits that start audits.** Stop when an independent route confirms the result, and the
+  literature agrees, or you cannot consult the literature.
+- **Claims that someone asserted before checking them.** Print, then assert. Do this always,
+  not only when you suspect a problem.
+- **The same equation misread from a PDF twice.** If a `.tex` file exists, read it. If it does
+  not exist, read the rendered page. Never read the text layer
+  (`.claude/skills/literature-audit/reference/corpus.md`). Require a second source before the
+  equation of one paper changes a convention of the project.
+- **Scope creep during an interruption.** Under pressure, the scope gets smaller. It never gets
+  larger. The orphan check of the session close is the backstop.
+- **Long agent outputs that stall silently.** Write in chunks. Check the line count of the file
+  and the transcript before you declare that an agent is stuck. A restart of a working agent
+  discards its work.
+- **Parallel authors do not make one document.** Split the reading and the checking. Never
+  split a narrative.
+- **A brief that an agent follows faithfully can still produce the wrong thing.** Start a brief
+  with the reader and with what the reader must be able to do.
+- **Working notes against the settled record.** The decision log and the audit rows outrank the
+  notes that they came from. If they disagree, record the inconsistency. Do not pick one
+  silently.
+- **STATUS drifts.** If a session changes a fact that STATUS states, the session updates that
+  line.
