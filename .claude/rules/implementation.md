@@ -7,31 +7,32 @@ paths:
 
 # Production code — rules
 
-- Production code lives in `src/<lang>/`; tests in `tests/<lang>/`; validation drivers in
-  `validation/<topic>/`. Run everything through `scripts/run`; tests through `make test`.
-- **The language a solver is written in, and the route by which it receives coefficients, are
-  the PI's decisions** (`docs/toolchain.md`): a registry row, or the default profile and its
-  default routes. Do not choose either yourself, and do not add a hand-off that neither the
-  registry nor the default routes describe.
-- **Coefficients and equations come only from `symbolic/generated/`.** If something you need
-  is missing, stop and report it. Never hand-write it, never copy it from a paper, never
-  "temporarily" inline it.
-- No result guesses and no known answers in production code. A shift, target, bracket or
-  initial iterate comes from a documented automated rule; if the rule needs a scale, derive
-  the scale.
-- Write numerics generic in the element type so the identical code runs at working and at
-  extended precision. Record which precisions a result was confirmed at.
-- Evaluate residuals in the **original** problem, not only in the reformulation the solver
-  uses internally. A small residual in a linearization proves the linearization was solved.
-- Prefer a dense, obviously-correct method at small size first; move to an iterative or
-  structured method only with a size estimate recorded in the relevant doc.
-- Every run that produces a reportable number writes its own record (JSON) with parameters,
-  resolution, precision, residuals, benchmark and its method, tool versions and git commit
-  (`docs/validation_protocol.md` §12). Records are hook-protected against hand editing: a
+- Put production code in `src/<lang>/`, tests in `tests/<lang>/` and validation drivers in
+  `validation/<topic>/`. Run everything through `scripts/run`. Run tests through `make test`.
+- **The PI decides the language of a solver and the route by which it receives coefficients**
+  (`docs/toolchain.md`). The decision is a registry row, or the default profile and its default
+  routes. Do not choose either yourself. Do not add a hand-off that neither the registry nor the
+  default routes describe.
+- **Coefficients and equations come only from `symbolic/generated/`.** If something that you
+  need is missing, stop and report it. Never write it by hand. Never copy it from a paper. Never
+  inline it "temporarily".
+- Do not guess results. Do not put known answers in production code. A documented automated rule
+  must give each shift, target, bracket or initial iterate. If the rule needs a scale, derive the
+  scale.
+- Write numerics that are generic in the element type. Then the identical code runs at working
+  precision and at extended precision. Record the precisions at which you confirmed a result.
+- Evaluate residuals in the **original** problem. Do not evaluate them only in the reformulation
+  that the solver uses internally. A small residual in a linearization proves only that the
+  solver solved the linearization.
+- Use a dense method first, at small size, when the correctness of the method is easy to see. Move to an iterative or
+  structured method only with a size estimate in the relevant document.
+- Each run that produces a reportable number writes its own record (JSON). The record has the
+  parameters, resolution, precision, residuals, benchmark and its method, tool versions and git
+  commit (`docs/validation_protocol.md` §12). A hook protects records against hand edits. A
   changed number is a new run.
-- Every module has a test file. At least one test per topic is a **known-answer** test
-  against a problem with an exact closed-form solution, exercising the full chain the real
-  solver uses — not a unit test of each piece separately. A chain can be correct piecewise
-  and wrong end to end.
+- Each module has a test file. For each topic, at least one test is a **known-answer** test. It
+  uses a problem with an exact closed-form solution. It exercises the full chain that the real
+  solver uses. It is not a separate unit test of each piece. A chain can be correct piece by
+  piece and wrong from end to end.
 - A solver output is a **candidate** until it passes the validation protocol. Use the word
-  "candidate" in code comments, logs and reports until it does.
+  "candidate" in code comments, logs and reports until then.

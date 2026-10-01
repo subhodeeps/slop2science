@@ -8,23 +8,23 @@ paths:
 
 # Bibliography — rules
 
-Every entry carries every identifier that exists for that work:
+Each entry carries each identifier that exists for the work:
 
-- `doi` — required for anything that has one. Preprints are excepted only when no DOI
-  genuinely exists, not because looking it up is inconvenient.
-- `eprint` + `archivePrefix` + `primaryClass` — all three together, for anything on arXiv.
-  An `eprint` without its siblings is an incomplete entry, not a complete one.
-- `url` — only when neither a DOI nor a preprint ID identifies the work.
-- Works predating both: record `publisher`, `edition`, `isbn`, and a comment stating why no
-  DOI or eprint is given.
+- `doi`: required for any work that has a DOI. A preprint is an exception only if no DOI exists.
+  It is not an exception because the lookup is inconvenient.
+- `eprint`, `archivePrefix` and `primaryClass`: give all three together for any work on arXiv.
+  An `eprint` without the other two is an incomplete entry.
+- `url`: use it only if neither a DOI nor a preprint ID identifies the work.
+- Works that are older than both: record `publisher`, `edition` and `isbn`. Add a comment that
+  states why the entry has no DOI or eprint.
 
-## Verification, not construction
+## Verify. Do not construct.
 
-- Identifiers are **verified against the actual source** before being recorded, never
-  guessed and never assembled from a publisher's URL pattern.
-- A DOI that resolves to a *different* work than the one cited is worse than a missing DOI.
-  Check what it resolves to.
-- If an identifier cannot be found, record that it could not be found. Do not leave the field
-  out silently, and do not invent one.
-- Cite the version actually consulted. Preprint and journal versions differ, sometimes in the
-  equation the project depends on.
+- **Verify identifiers against the actual source** before you record them. Never guess an
+  identifier. Never build one from the URL pattern of a publisher.
+- A DOI that resolves to a *different* work than the cited work is worse than a missing DOI.
+  Check what the DOI resolves to.
+- If you cannot find an identifier, record that you did not find it. Do not omit the field
+  silently. Do not invent an identifier.
+- Cite the version that you consulted. The preprint and the journal version differ, sometimes
+  in the equation that the project depends on.

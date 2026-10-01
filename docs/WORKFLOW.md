@@ -75,8 +75,8 @@ Report the rung honestly. "Script-checked" and "adversarially verified" are diff
 Neither is "machine-checked".
 
 **What the automated checks can do and cannot do.** `make check` verifies that a reference
-*resolves* to a file, a check label, a column or a commit. It cannot verify that the statement
-is *true*. A citation can resolve cleanly to a real script. The check in
+*resolves* to a file, a check label, a column or a commit. It cannot verify the truth of the
+statement. A citation can resolve cleanly to a real script. The check in
 that script can fail to establish what the entry claims. Such a citation passes every
 automated check. Only a person, or the `verification` agent that reads the script, closes this
 gap.

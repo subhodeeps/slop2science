@@ -6,35 +6,35 @@ paths:
 
 # Derivation work — rules
 
-Derivations are a deliverable in their own right (CLAUDE.md §2); these rules are what keeps
-each one re-runnable and citable.
+Derivations are a deliverable in their own right (CLAUDE.md §2). These rules keep each
+derivation re-runnable and citable.
 
 ## Ownership
 
-- **The PI decides which language implements a topic** (CLAUDE.md §1, §5): per topic, or by
-  the default profile in `docs/toolchain.md`, written into the registry before work starts.
-  Work that neither the registry nor the profile covers is a question for the PI, never a
-  choice to make here.
-- Every topic has exactly one tool that is the **record** for it, declared in
-  `docs/toolchain.md` and repeated in each stage script's header. Undeclared ownership is a
-  defect. Two records for one fact is a defect.
-- A derivation of the same result in another tool is a **cross-check**, labelled as such in
-  its header and in `validation/`, and it never becomes the record.
+- **The PI decides which language implements a topic** (CLAUDE.md §1, §5). The PI decides per
+  topic, or by the default profile in `docs/toolchain.md`. Write the decision into the registry
+  before work starts. If neither the registry nor the profile covers the work, ask the PI.
+  Never make the choice here.
+- Each topic has exactly one tool as its **record**. Declare it in `docs/toolchain.md` and repeat
+  it in the header of each stage script. Undeclared ownership is a defect. Two records for one
+  fact is a defect.
+- A derivation of the same result in another tool is a **cross-check**. Label it as a
+  cross-check in its header and in `validation/`. It never becomes the record.
 
-## One derivation per file
+## One derivation in each file
 
-- One stage, one script: `symbolic/<topic>/stage_NN_<what>.<ext>`. Never combine two stages;
-  never append a new derivation to an existing script. A `PreToolUse` hook blocks `Write` to
-  an existing stage or export script — a new stage is a new numbered file.
-- One write-up per stage: `derivation/<topic>/NN_<what>.md`, citing its script at every
+- Use one script for each stage: `symbolic/<topic>/stage_NN_<what>.<ext>`. Never combine two
+  stages. Never append a new derivation to an existing script. A `PreToolUse` hook blocks `Write`
+  to an existing stage or export script. A new stage is a new numbered file.
+- Use one write-up for each stage: `derivation/<topic>/NN_<what>.md`. It cites its script at each
   displayed equation.
-- A sub-derivation long enough to stand alone gets its own numbered stage and write-up, not a
-  section inside another one's.
-- Order comes from `symbolic/<topic>/stages.txt`, never from a shell glob.
+- If a sub-derivation is long enough to stand alone, give it its own numbered stage and
+  write-up. Do not make it a section of another stage.
+- The order comes from `symbolic/<topic>/stages.txt`. Never use a shell glob for the order.
 
-## Every script
+## Each script
 
-Header comment states, in this order:
+The header comment states these items, in this order:
 
     Topic:          <topic>
     Stage:          NN — <what this stage establishes>
@@ -44,31 +44,31 @@ Header comment states, in this order:
     Inputs:         <previous stage outputs it loads>
     Outputs:        <what it writes, including its out/ record>
 
-Body rules:
+Rules for the body:
 
-- Shared helper code lives in `symbolic/common/`, loaded by path from `PROJECT_ROOT`, never
-  copy-pasted between stages.
-- **Print before asserting.** Every non-trivial step prints what it found and *then* checks
-  it. Asserting an expected value and reading the printout only when something looks wrong is
-  how a wrong assertion survives; this project's ancestor caught exactly one such case, and
+- Put shared helper code in `symbolic/common/`. Load it by path from `PROJECT_ROOT`. Never copy
+  it between stages.
+- **Print before you assert.** Each non-trivial step prints what it found and *then* checks it.
+  If you assert an expected value and read the printout only when something looks wrong, a wrong
+  assertion survives. The ancestor of this project caught exactly one such case. It caught it
   only because the printed invariant contradicted the assertion.
-- Every check carries a short, stable, quoted **label**. Write-ups cite labels, so renaming
-  one silently breaks a citation (`make check-evidence` catches the break).
-- The script exits non-zero on any failed check. A script that can fail silently is not a
-  check.
-- Persist stage results as text under `symbolic/<topic>/out/`, never as a version-specific
-  binary format.
+- Each check has a short, stable, quoted **label**. Write-ups cite labels. If you rename a
+  label, you break a citation silently (`make check-evidence` catches the break).
+- The script exits with a non-zero code on any failed check. A script that can fail silently is
+  not a check.
+- Save the results of a stage as text under `symbolic/<topic>/out/`. Never use a binary format
+  that depends on a version.
 
 ## Retention
 
-Scripts and write-ups are the permanent record and are committed. **Never delete one.**
-Supersede by adding a new numbered stage and noting the change in the old script's header and
-in `docs/decision_log.md`.
+Scripts and write-ups are the permanent record. Commit them. **Never delete one.** To supersede
+a script, add a new numbered stage. Note the change in the header of the old script and in
+`docs/decision_log.md`.
 
-## Exporting to another tool
+## Export to another tool
 
-- Hand-off is always machine-generated: `export_NN_<what>.<ext>` writes into
-  `symbolic/generated/<lang>/`, and `make codegen-check TOPIC=<topic>` must be clean.
-- Generated files carry a banner with the generating script and its SHA-256.
-- Never hand-transcribe an expression between tools, in either direction, not even a short
-  one, not even temporarily.
+- Always generate the hand-off by machine. `export_NN_<what>.<ext>` writes into
+  `symbolic/generated/<lang>/`. `make codegen-check TOPIC=<topic>` must be clean.
+- Each generated file has a banner with the generating script and its SHA-256.
+- Never transcribe an expression by hand between tools, in either direction. This applies also
+  to a short expression and to a temporary expression.
