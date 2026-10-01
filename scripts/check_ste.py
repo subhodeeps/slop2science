@@ -158,6 +158,17 @@ def py_blocks(text):
     return blocks
 
 
+def candidate_files(pats):
+    """Tracked files, and new files that git does not ignore, that match the patterns.
+
+    A new file must count: if the lint read only tracked files, a new file would pass
+    `make check` before its commit and fail it after the commit.
+    """
+    out = subprocess.run(["git", "ls-files", "--cached", "--others", "--exclude-standard", *pats],
+                         capture_output=True, text=True, check=True).stdout.split()
+    return sorted(f for f in set(out) if os.path.exists(f))
+
+
 def main(argv):
     strict = "--strict" in argv
     code = "--code" in argv
@@ -165,7 +176,7 @@ def main(argv):
     args = [a for a in argv if not a.startswith("--")]
     if not args:
         pats = ["*.py", "*.sh", "*.jl", "*.wl", "*.wls"] if code else ["*.md"]
-        args = subprocess.run(["git", "ls-files", *pats], capture_output=True, text=True, check=True).stdout.split()
+        args = candidate_files(pats)
     show = int(os.environ.get("SHOW", "0"))
     total = 0
     for f in args:

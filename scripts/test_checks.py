@@ -434,5 +434,20 @@ expect("a file that does not plot is not checked",
        cp.violations("import numpy as np\nc = '#ff0000'\n"), [])
 expect("no real file breaks the rule", sum(len(cp.violations((R / f).read_text())) for f in cp.files()), 0)
 
+print("check_ste.py — the lint reads new files, not only tracked ones")
+
+probe = R / "notes" / "_ste_selection_probe.md"
+probe.write_text("probe\n", encoding="utf-8")
+try:
+    old_cwd = os.getcwd()
+    os.chdir(R)
+    expect("a new, untracked Markdown file is linted (else it passes before its commit only)",
+           "notes/_ste_selection_probe.md" in ste.candidate_files(["*.md"]), True)
+    expect("a tracked Markdown file is still linted",
+           "README.md" in ste.candidate_files(["*.md"]), True)
+finally:
+    os.chdir(old_cwd)
+    probe.unlink()
+
 print(f"\nchecks: {passed} passed, {failed} failed")
 sys.exit(1 if failed else 0)

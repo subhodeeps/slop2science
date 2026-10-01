@@ -37,7 +37,7 @@ test-env: ## self-test how scripts pick the Python environment (fake uv; no netw
 lint-ste: ## screen Markdown for the measurable ASD-STE100 rules, report only (FILE=... for one file)
 	@$(PY) scripts/check_ste.py $(FILE)
 
-lint-ste-md: ## fail if a tracked Markdown file breaks a measurable ASD-STE100 rule
+lint-ste-md: ## fail if a tracked or new Markdown file breaks a measurable ASD-STE100 rule
 	@$(PY) scripts/check_ste.py --strict --quiet
 
 lint-ste-code: ## report ASD-STE100 hits in code comments and docstrings (report only)
