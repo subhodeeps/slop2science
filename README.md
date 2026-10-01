@@ -27,9 +27,9 @@ say no, the decision is final. The charter states this rule.
   extension ends in a set of new calculations for a possible publication.
 - Mathematica, Python and Julia each own named topics. An ownership registry records the
   owners. The project generates code from the algebra. It never retypes code.
-- Independent verification. The verifier sees only the artifact. A hook blocks its file edits, and it writes
-  only its own audit report. A check of `git status` after each audit catches a shell write. Each
-  result has a record of how the project produced it.
+- Independent verification. The verifier sees only the artifact. A hook blocks its file edits,
+  and it writes only its own audit report. Another hook detects a shell write. Each result has a
+  record of how the project produced it.
 - Continuity between sessions. The project keeps the current status, a handoff note and the
   captured prompts. Guards protect the sources and the accepted results.
 

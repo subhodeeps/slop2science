@@ -7,8 +7,8 @@ when_to_use: 'Trigger phrases: verify, audit, check this result, is this converg
 # Scientific verification
 
 The audit finds failures and classifies them. It does **not** fix them. A bug that someone fixes
-quietly is a finding that nobody recorded. A hook blocks the `verification` agent from writing
-project files for this reason.
+quietly is a finding that nobody recorded. For this reason, a hook blocks the Edit and Write
+tools of the `verification` agent on project files.
 
 ## Derivation checks
 
@@ -84,8 +84,8 @@ must read the script. This is the most valuable output of the audit.
 
     ID | class | evidence (the command run and its actual output) | severity | suggested check
 
-A hook blocks the Edit and Write tools of the verifier on project files. It records its report as a new file
-`docs/audits/<YYYYMMDD>_<topic>.md` (see `docs/audits/README.md`) and returns the same text.
+The `verification` agent records its report as a new file `docs/audits/<YYYYMMDD>_<topic>.md`
+(see `docs/audits/README.md`) and returns the same text.
 
 Rules:
 
