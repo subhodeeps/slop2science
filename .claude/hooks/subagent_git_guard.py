@@ -5,11 +5,12 @@ A subagent has one job and a fresh context. It does not know what else is in fli
 branch the PI is on, or what an interrupted session left half-staged -- so it must not be
 able to reshape history or publish anything. Reading git is fine and often necessary.
 
-Allowed:   status, log, diff, show, blame, ls-files, rev-parse, describe, cat-file,
-           config --get, and staging an explicit path (`git add <path>`).
-Blocked:   push, pull, fetch, merge, rebase, reset, revert, cherry-pick, stash, checkout,
-           switch, branch, tag, worktree, filter-branch, gc, reflog, remote, submodule,
-           clean, restore, commit, commit --amend, and `git add -A/-u/.`.
+Allowed:   the read-only subcommands in READ_ONLY (status, log, diff, show, ...),
+           `config --get`, `config --list`, and staging an explicit path (`git add <path>`).
+Blocked:   every other subcommand. This is an allowlist: a subcommand that nobody listed is
+           blocked, so an alias (`git ci`), a plumbing command (`update-index`, `read-tree`,
+           `commit-tree`, `sparse-checkout`) or a new git release cannot get through.
+           `git add -A/-u/.` and `git config` with a write form are blocked too.
 
 `git commit` is blocked deliberately: a commit is the project's record, and it is proposed at
 `/session-close` or `/checkpoint` by the main session, which can see the whole working tree
@@ -31,14 +32,9 @@ READ_ONLY = {
     "rev-list", "describe", "cat-file", "shortlog", "grep", "count-objects", "var",
     "check-ignore", "diff-tree", "diff-index", "symbolic-ref", "name-rev", "whatchanged",
 }
-BLOCKED = {
-    "push", "pull", "fetch", "clone", "merge", "rebase", "reset", "revert", "cherry-pick",
-    "stash", "checkout", "switch", "branch", "tag", "worktree", "filter-branch",
-    "filter-repo", "gc", "prune", "reflog", "remote", "submodule", "clean", "restore",
-    "commit", "am", "apply", "mv", "rm", "update-ref", "notes", "replace", "bisect",
-    "format-patch", "send-email", "archive", "daemon", "init",
-}
 
+# Known limit: a string scan cannot see through a variable (`g=git; $g push`) or a command that
+# another program builds. The allowlist covers every spelling that contains the word `git`.
 # Detection is by token scan, not by a clever regex: every shell punctuation character
 # that can precede a command -- whitespace, quotes, operators, backticks, braces, heredoc
 # boundaries -- is normalized to a space, and the resulting token stream is scanned for a
@@ -50,6 +46,13 @@ GIT_WORD = re.compile(r"^(?:[\w./\\-]*[/\\])?git(?:\.exe)?$", re.IGNORECASE)
 
 GLOBAL_OPTS_WITH_VALUE = {"-C", "-c", "--git-dir", "--work-tree", "--namespace",
                           "--exec-path", "--config-env"}
+# `git -c core.fsmonitor=<cmd> status` and `git -c core.pager=<cmd> log` run a command, so a
+# read-only subcommand is not enough. Block these global options and these flags.
+RUNS_A_COMMAND_GLOBAL = ("-c", "--config-env", "--exec-path")
+WRITES_OR_RUNS_FLAGS = ("--output", "--open-files-in-pager", "-O")
+CONFIG_WRITE_FLAGS = {"--add", "--unset", "--unset-all", "--replace-all", "--edit", "-e",
+                      "--remove-section", "--rename-section", "--file", "-f", "--global",
+                      "--system"}
 
 
 def git_invocations(command):
@@ -69,6 +72,8 @@ def verdict(command):
     for args in git_invocations(command):
         i = 0
         while i < len(args):                       # skip git's own global options
+            if args[i] in RUNS_A_COMMAND_GLOBAL or args[i].startswith(("--config-env=", "--exec-path=")):
+                return (args[i], "run a command through a global option")
             if args[i] in GLOBAL_OPTS_WITH_VALUE:
                 i += 2
                 continue
@@ -87,12 +92,16 @@ def verdict(command):
             if not rest:
                 return ("add", "stage with no explicit path")
             continue                               # `git add <explicit path>` is allowed
-        if sub == "config" and any(a in ("--get", "--get-all", "--list", "-l") for a in rest):
+        if sub == "config":
+            reads = any(a in ("--get", "--get-all", "--list", "-l") for a in rest)
+            if reads and not any(a in CONFIG_WRITE_FLAGS for a in rest):
+                continue
+        elif sub in READ_ONLY:
+            bad = [a.split("=")[0] for a in rest if a.split("=")[0] in WRITES_OR_RUNS_FLAGS or a.startswith("-O")]
+            if bad:
+                return (f"{sub} {bad[0]}", "write a file or run a command from a read-only subcommand")
             continue
-        if sub in READ_ONLY:
-            continue
-        if sub in BLOCKED:
-            return (sub, "change history, the working tree, or the remote")
+        return (sub, "change history, the index, the working tree, the configuration or the remote")
     return (None, None)
 
 
