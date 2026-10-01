@@ -1,17 +1,63 @@
 # Toolchain and tool ownership
 
-Mathematica, Julia and Python are **co-equal** in this project. Neither symbolic work nor
-numerics belongs to a language by default.
+Mathematica, Julia and Python are **equal in capability**: any of them can own any topic.
+Which one does, when nobody chose, is the **default profile** below.
 
 **The PI decides what is implemented in which language, and how the tools interoperate**
-(CLAUDE.md §1, §5). Claude does not choose a language for a new piece of work, does not move
-work between languages, and does not add or change a hand-off between tools. Every assignment
-below is a PI decision with a `docs/decision_log.md` entry; where this file does not cover the
+(CLAUDE.md §1, §5): per topic, or by adopting the default profile. Claude applies that
+assignment and does not invent one, does not move work between languages, and does not add or
+change a hand-off between tools. Every assignment is a PI decision with a
+`docs/decision_log.md` entry; where neither a registry row nor the default profile covers the
 work at hand, **stop and ask the PI** rather than picking the obvious option.
 
 Execution details (the common wrapper, environments, precision, hand-off): the `toolchain`
 skill. Rules a checker enforces: `.claude/rules/derivation.md`,
 `.claude/rules/implementation.md`.
+
+## Default profile
+
+A standing PI decision, so that a project never stops to ask "which language?" about work whose
+answer is not in doubt. It assigns by **kind of work**, not by a preference for a language:
+
+| Kind of work | Default owner | Why |
+|---|---|---|
+| **Algebra**: tensor calculus, series and asymptotics, symbolic reduction, exact identities, limits, and exporting coefficients | **Mathematica**, as plain-text `.wls` scripts run through `scripts/run` | a mature symbolic engine; scripts, never notebooks, are the record |
+| **Numerics**: solvers, eigenproblems, ODE/PDE, root finding, precision and convergence studies, validation drivers | **Julia** (`src/julia`) | speed and arbitrary precision together; written generic in the element type |
+| **Anything with a better Python ecosystem**: plotting, machine learning, statistics and fitting, data wrangling and file formats, fetching, repository tooling | **Python** (`src/python`) | the libraries decide this one, not the language |
+
+Default routes between them (the PI may change any of them):
+
+| From | To | What crosses | Mechanism |
+|---|---|---|---|
+| Mathematica | Julia | coefficient functions | `export_NN_*.wls` → `symbolic/generated/julia/` |
+| Mathematica | Python | an expression Python needs (rare) | `export_NN_*.wls` → `symbolic/generated/python/` |
+| Julia | Python | results to plot or analyse | JSON records in `validation/<topic>/records/`, data files in `data/` |
+| Python | Julia, Mathematica | **nothing, as physics** | a quantity Python computes for another tool needs its own registry row |
+
+**When it applies.** When the PI chose "defaults" at `/init-paper`, and also when the PI did not
+choose. That is deliberate: the alternative is a project that stops to ask about work whose
+answer is not in doubt. It does not apply if the PI declined it ("ask me each time"), and it
+never applies silently:
+
+1. **Applying it means writing it down.** Before the work starts, the topic gets a row in the
+   registry below, citing the decision that adopted the profile. `make check-docs` fails if a
+   topic has stage scripts and no row.
+2. **A task that straddles kinds splits at the hand-off.** A derivation whose result is then
+   evaluated numerically is two pieces of work: Mathematica derives and exports, Julia consumes.
+3. **Work that fits no kind, or whose kind is unclear, is a question for the PI.** The profile
+   covers three kinds; it is not a licence to extend itself.
+4. **Python never becomes a second record of physics.** A figure or a fit is a view of a
+   record. A Python re-implementation of an algebra or numerics result is a cross-check of a
+   named owner, labelled as one.
+5. **The PI can override at any time**, per topic or per kind. That is a new logged decision,
+   and the profile still applies to everything it did not override.
+6. **A machine without the default owner does not reassign the work.** A session there can
+   audit, plan and write up, and says so. Moving the work to another tool is the PI's call.
+
+**How it is adopted.** `/init-paper` shows this table and asks. The PI can accept it, override
+parts of it, or decline it. Accepting it, or skipping the question, records decision `D-002`
+("adopted the default profile", saying which of the two it was), and the init report says so
+in its first lines, so a default is never one nobody knew had been chosen.
 
 ## Why ownership is declared rather than inferred
 
@@ -28,7 +74,8 @@ five-point form, not a choice to make silently.
 
 ## Ownership registry
 
-Filled by `/init-paper` from the PI's answers, and changed only by a PI decision. Every row
+Filled by `/init-paper` from the PI's answers, or from the default profile where the PI did
+not choose, and changed only by a PI decision. Every row
 cites the decision that put it there, so "why is this in Julia?" always has an answer.
 
 <!-- REGISTRY-START -->
@@ -57,8 +104,9 @@ Rules that hold for every route, whatever the PI chooses:
   record and the other is a cross-check — the registry says which.
 - **Text, not a tool-specific binary format**, so a hand-off is readable and diffable by
   anything, and `make codegen-check` can compare it.
-- **Claude does not invent a route.** Needing a quantity in a tool the registry does not
-  deliver it to is a question for the PI, not an opportunity to add a converter.
+- **Claude does not invent a route.** Needing a quantity in a tool that neither the registry
+  nor the default routes deliver it to is a question for the PI, not an opportunity to add a
+  converter.
 
 ## Division of labour
 

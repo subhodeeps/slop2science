@@ -22,7 +22,9 @@ alternatives cannot be revisited, only reversed.
 - Any convention the project adopts where the source is ambiguous or the project departs
   from it.
 - **Which language implements which piece of work, and how the tools interoperate** — every
-  row of `docs/toolchain.md`'s registry cites its entry here (CLAUDE.md §5).
+  row of `docs/toolchain.md`'s registry cites its entry here (CLAUDE.md §5). That includes
+  adopting the default profile, and whether the PI chose it or it was applied because they
+  did not.
 - **What extension work is in scope**, and what is deliberately not: the boundary between
   reproduction and new work, and what the new work is for (CLAUDE.md §2).
 - Any change to the scientific or numerical architecture (CLAUDE.md §9).
@@ -57,15 +59,20 @@ Evidence:     `symbolic/<topic>/stage_04_reduce.wls` check "reduced system match
 
 ## D-002 — <example: language assignment and interoperation; replace or delete> — YYYY-MM-DD
 
-Context:      Three co-equal tools are available. Without an explicit assignment, the same
-              quantity ends up derived in two of them during debugging, both committed, with
-              nothing saying which is authoritative — and both pass their own checks.
-Options:      (a) leave it to whoever works on a topic; (b) assign per language by kind of
-              work; (c) assign per topic and per solver, explicitly, and record each one.
-Decision:     (c). {{TOOL_A}} is the record for the {{TOPIC_1}} derivation; {{TOOL_B}} is the
-              record for its solver; coefficients cross from the first to the second by
-              generated code only. Anything computed in a third tool is a `CROSS-CHECK` and
-              never the record. Claude asks before assigning anything not covered here.
+Context:      Three tools of equal capability are available. Without an explicit assignment,
+              the same quantity ends up derived in two of them during debugging, both
+              committed, with nothing saying which is authoritative — and both pass their own
+              checks.
+Options:      (a) leave it to whoever works on a topic; (b) assign each topic and solver
+              explicitly; (c) adopt the default profile (algebra in Mathematica `.wls`,
+              numerics in Julia, plotting/ML/ecosystem-bound work in Python), overriding where
+              needed.
+Decision:     (c), chosen. {{TOOL_A}} is the record for the {{TOPIC_1}} derivation; {{TOOL_B}}
+              for its solver; coefficients cross from the first to the second by generated
+              code only. Anything computed in a third tool is a `CROSS-CHECK` and never the
+              record. (If the PI had not chosen, this entry would say "applied: the PI did not
+              choose", and the init report would have said so.) Claude asks about anything
+              the profile does not cover.
 Consequences: `docs/toolchain.md`'s ownership and interoperation registries are filled in
               accordingly; every stage header names its owner tool; `make check-docs` fails
               if a topic has stage scripts and no registry row.

@@ -244,7 +244,8 @@ Three co-equal tools make it easy to derive something in one, re-derive it in an
 debugging session, commit both, and have nothing say which is authoritative. **Neither tool's
 own checks can detect this** — each passes.
 
-Guarded by: the PI decides what is implemented where (CLAUDE.md §1, §5); the ownership and
+Guarded by: the PI decides what is implemented where, per topic or by the default profile
+(CLAUDE.md §1, §5), so a language is never picked because it was convenient; the ownership and
 interoperation registries in `docs/toolchain.md`, each row citing its decision;
 `make check-docs` failing when a topic has stage scripts and no registry row; and the rule
 that a second implementation is a labelled `CROSS-CHECK`, never a co-record.

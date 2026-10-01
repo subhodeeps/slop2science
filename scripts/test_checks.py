@@ -167,5 +167,42 @@ expect("corpus.md leads with the .tex, and puts the text layer last",
        (lambda s: s.index(".tex") < s.index("rendered PDF") < s.index("text layer"))(
            real[OWNER].split("## The reading order, stated once", 1)[1]), True)
 
+print("toolchain — the default profile is mentioned wherever the language rule is stated")
+
+ASK_RE = re.compile(r"stop\s+and\s+ask|never\s+(?:pick|choose|invent)|not\s+yours\s+to\s+choose|"
+                    r"question\s+for\s+the\s+PI|not\s+(?:pick|choose)\s|never\s+a\s+choice", re.I)
+LANG_RE = re.compile(r"\blanguage\b|\bowner\b|\bownership\b", re.I)
+
+
+def default_profile_violations(files):
+    """Files with a paragraph that says to ask about / never choose a language or tool owner,
+    in a file that never mentions the default profile.
+
+    Eleven files once said Claude must stop and ask which language to use. Adding a default
+    profile made every one of them a contradiction. The profile is defined once, in
+    docs/toolchain.md; any file that states the language rule has to acknowledge it.
+    """
+    bad = []
+    for path, text in files.items():
+        if "default profile" in text.lower():
+            continue
+        if any(ASK_RE.search(par) and LANG_RE.search(par) for par in re.split(r"\n\s*\n", text)):
+            bad.append(path)
+    return sorted(bad)
+
+
+expect("'stop and ask which language' with no mention of the default profile is flagged",
+       default_profile_violations({"x.md": "Which language owns this? Stop and ask the PI."}), ["x.md"])
+expect("the same paragraph in a file that names the default profile is fine",
+       default_profile_violations({"x.md": "Stop and ask the PI which language.\n\nSee the default profile."}), [])
+expect("a paragraph about asking that is not about a language or owner is not flagged",
+       default_profile_violations({"x.md": "If two sources disagree, never pick one: stop and ask."}), [])
+real = {f: (cd.ROOT / f).read_text(encoding="utf-8", errors="replace") for f in cd.tracked("*.md")}
+expect("every real file that states the language rule acknowledges the default profile",
+       default_profile_violations(real), [])
+expect("docs/toolchain.md defines the profile by kind of work",
+       all(s in real["docs/toolchain.md"] for s in ("## Default profile", "**Algebra**", "**Numerics**",
+                                                    "Python ecosystem")), True)
+
 print(f"\nchecks: {passed} passed, {failed} failed")
 sys.exit(1 if failed else 0)

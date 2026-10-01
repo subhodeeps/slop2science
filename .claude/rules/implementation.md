@@ -10,8 +10,9 @@ paths:
 - Production code lives in `src/<lang>/`; tests in `tests/<lang>/`; validation drivers in
   `validation/<topic>/`. Run everything through `scripts/run`; tests through `make test`.
 - **The language a solver is written in, and the route by which it receives coefficients, are
-  the PI's decisions** (`docs/toolchain.md`). Do not choose either, and do not add a hand-off
-  the registry does not describe.
+  the PI's decisions** (`docs/toolchain.md`): a registry row, or the default profile and its
+  default routes. Do not choose either yourself, and do not add a hand-off that neither the
+  registry nor the default routes describe.
 - **Coefficients and equations come only from `symbolic/generated/`.** If something you need
   is missing, stop and report it. Never hand-write it, never copy it from a paper, never
   "temporarily" inline it.

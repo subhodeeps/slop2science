@@ -61,8 +61,10 @@ under ~100 lines. History goes to `docs/status_history.md`, which is *not* auto-
 the source project STATUS reached 504 lines of history before this split.
 
 **Tool ownership is a PI decision, declared per topic, not per language.** All three tools are
-co-equal, and Claude never picks one: not for new work, not to move existing work, not to add
-a hand-off between tools. The defect the registry prevents is not "using the wrong tool" — it
+equal in capability. The PI assigns each topic or adopts the **default profile** (algebra in
+Mathematica `.wls`, numerics in Julia, plotting, ML and ecosystem-bound work in Python); the
+template applies the default when the PI does not choose, and says so loudly. Claude never
+invents an assignment, moves existing work, or adds a hand-off between tools. The defect the registry prevents is not "using the wrong tool" — it
 is two tools each holding a slightly different version of the same equation, with nothing
 saying which is the record, and neither tool's own checks able to detect it. `docs/toolchain.md`
 carries both an ownership registry and an interoperation registry for that reason.

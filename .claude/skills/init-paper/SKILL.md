@@ -38,17 +38,20 @@ an unanswered placeholder silently becomes a permanent wrong default.
 5. **Topics** — the units of work that each get their own `symbolic/<topic>/`,
    `derivation/<topic>/`, `validation/<topic>/`. Usually a progression of increasing
    difficulty. The first one is where work starts.
-6. **Tools — the PI's decision, in two parts.** All three are co-equal and Claude never
-   chooses (CLAUDE.md §1, §5), so ask both parts explicitly and do not offer a default split
-   as though it were obvious:
-   - **Ownership**: which of Mathematica, Python and Julia this project will use, and for
-     each topic and each solver, **which tool is the record**.
-   - **Interoperation**: which tool hands what to which, in which direction, by what
-     mechanism. Include the cases the PI expects to need later, not only the first one.
+6. **Tools.** Show the **default profile** from `docs/toolchain.md` (algebra in Mathematica
+   `.wls`, numerics in Julia, plotting/ML/ecosystem-bound work in Python, with its default
+   routes between them) and ask which the PI wants:
+   - **accept it**, "defaults";
+   - **override parts of it**: which topic or kind goes to which tool, and which routes change;
+   - **decline it**, "ask me each time": the registry then starts empty and Claude asks as the
+     work reaches each topic.
 
-   Record both as decision `D-002` in `docs/decision_log.md`, and write them into
-   `docs/toolchain.md`'s two registries with that reference. Anything the PI leaves open stays
-   open, and Claude asks again when the work reaches it.
+   **If the PI skips the question or does not answer it, treat that as "accept it"**: the
+   default profile is the fallback. Record which of the two it was. Write decision `D-002` in
+   `docs/decision_log.md` as "adopted the default profile (chosen)" or "(applied: the PI did
+   not choose)", and write the rows into `docs/toolchain.md`'s two registries citing it. The
+   init report must say, in its first lines, that the default profile was applied and by which
+   route, so a default is never one nobody knew had been chosen.
 7. **Conventions to pin now** — units, notation, sign/orientation conventions, how results
    are labelled. Anything the PI does not yet know goes in as `OPEN`, not as a guess.
 8. **Reproduction targets** — which equations, tables and figures of the source the project
@@ -67,8 +70,9 @@ subtly-wrong one:
    §1, §3, §4, §6, §8–§11 are the discipline and are not project parameters
    (`TEMPLATE_GUIDE.md` §1).
 2. `docs/toolchain.md` — fill the ownership registry between the `REGISTRY-START/END`
-   markers: one row per topic and per solver, naming its owning tool. Remove profiles for
-   tools this project will not use.
+   markers: one row per topic and per solver, naming its owning tool, taken from the PI's
+   answers or from the default profile. Remove the per-tool notes for a tool this project
+   will not use, but **keep the Default profile section**: it is the standing fallback.
 3. `docs/conventions.md` — one row per convention from answer 7, each tagged SOURCE /
    ADOPTED / OPEN / DERIVED, with where it is fixed.
 4. `docs/reproduction_and_extension.md` — one row per reproduction target from answer 8, all
@@ -102,12 +106,14 @@ subtly-wrong one:
 
 ## 4. Report
 
-Print, in this order:
+Print, in this order, and **start with the toolchain line**: which profile or override was
+adopted, and whether the PI chose it or it was applied because they did not:
 
 1. Every file written, with a one-line summary of what it now says.
 2. **What only the PI can do**: fetch the paper (`make fetch-source ID=…`), install missing
-   tools, decide each convention left `OPEN`, and settle any language-ownership or
-   interoperation question left unanswered in 6.
+   tools, decide each convention left `OPEN`, settle any language-ownership question the default
+   profile does not cover, and confirm or change the profile if it was applied because they
+   did not choose.
 3. The first session to run: the source audit, via `docs/prompts/A1_source_audit.md`.
 4. A reminder that no code is written before the audit — that ordering is the point of this
    template, and every later gate assumes the audit exists.

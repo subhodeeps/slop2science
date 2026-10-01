@@ -25,8 +25,9 @@ documentation and reproducibility. Claude advises; the PI decides.
 - what is accepted as a result, and what is published, claimed, and authored;
 - priorities, ordering, and when something is finished.
 
-**Where a decision is the PI's and has not been made, stop and ask.** Do not pick a default,
-infer one from the repository, or proceed on the most likely reading. An unasked question
+**Where a decision is the PI's and has not been made, stop and ask.** Do not invent a default,
+infer one from the repository, or proceed on the most likely reading. (The one standing default
+is the toolchain profile, §5: a recorded PI decision, not Claude's.) An unasked question
 becomes a silent permanent default that everything downstream inherits, and it is almost never
 noticed at the time.
 
@@ -40,7 +41,7 @@ Claude must not:
   the PI's approval;
 - silently replace the project's chosen formulation, method or tool with another;
 - **choose or change which language implements a piece of work, or how results pass between
-  the tools** — that is the PI's decision (§5), recorded in `docs/decision_log.md`;
+  the tools**, beyond the default profile the PI adopted (§5);
 - fabricate equations, coefficients, numbers, benchmarks, citations or validation;
 - call anything "verified" that has not been checked by a recorded, re-runnable procedure;
 - silently repair an inconsistency in a source paper (record it; see §3);
@@ -120,21 +121,22 @@ these roles.
 
 ## 5. Toolchain (explicit, local)
 
-{{TOOL_A}}, {{TOOL_B}} and {{TOOL_C}} are **co-equal**: none is privileged by language, and
-none owns a kind of work by default. **What is implemented in which language, and how the
-tools exchange results, is the PI's decision** (§1) — recorded in `docs/toolchain.md`'s
-ownership registry, each row citing its `docs/decision_log.md` entry.
+{{TOOL_A}}, {{TOOL_B}} and {{TOOL_C}} are **equal in capability**: any can own any topic.
+**What is implemented in which language, and how the tools exchange results, is the PI's
+decision** (§1), recorded in `docs/toolchain.md`'s ownership registry, each row citing its
+`docs/decision_log.md` entry. The PI chooses per topic or adopts the **default profile**
+defined there; with no choice made, the default profile applies.
 
 Everything runs through one wrapper, `scripts/run <file>`, whatever the language. Which tool
 does what: the registries in `docs/toolchain.md`.
 
 Rules that hold whichever tool is used:
 
-- **The PI assigns the language; Claude never chooses one.** Claude does not pick a language
-  for a new piece of work, does not move work from one language to another, and does not add,
-  remove or alter a hand-off between tools. Where the registry does not already cover the
-  work at hand, **stop and ask the PI** — and if the PI's answer changes the registry, log it
-  as a decision.
+- **Claude applies the PI's assignment and never invents one.** That is the registry or, where
+  it is silent, the **default profile** (`docs/toolchain.md`), itself a recorded PI decision, so
+  applying it is not Claude's choice. Claude does not move work between languages or alter a
+  hand-off. If work fits no kind in the profile, or the PI declined it, **stop and ask**. Every
+  application is first written into the registry with its decision cited.
 - **Ownership is declared, never assumed.** Every topic and every solver has exactly one
   tool that is its *record*, declared in `docs/toolchain.md`'s ownership registry and in the
   stage script's own header. An undeclared owner is a defect; two records for one fact is a
@@ -178,9 +180,8 @@ start a new derivation stage, subagent task or investigation when limits are nea
 started and not finished is worse than one not started.
 
 `/session-close` must record what was completed, what was left incomplete, and any file an
-interrupted step left behind. An orphaned file with no record is the failure this exists to
-prevent (`docs/failure_modes.md`). A session resuming after an interruption reads the previous
-close first and checks the working tree against it before anything else.
+interrupted step left behind: an orphaned file with no record is the failure this exists to
+prevent (`docs/failure_modes.md`). A resuming session reads the previous close first.
 
 **Under interruption, scope shrinks; it never expands.** An agent that cannot complete its
 instructions reports what it could not do rather than substituting adjacent work.
@@ -206,8 +207,7 @@ unknown and which calculation would resolve it.
 
 ## 12. Where the rest lives
 
-- Layout and the hook-guarded paths: `README.md`, `docs/GUIDE.md` §2,
-  `.claude/guard_paths.json`.
+- Layout: `README.md`, `docs/GUIDE.md` §2. Guarded paths: `.claude/guard_paths.json`.
 - State: `docs/STATUS.md` (loaded); history `docs/status_history.md`; claim by claim,
   reproduction and new work, `docs/reproduction_and_extension.md`.
 - Rules `.claude/rules/`; skills `.claude/skills/README.md`; agents and models

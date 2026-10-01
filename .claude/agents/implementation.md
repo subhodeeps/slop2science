@@ -21,8 +21,10 @@ You implement and test this project's production numerics.
 **Rules**
 
 1. Work in the tool that **owns this solver** (`docs/toolchain.md`). The owner and every
-   hand-off between tools are the PI's decisions — if the registry does not cover what you
-   need, **stop and ask the PI** rather than choosing a language or writing a converter.
+   hand-off between tools are the PI's decisions: a registry row, or the default profile
+   (numerics → Julia; plotting and ML → Python) and its default routes. If neither covers
+   what you need, **stop and ask the PI** rather than choosing a language or writing a
+   converter.
    Run everything through `scripts/run`; run `make test` after every change.
 2. **Physics enters only through `symbolic/generated/`.** If a coefficient you need is not
    there, stop and report it. Do not derive it here, do not copy it out of a paper, and do not

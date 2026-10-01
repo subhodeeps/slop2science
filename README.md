@@ -86,14 +86,19 @@ Then run `/source-audit`. No code before the audit.
 
 ## Tools
 
-Mathematica, Python and Julia. The template comes configured for all three and treats them
-as equals: an environment for each, one runner that handles any of them, and separate test
-and codegen paths per language.
+Mathematica, Python and Julia. The template comes configured for all three: an environment
+for each, one runner that handles any of them, and separate test and codegen paths per
+language. Any of them can own any topic.
 
-What it does require is that you say which tool owns what. Three capable tools make it easy
-to derive something twice and end up with two versions of one equation, both passing their
-own checks. The registry in `docs/toolchain.md` records the owner of each topic and each
-solver, and Claude does not pick or move work between languages on its own.
+If you don't choose, the default profile applies: Mathematica for algebra, as plain `.wls`
+scripts; Julia for numerics; Python for plotting, ML and anything else with a better Python
+ecosystem. `/init-paper` shows you that and lets you change it. Say "ask me each time" and it
+will.
+
+What it does require is that the choice is written down. Three capable tools make it easy to
+derive something twice and end up with two versions of one equation, both passing their own
+checks. The registry in `docs/toolchain.md` records the owner of each topic and each solver,
+and Claude does not move work between languages on its own.
 
 Everything runs through `scripts/run`, whatever the language. A missing tool is a loud skip,
 not a failure.
