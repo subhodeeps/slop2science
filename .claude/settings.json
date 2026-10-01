@@ -23,7 +23,11 @@
     "ask": [
       "Bash(git commit *)",
       "Bash(git push *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Edit(/.claude/guard_paths.json)",
+      "Edit(/.claude/settings.json)",
+      "Edit(/.claude/hooks/**)",
+      "Edit(/.claude/agents/**)"
     ],
     "deny": [
       "Bash(rm -rf *)",

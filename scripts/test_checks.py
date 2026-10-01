@@ -325,5 +325,42 @@ nums = [int(m.group(1)) for m in re.finditer(r"^## (\d+)[a-z]?\.", charter, re.M
 expect("CLAUDE.md section numbers run 1, 2, 3 ... with no gap",
        sorted(set(nums)), list(range(1, max(nums) + 1)))
 
+print("guard config — every entry is well formed and every entry blocks something")
+
+sys.path.insert(0, str(R / ".claude/hooks"))
+import json
+import guard_paths as gp
+
+guard_cfg = gp.load_config(str(R))
+expect("guard_paths.json loads (a broken file would make the guard allow everything)",
+       guard_cfg is not None, True)
+entries = [(k, e) for k in ("readonly", "append_only") for e in (guard_cfg or {}).get(k, [])]
+expect("every entry has a non-empty glob and a reason",
+       [e.get("glob") for k, e in entries if not e.get("glob") or not e.get("reason")], [])
+
+
+def sample(glob):
+    """A path that the glob must match."""
+    return glob.replace("**", "x/y").replace("*", "x").replace("?", "x")
+
+
+expect("every glob matches its own sample path (a typo in a glob matches nothing)",
+       [e["glob"] for k, e in entries if not e["_re"].match(sample(e["glob"]))], [])
+readonly_res = [e["_re"] for e in (guard_cfg or {}).get("readonly", [])]
+expect("every readonly_exempt path falls under a readonly glob (an exemption of nothing is a typo)",
+       [x for x in (guard_cfg or {}).get("readonly_exempt", [])
+        if not any(r.match(x) for r in readonly_res)], [])
+
+print("guard files — a change to the guards needs approval")
+
+settings = json.loads((R / ".claude/settings.json").read_text(encoding="utf-8"))
+ask = settings.get("permissions", {}).get("ask", [])
+for guarded in (".claude/guard_paths.json", ".claude/settings.json", ".claude/hooks/guard_paths.py",
+                ".claude/hooks/subagent_git_guard.py", ".claude/hooks/readonly_agent.py",
+                ".claude/agents/verification.md"):
+    covered = any(a.startswith("Edit(/") and
+                  gp.glob_to_regex(a[len("Edit(/"):-1]).match(guarded) for a in ask)
+    expect(f"an ask rule covers {guarded}", covered, True)
+
 print(f"\nchecks: {passed} passed, {failed} failed")
 sys.exit(1 if failed else 0)

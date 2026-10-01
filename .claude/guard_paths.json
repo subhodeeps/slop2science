@@ -32,8 +32,7 @@
     "papers/sources.yaml",
     "papers/README.md",
     "papers/background/README.md",
-    "papers/_drop/README.md",
-    "validation/README.md"
+    "papers/_drop/README.md"
   ],
   "append_only": [
     {
