@@ -1,7 +1,7 @@
 # Local reference libraries — search, read, import
 
-The PI may keep a Zotero and/or a Calibre library on this machine. This is how to use them
-without damaging them and without drowning in them.
+The PI can keep a Zotero library, a Calibre library, or both, on this machine. This file explains
+how to use them without damage to them and without overload from them.
 
     scripts/py scripts/library.py status
     scripts/py scripts/library.py search --author SURNAME [--title WORDS] [--doi DOI]
@@ -11,110 +11,127 @@ without damaging them and without drowning in them.
     scripts/py scripts/library.py import --zotero ID | --calibre ID [--label L] [--role R]
                                          [--max-mb 25] [--no-file] [--formats pdf,epub]
 
-## Search, never browse
+## Search. Never browse.
 
-These libraries hold thousands of items. `search` requires a query and there is no
-list-everything mode, on purpose: enumerating a library spends the session's context and
-answers nothing. Search for a specific work you already know you need. If two or three
-targeted queries miss, stop and ask. If neither library exists on this machine, say so and
-move on; do not search the disk for one.
+These libraries hold thousands of items. `search` requires a query. There is no mode that lists
+everything, on purpose. If you enumerate a library, you use the context of the session and learn
+nothing. Search for a specific work that you know you need. If two or three targeted queries find
+nothing, stop and ask. If neither library exists on this machine, say so and continue. Do not
+search the disk for one.
 
-Search shows real, live works only. Trashed items, attachments and notes are hidden, and when
-you give more than one criterion all of them must match.
+Search shows real, live works only. It hides trashed items, attachments and notes. If you give
+more than one criterion, an item must match all of them.
 
 ## Read-only, always
 
-The database is opened through a read-only connection. If the application holds it locked
-(Zotero keeps it locked while it runs), the database, with any `-wal` file, is copied to a
-scratch location and the copy is read; the output says so. A library file is only ever read
-and copied, never moved, renamed or edited. The library is the PI's own long-term store and
-this project does not own it.
+The tool opens the database through a read-only connection. The application can lock the
+database (Zotero keeps it locked while it runs). In that case the tool copies the database, with
+any `-wal` file, to a scratch location and reads the copy. The output says so. The tool only
+reads and copies a library file. It never moves, renames or edits one. The library is the
+long-term store of the PI. This project does not own it.
 
-## Reading one item: `show`
+## Read one item: `show`
 
-`show` prints everything bibliographic the library knows: every field, full creator names and
-roles, identifiers, tags, collections, attachments with their type and size, and for Calibre
-the publisher, series, languages, formats and description. It also says what it could **not**
-read (a table missing from an older schema, Calibre custom columns), because an empty result
-and a failed query are different things.
+`show` prints everything that the library knows about the item:
 
-Deliberately **not** read, because it is personal and a repository gets shared: Zotero notes
-and annotations, Calibre ratings, and absolute paths on the PI's machine.
+- every field
+- full creator names and roles
+- identifiers, tags and collections
+- attachments, with their type and size
+- for Calibre: the publisher, series, languages, formats and description
 
-## Importing one item: `import`
+It also says what it did **not** read, for example a table that an older schema lacks, or
+Calibre custom columns. An empty result and a failed query are different things.
 
-Import is a decision, so the unit is exactly one explicitly named item, never "all matches".
-Always run `--dry-run` first: it prints every file it would copy or skip, with the reason,
-and the BibTeX entry it would add, and writes nothing.
+The tool deliberately does **not** read these items:
 
-An import:
+- Zotero notes and annotations
+- Calibre ratings
+- absolute paths on the machine of the PI
 
-1. **copies the file into `papers/imported/<label>/`** if it is small. The default limit is
-   25 MB per file and three files per item; anything larger is skipped, and the reason is
-   recorded. Metadata is recorded regardless. Use `--no-file` for metadata only;
-2. **writes `papers/imported/<label>/metadata.json`**, the full record, with a sha256 and size
-   for each copied file;
-3. **appends an entry to `papers/sources.yaml`** with the identifiers, the provenance (which
-   library, which item key, which date) and `verified: false`;
-4. **appends a BibTeX entry to `papers/refs.bib`**, marked UNVERIFIED.
+They are personal, and a repository gets shared.
 
-Either all of that happens or none of it does: on any failure the directory is removed and
-both files are restored to exactly what they were.
+## Import one item: `import`
 
-It refuses, with a message, when: the item is in the trash, is an attachment or a note, has no
-title, or the label, BibTeX key or DOI is already in the bibliography.
+An import is a decision. Therefore the unit is exactly one item that you name explicitly. Never
+import "all matches". Always run `--dry-run` first. It prints each file that it would copy or
+skip, with the reason. It prints the BibTeX entry that it would add. It writes nothing.
 
-`papers/imported/` is gitignored, as the PDFs are: whether to commit someone else's paper is
-the PI's call. What **is** committed is the registry entry and `refs.bib`, which carry the
-identifiers and provenance.
+An import does these steps:
 
-### What is skipped, and why
+1. **It copies the file into `papers/imported/<label>/`** if the file is small. The default limit
+   is 25 MB for each file and three files for each item. The tool skips a larger file and records
+   the reason. The tool records the metadata in all cases. Use `--no-file` for metadata only.
+2. **It writes `papers/imported/<label>/metadata.json`.** This is the full record, with a sha256
+   and a size for each copied file.
+3. **It appends an entry to `papers/sources.yaml`.** The entry has the identifiers, the
+   provenance (which library, which item key, which date) and `verified: false`.
+4. **It appends a BibTeX entry to `papers/refs.bib`**, marked UNVERIFIED.
 
-| File | Why it is not copied |
+All of these steps happen, or none of them happens. If any step fails, the tool removes the
+directory and restores both files to their exact earlier state.
+
+The tool refuses, with a message, in these cases:
+
+- The item is in the trash.
+- The item is an attachment or a note.
+- The item has no title.
+- The label, the BibTeX key or the DOI is already in the bibliography.
+
+Git ignores `papers/imported/`, as it ignores the PDFs. The PI decides whether to commit the
+paper of another person. The project **does** commit the registry entry and `refs.bib`. They
+carry the identifiers and the provenance.
+
+### What the tool skips, and why
+
+| File | Why the tool does not copy it |
 |---|---|
-| a saved web page (`text/html`) | a snapshot of an abstract page, not the paper |
-| catalogued as a PDF but does not start with `%PDF` | a mislabelled attachment |
-| over the size limit | too large for a repository; the path is in the metadata |
-| missing on this machine | the catalogue knows it, the disk does not |
-| stored relative to Zotero's base directory | that is a preference outside the database |
+| a saved web page (`text/html`) | It is a snapshot of an abstract page. It is not the paper. |
+| catalogued as a PDF but does not start with `%PDF` | It is an attachment with the wrong label. |
+| over the size limit | It is too large for a repository. The path is in the metadata. |
+| missing on this machine | The catalogue knows it. The disk does not. |
+| stored relative to the base directory of Zotero | That is a preference outside the database. |
 
-A Zotero snapshot is recognised by its content type. It is not recognised by `linkMode`: a PDF
-downloaded from a URL has the same `linkMode` as a saved web page.
+The tool recognises a Zotero snapshot by its content type. It does not recognise it by
+`linkMode`. A PDF that someone downloaded from a URL has the same `linkMode` as a saved web page.
 
 ## `verified: false` is the point
 
-The import copies what the catalogue says, and **a catalogue can be wrong**: a mislabelled
-entry, an attachment that is a different paper or a different version, a wrong or missing DOI.
-So every import is written unverified, and `make check-docs` counts the ones that still are.
+The import copies what the catalogue says. **A catalogue can be wrong.** An entry can have the
+wrong label. An attachment can be a different paper or a different version. A DOI can be wrong
+or missing. Therefore you write each import as unverified. `make check-docs` counts the entries
+that are still unverified.
 
-To verify an entry, open the copied file and read the document's own first page: title,
-authors, journal, volume, pages. Then check the DOI and any arXiv ID against that. Fix what is
-wrong, fill in `role` and `notes` in `papers/sources.yaml`, set `verified: true`, and delete
-the UNVERIFIED marker above the entry in `papers/refs.bib`. If it does not match, say which of
-the failure modes it is, by name, rather than reporting "not found".
+To verify an entry, open the copied file and read the first page of the document. Check the
+title, the authors, the journal, the volume and the pages. Then check the DOI and each arXiv ID
+against that page. Fix what is wrong. Fill in `role` and `notes` in `papers/sources.yaml`. Set
+`verified: true`. Delete the UNVERIFIED marker above the entry in `papers/refs.bib`. If the entry
+does not match, name the failure mode. Do not report "not found".
 
-Two things the importer will not do for you: it never guesses an identifier it was not given,
-and it never fills in `primaryClass` for an arXiv entry. Where the catalogue lacks it, the
-entry says so in a comment.
+The importer does not do two things for you. It never guesses an identifier that you did not give
+it. It never fills in `primaryClass` for an arXiv entry. If the catalogue lacks it, the entry
+says so in a comment.
 
 ## When the library is not enough
 
-Order of attempts for a work the project needs:
+Use this order of attempts for a work that the project needs:
 
-1. `papers/`: already here?
-2. `papers/_drop/`: has the PI supplied it?
-3. **arXiv source**: `make fetch-source ID=<id>`, if it is on arXiv (`reference/corpus.md`).
-4. **The local libraries**, this file. The usual route for anything older than arXiv, and for
-   books.
-5. Ask the PI, and record what was needed and why it could not be found.
+1. `papers/`: is the work already here?
+2. `papers/_drop/`: did the PI supply it?
+3. **The arXiv source**: `make fetch-source ID=<id>`, if the work is on arXiv
+   (`reference/corpus.md`).
+4. **The local libraries**, which this file describes. This is the usual route for anything older
+   than arXiv, and for books.
+5. Ask the PI. Record what the project needed and why you did not find it.
 
 ## Known limits
 
-- Calibre custom columns are not read, and `show` says so.
-- Zotero attachments stored relative to a base directory cannot be resolved from the database.
-- Group libraries are read, and the item records which library it came from.
-- BibTeX is built from catalogue fields and covers the common entry types. Anything else
-  becomes `@misc`. Unicode is left as UTF-8, so use biber or a modern BibTeX setup.
-- The tools are tested against synthetic databases that follow the real table layouts, not
-  against every Zotero or Calibre version. **On a real library, run `import --dry-run` first**
-  and read what it says.
+- The tool does not read Calibre custom columns. `show` says so.
+- The database does not give the path of a Zotero attachment that the library stores relative
+  to a base directory. The tool cannot resolve it.
+- The tool reads group libraries. The item records the library that it came from.
+- The tool builds BibTeX from catalogue fields. It covers the common entry types. It writes
+  anything else as `@misc`. It leaves Unicode as UTF-8, so use biber or a modern BibTeX setup.
+- The tests use synthetic databases that follow the real table layouts. They do not use every
+  Zotero or Calibre version. **On a real library, run `import --dry-run` first** and read what it
+  says.

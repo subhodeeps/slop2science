@@ -1,121 +1,128 @@
 # Template guide — what to change, and what to leave alone
 
-Read this once, before `/init-paper`. It says which parts of this repository are meant to be
-rewritten for your paper, which are meant to survive unchanged, and why.
+Read this guide one time, before `/init-paper`. It states which parts of this repository you
+rewrite for your paper and which parts must stay unchanged. It also gives the reasons.
 
 ## 1. The three layers
 
 | Layer | Files | Change it? |
 |---|---|---|
-| **Charter and discipline** | `CLAUDE.md` §1, §3–§4, §6, §8–§11; `.claude/rules/`; `docs/WORKFLOW.md`; `docs/failure_modes.md`; the hooks | **No.** These encode failure modes, not preferences — §1 in particular (PI authority, and asking rather than defaulting) is the one the rest rests on. Change them only after your project hits a failure they don't cover — and then log it in `docs/decision_log.md`. |
-| **Project parameters** | `CLAUDE.md` `{{PLACEHOLDERS}}`; `docs/conventions.md`; `docs/toolchain.md` ownership registry; `papers/sources.yaml`; agent/skill trigger phrases | **Yes, once**, via `/init-paper`, then as the project evolves. |
-| **Scientific content** | `derivation/`, `symbolic/`, `src/`, `tests/`, `validation/`, `reports/`, `docs/reproduction_and_extension.md`, `docs/STATUS.md` | **Yes, continuously.** This is the work. Ships empty. |
+| **Charter and discipline** | `CLAUDE.md` §1, §3–§4, §6, §8–§11; `.claude/rules/`; `docs/WORKFLOW.md`; `docs/failure_modes.md`; the hooks | **No.** These files encode failure modes. They do not encode preferences. §1 matters most: the authority of the PI, and asking in place of choosing a default. The rest depends on it. Change these files only after your project meets a failure that they do not cover. Then log the change in `docs/decision_log.md`. |
+| **Project parameters** | the `{{PLACEHOLDERS}}` in `CLAUDE.md`; `docs/conventions.md`; the ownership registry in `docs/toolchain.md`; `papers/sources.yaml`; the trigger phrases of agents and skills | **Yes, one time**, through `/init-paper`. Then change them as the project evolves. |
+| **Scientific content** | `derivation/`, `symbolic/`, `src/`, `tests/`, `validation/`, `reports/`, `docs/reproduction_and_extension.md`, `docs/STATUS.md` | **Yes, continuously.** This is the work. It ships empty. |
 
-If you find yourself editing layer 1 in the first week, that is a signal the template is
-wrong for your problem — not that the rule is inconvenient. Say which rule and why in
-`docs/decision_log.md` so the next project inherits the reasoning.
+If you edit layer 1 in the first week, the template is probably wrong for your problem. The rule
+is not only inconvenient. Say which rule and why in `docs/decision_log.md`. Then the next project
+inherits the reasoning.
 
 ## 2. What `/init-paper` does
 
-It interviews you, then writes:
+It interviews you. Then it writes these items:
 
-- `CLAUDE.md` — project name, objective, pipeline, primary source, the three tool names.
-- `docs/conventions.md` — the first rows of the conventions register (units, notation,
-  sign/orientation conventions, labelling), each tagged SOURCE / ADOPTED / OPEN / DERIVED.
-- `docs/toolchain.md` — the **ownership registry**: which tool is the record for which topic
-  and which solver.
-- `docs/STATUS.md` — phase 0, the first immediate task (the source audit), no blockers.
-- `docs/prompts/A1_source_audit.md` — the first curated prompt record, ready to run.
-- Agent and skill `description` / `when_to_use` lines, so triggering matches your vocabulary.
-- `src/julia/Project.toml` and `src/python/pyproject.toml` package names, and the library
-  lists `src/python/packages.txt` and `src/julia/packages.txt` (the PI's choice, decision D-003).
+- `CLAUDE.md`: the project name, the objective, the pipeline, the primary source and the names of
+  the three tools.
+- `docs/conventions.md`: the first rows of the conventions register (units, notation, sign and
+  orientation conventions, labelling). Each row has the tag SOURCE, ADOPTED, OPEN or DERIVED.
+- `docs/toolchain.md`: the **ownership registry**. It states which tool is the record for which
+  topic and which solver.
+- `docs/STATUS.md`: phase 0, the first immediate task (the source audit) and no blockers.
+- `docs/prompts/A1_source_audit.md`: the first curated prompt record, ready to run.
+- The `description` and `when_to_use` lines of agents and skills, so that the triggers match your
+  vocabulary.
+- The package names in `src/julia/Project.toml` and `src/python/pyproject.toml`, and the library
+  lists `src/python/packages.txt` and `src/julia/packages.txt` (the choice of the PI, decision
+  D-003).
 
-It then deletes its own placeholder scaffolding and prints a checklist of what only you can
-do (fetch the paper, decide open conventions, install tools).
+Then it deletes its own placeholder scaffolding. It prints a checklist of what only you can do:
+fetch the paper, decide open conventions and install tools.
 
-Re-running it on an initialized project is refused; to change one answer, edit the file.
+If you run it again on an initialized project, it refuses. To change one answer, edit the file.
 
-## 3. The naming you inherit
+## 3. The names that you inherit
 
-- **PI** — the human researcher who decides. If you are a solo researcher, you are the PI;
-  the word exists so that "who decides this?" always has an answer in the text.
-- **topic** — one model, system, regime or chapter of the work: the unit that gets its own
-  `symbolic/<topic>/`, `derivation/<topic>/`, `validation/<topic>/`. Usually a progression of
-  increasing difficulty — the simplest case first, then the one the paper is actually about,
-  then the extension.
-- **stage** — one derivation step: one script, one write-up, one number. Never two.
-- **record** — a machine-readable JSON result with its full provenance.
-- **REPRODUCTION vs EXTENSION** — see `docs/WORKFLOW.md` §5. Marked at the point of use, not
-  by directory.
+- **PI**: the human researcher who decides. If you are a solo researcher, you are the PI. The
+  word exists so that the question "who decides this?" always has an answer in the text.
+- **topic**: one model, system, regime or chapter of the work. It is the unit that gets its own
+  `symbolic/<topic>/`, `derivation/<topic>/` and `validation/<topic>/`. Topics are usually a
+  progression of increasing difficulty: the simplest case first, then the case that the paper is
+  about, then the extension.
+- **stage**: one derivation step. It has one script, one write-up and one number. Never two.
+- **record**: a machine-readable JSON result with its full provenance.
+- **REPRODUCTION and EXTENSION**: see `docs/WORKFLOW.md` §5. The project marks them where it uses
+  them. It does not mark them by directory.
 
-## 4. Deliberate design choices you might otherwise undo
+## 4. Deliberate design choices that you can undo by accident
 
-**One canonical statement per fact.** The five-point discrepancy form is stated in
-`CLAUDE.md` §3 and nowhere else. The REPRODUCTION/EXTENSION convention is in
-`docs/WORKFLOW.md` §5 and nowhere else. Model routing is in `.claude/models.md` and nowhere
-else. Restating a rule in a second file is how the two copies drift apart; the project this
-came from had to write a staleness checker to police drift it had created by restating.
-If you need to invoke a rule, link to it.
+**One canonical statement for each fact.** `CLAUDE.md` §3 states the five-item discrepancy form,
+and no other file states it. `docs/WORKFLOW.md` §5 states the REPRODUCTION and EXTENSION
+convention, and no other file states it. `.claude/models.md` states the model routing, and no
+other file states it. If you restate a rule in a second file, the two copies drift apart. The
+project that this template came from had to write a staleness checker for the drift that its own
+restatements created. If you need to invoke a rule, link to it.
 
-**`docs/STATUS.md` holds current state only.** It loads into every session, so it stays
-under ~100 lines. History goes to `docs/status_history.md`, which is *not* auto-loaded. In
-the source project STATUS reached 504 lines of history before this split.
+**`docs/STATUS.md` holds the current state only.** It loads into every session. Therefore it
+stays under about 100 lines. The history goes to `docs/status_history.md`, which does *not* load
+automatically. In the source project, STATUS reached 504 lines of history before this split.
 
-**Tool ownership is a PI decision, declared per topic, not per language.** All three tools are
-equal in capability. The PI assigns each topic or adopts the **default profile** (algebra in
-Mathematica `.wls`, numerics in Julia, plotting, ML and ecosystem-bound work in Python); the
-template applies the default when the PI does not choose, and says so loudly. Claude never
-invents an assignment, moves existing work, or adds a hand-off between tools. The defect the registry prevents is not "using the wrong tool" — it
-is two tools each holding a slightly different version of the same equation, with nothing
-saying which is the record, and neither tool's own checks able to detect it. `docs/toolchain.md`
-carries both an ownership registry and an interoperation registry for that reason.
+**Tool ownership is a PI decision. The PI declares it for each topic, not for each language.**
+The three tools have equal capability. The PI assigns each topic, or adopts the default profile.
+The default profile assigns algebra to Mathematica `.wls`, numerics to Julia, and plotting, ML
+and work that depends on the Python ecosystem to Python. The template applies the default
+profile if the PI does not choose, and says so loudly. Claude never invents an assignment.
+Claude never moves existing work. Claude never adds a hand-off between tools. The registry does
+not prevent the use of the wrong tool. It prevents a different defect: two tools that each hold
+a slightly different version of the same equation. Nothing states which one is the record, and
+the checks of neither tool can detect it. `docs/toolchain.md` has an ownership registry and an
+interoperation registry for this reason.
 
-**Reproduction and extension are equal halves, in one tree.** The template does not treat the
-extension as a follow-on: `docs/reproduction_and_extension.md` tracks both plus the
-new-work deliverables, `docs/STATUS.md` has a section for each, and the two are held to
-different standards of evidence at the point of use rather than separated by directory
-(`docs/WORKFLOW.md` §5). If you only ever fill in the reproduction table, the project will
-have quietly become a reproduction project.
+**Reproduction and extension are equal parts, in one tree.** The template does not treat the
+extension as a follow-on. `docs/reproduction_and_extension.md` tracks both parts and the new-work
+deliverables. `docs/STATUS.md` has a section for each part. The project holds the two parts to
+different standards of evidence where it uses them. It does not separate them by directory
+(`docs/WORKFLOW.md` §5). If you fill in only the reproduction table, the project quietly becomes
+a reproduction project.
 
-**Derivation scripts are append-only.** A hook blocks `Write` to an existing stage script; a
-new stage is a new numbered file. Supersede by adding, never by overwriting — the write-ups
-cite these scripts by name, and rewriting one silently invalidates every citation.
+**Derivation scripts are append-only.** A hook blocks `Write` to an existing stage script. A new
+stage is a new numbered file. Supersede by adding. Never supersede by overwriting. The write-ups
+cite these scripts by name. If you rewrite a script silently, you invalidate each citation.
 
-**`papers/` PDFs are gitignored by default.** The registry (`papers/sources.yaml`) with DOIs
-and arXiv IDs is committed; the PDFs are not, because redistributing a publisher's PDF is
-your call, not the template's. `make fetch-source ID=<arxiv-id>` retrieves them locally.
+**Git ignores the PDFs in `papers/` by default.** The project commits the registry
+(`papers/sources.yaml`) with DOIs and arXiv IDs. It does not commit the PDFs. You decide whether
+to redistribute the PDF of a publisher. The template does not decide this.
+`make fetch-source ID=<arxiv-id>` retrieves the files locally.
 
-**No example project.** A worked example in a template gets copied into real projects and
-then cited as if it were real evidence. The cost is that the pipeline is unexercised until
-your first stage — which is what `make check` and the hook self-tests are for.
+**There is no example project.** If a template has a worked example, people copy it into real
+projects. Then they cite it as real evidence. The cost of having no example is this: the pipeline
+is not exercised until your first stage. `make check` and the hook self-tests exist for this
+reason.
 
 ## 4a. Continuity across sessions, and what each piece is for
 
-Four mechanisms, deliberately distinct — conflating them is how a project ends up with one
-file that is simultaneously a record, a note and a log, and therefore none of them:
+There are four mechanisms. They are distinct on purpose. If you mix them, a project ends up with
+one file that is a record, a note and a log at the same time. Then the file is none of them.
 
 | Artifact | Written by | Read by | Committed? |
 |---|---|---|---|
-| `docs/STATUS.md` | `/session-close` | every session, automatically | yes — the authoritative current state |
-| `handoff.md` | `/checkpoint`, `/session-close` | every session, **with its age** | yes — prose for the next session, shareable |
-| `docs/status_history.md` | `/session-close` | on demand | yes — the log, not auto-loaded |
-| session transcript | a `Stop` hook, condensed | the next session, on demand | **no — outside the repository entirely** |
+| `docs/STATUS.md` | `/session-close` | every session, automatically | yes. It is the authoritative current state. |
+| `handoff.md` | `/checkpoint`, `/session-close` | every session, **with its age** | yes. It is prose for the next session, and you can share it. |
+| `docs/status_history.md` | `/session-close` | on demand | yes. It is the log. It does not load automatically. |
+| session transcript | a `Stop` hook, condensed | the next session, on demand | **no. It is outside the repository entirely.** |
 
-The last row matters most and is the one people get wrong. A transcript holds half-formed
-reasoning and dead ends; repository sharing permissions inherit downward and cannot be
-subtracted from a subfolder, and a dot-prefixed folder is not hidden in a web UI
-(`docs/failure_modes.md` C2). The property relied on is *never shared*.
+The last row matters most, and people get it wrong most often. A transcript holds half-formed
+reasoning and dead ends. Sharing permissions of a repository inherit downward. You cannot
+subtract them from a subfolder. A web interface does not hide a folder with a dot prefix
+(`docs/failure_modes.md` C2). The design depends on this property: *never shared*.
 
-`handoff.md` carries its **age** into context on purpose: at three days old it is context, at
-three months it describes a project that has moved on, and silently believing it is worse than
-having none.
+`handoff.md` carries its **age** into the context on purpose. At three days, it is context. At
+three months, it describes a project that moved on. To believe it silently is worse than to have
+no handoff.
 
-How to write one — the four headings, a worked good example, a bad one annotated line by
-line, and a checklist — is `docs/handoff_guide.md`. It is a separate file rather than comments
-inside `handoff.md` because it only matters while a handoff is being written, and anything
-left inside that file is paid for in context at every session start.
+`docs/handoff_guide.md` explains how to write a handoff. It has the four headings, a good
+example, a bad example with an annotation for each line, and a checklist. It is a separate file
+and not comments inside `handoff.md`. It matters only while someone writes a handoff. Anything
+inside `handoff.md` costs context at each session start.
 
-## 5. Keeping the harness healthy
+## 5. Keep the harness healthy
 
 ```bash
 make check         # every session: hooks self-test, references, evidence tags, staleness
@@ -124,28 +131,30 @@ make check-init    # fail while {{PLACEHOLDERS}} remain (passes once initialized
 make libraries     # what is in the PI's local Zotero/Calibre, if anything
 ```
 
-`make check` includes the **context budget**: `CLAUDE.md`, `docs/STATUS.md` and
-`docs/conventions.md` have line limits and exceeding one is an error, not a warning. A budget
-that only warns is a budget ignored until the file is 500 lines of history. When it fires,
-move detail into a skill, a rule or a referenced doc — do not compress the wording.
+`make check` includes the **context budget**. `CLAUDE.md`, `docs/STATUS.md` and
+`docs/conventions.md` have line limits. If a file exceeds its limit, that is an error. It is not
+a warning. Nobody obeys a budget that only warns. The file grows to 500 lines of history. When the
+budget fires, move detail into a skill, a rule or a referenced document. Do not compress the
+wording.
 
-`/sync-template` pulls harness improvements from upstream without touching any scientific
-content; it diffs only the reusable layer and applies nothing unapproved.
+`/sync-template` pulls harness improvements from upstream without touching scientific content.
+It diffs only the reusable layer. It applies only what the PI approves.
 
-In a Claude Code session, `/doctor prompt-audit` reviews `CLAUDE.md`, the rules, skills and
-agents for instructions that contradict each other or cite files that no longer exist. Run it
-after any significant restructuring.
+In a Claude Code session, `/doctor prompt-audit` reviews `CLAUDE.md`, the rules, the skills and
+the agents. It finds instructions that contradict each other and files that no longer exist.
+Run it after each significant restructuring.
 
-If Claude seems not to follow an instruction: check `/context` to confirm the file loaded,
-then ask whether the instruction belongs in a rule (path-scoped, loads on touch), a skill
-(loads on trigger), or a hook (runs regardless of what the model decides). Prose in
-`CLAUDE.md` is the weakest of the three; a hook is the strongest. `docs/GUIDE.md` §6 lists
-which of this template's guarantees are enforced and which depend on the model complying.
+If Claude seems to ignore an instruction, check `/context` to confirm that the file loaded. Then
+decide where the instruction belongs. Use a rule if it is path-scoped and loads when Claude
+touches the path. Use a skill if it loads on a trigger. Use a hook if it must run whatever the
+model decides. Prose in `CLAUDE.md` is the weakest of the three. A hook is the strongest.
+`docs/GUIDE.md` §6 lists which guarantees of this template the system enforces, and which depend
+on the compliance of the model.
 
-## 6. Upgrading the harness later
+## 6. Upgrade the harness later
 
-The reusable layer is confined to `.claude/`, `scripts/`, `Makefile`, and the process docs in
-`docs/` (`GUIDE`, `WORKFLOW`, `failure_modes`, `validation_protocol`,
-`source_audit_template`). None of it imports project content. To pull improvements from a
-newer version of this template into a running project, diff those paths only — your
-scientific content and your `STATUS`/`conventions`/`decision_log` are untouched by it.
+The reusable layer is in `.claude/`, `scripts/`, `Makefile`, and the process documents in `docs/`
+(`GUIDE`, `WORKFLOW`, `failure_modes`, `validation_protocol`, `source_audit_template`). None of
+it imports project content. To pull improvements from a newer version of this template into a
+running project, diff only those paths. This does not touch your scientific content or your
+`STATUS`, `conventions` and `decision_log`.
