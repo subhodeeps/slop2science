@@ -49,8 +49,9 @@ Evidence tags look like this:
 
     [E: `symbolic/<topic>/stage_04_reduce.wls`, "reduced system matches source Eq. (9)"]
 
-If a displayed equation has no citable check, do not put it in the write-up. You can do algebra by hand
-between two checked expressions. State it one time, briefly, and mark it.
+If a displayed equation has no citable check, do not put it in the write-up. You can do algebra by
+hand between two checked expressions. State it one time, briefly, and mark it
+(`.claude/rules/derivation.md` owns this rule).
 
 **4. Commit** the script and the write-up together. Do not defer this to a cleanup pass. A
 write-up that you commit a week after its script is how a stale citation appears.

@@ -24,7 +24,8 @@ to produce an artefact that nobody asked for and nobody can explain later.
    value lets a false PASS survive a whole session.
 3. **Write up** in `derivation/<topic>/NN_<what>.md`. For each displayed equation, cite the
    verifying script and the exact check label. If a displayed equation has no citable check, do
-   not put it in the write-up.
+   not put it in the write-up. The exception is algebra by hand between two checked expressions.
+   State it one time and mark it (`.claude/rules/derivation.md`).
 4. **Commit** the script and the write-up together. Do not defer this to a cleanup pass.
 5. **Export**, if the stage produces coefficients that another tool needs. Then run
    `make codegen-check`. Never transcribe by hand.
