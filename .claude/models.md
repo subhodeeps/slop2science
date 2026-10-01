@@ -1,42 +1,43 @@
 # Model routing
 
-The single place model identifiers appear in this repository. Agent frontmatter cites this
-file; when a model is retired or a tier changes, one file changes.
+This is the single place where model identifiers appear in this repository. The frontmatter of
+each agent cites this file. If a vendor retires a model or a tier changes, change this one file.
 
-## The choice this template makes, and its cost
+## The choice that this template makes, and its cost
 
-Bare tier aliases (`opus` / `sonnet` / `haiku` / `fable`) resolve to "whatever is latest in
-that tier for this account" and can change without any commit here — which means a result's
-provenance record can name a model that is no longer what ran. Exact IDs make the record
-honest but **guarantee** eventual breakage: a retired ID surfaces as an explicit
-model-not-found error rather than a silent substitution.
+A bare tier alias (`opus`, `sonnet`, `haiku`, `fable`) resolves to the latest model in that tier
+for the account. The alias can change without a commit here. Then the provenance record of a
+result can name a model that is not the model that ran. An exact ID makes the record honest. It
+also **guarantees** that the setup breaks one day. A retired ID gives an explicit
+model-not-found error. It does not give a silent substitution.
 
-This template ships **aliases by default**, because a template that breaks on first use is
-worse than one whose provenance is a tier rather than a build. If your project reports
-model-sensitive results, switch the table to exact IDs, log the decision, and expect to
-revisit it — that is the trade, made deliberately.
+This template uses **aliases by default**. A template that breaks on first use is worse than a
+template whose provenance is a tier and not a build. If your project reports results that
+depend on the model, switch the table to exact IDs. Log the decision. Expect to revisit it. This
+is the trade, and the project makes it deliberately.
 
 ## Table
 
 | Agent / session | Model | Why |
 |---|---|---|
-| `derivation` | `opus` | The hard algebra, where a wrong answer is most expensive and least visible. |
-| `paper-writer` | `opus` | The main human-facing deliverable; it must reconstruct and explain what the source omits, not assemble bounded text. Runs rarely. |
-| `implementation` | `sonnet` | Bounded by tests, generated coefficients and the validation protocol. |
-| `literature` | `sonnet` | Bounded by primary sources; its characteristic failures are procedural (misread PDF, unverified identifier), not reasoning gaps. |
-| `verification` | `sonnet` | Checklist-driven with a fixed failure taxonomy. Raise to `opus` for an audit that must re-derive rather than re-check. |
-| `status-reporter` | `sonnet` | Summarising authoritative files; no mathematics. |
-| `explore` | `haiku` | Locate-and-quote lookup, no synthesis. |
-| `session-close` | `haiku` | Template-following over read-only git/make commands. |
-| Main session | project default | Orchestrates, prompts and reviews; does not itself do the hard algebra or the independent audits. |
+| `derivation` | `opus` | The hard algebra. A wrong answer here is the most expensive and the least visible. |
+| `paper-writer` | `opus` | The main deliverable for human readers. It must reconstruct and explain what the source omits. It does not assemble bounded text. It runs rarely. |
+| `implementation` | `sonnet` | Tests, generated coefficients and the validation protocol bound the work. |
+| `literature` | `sonnet` | Primary sources bound the work. Its typical failures are procedural (a misread PDF, an unverified identifier). They are not gaps in reasoning. |
+| `verification` | `sonnet` | The work follows a checklist with a fixed failure taxonomy. Use `opus` for an audit that must derive again and not only check again. |
+| `status-reporter` | `sonnet` | The work summarises authoritative files. It has no mathematics. |
+| `explore` | `haiku` | Lookup that locates and quotes. It does not synthesize. |
+| `session-close` | `haiku` | The work follows a template over read-only git and make commands. |
+| Main session | project default | It orchestrates, prompts and reviews. It does not do the hard algebra or the independent audits. |
 
-Raise a single session with `/model` when a task warrants it; that does not change this table.
+To raise the model of one session, use `/model` when a task needs it. This does not change the
+table.
 
 ## Cost shape
 
-Spend is dominated by whichever agent does the derivations. The largest spike observed in the
-project this template came from was not a strong model on a hard problem but **fan-out**: ten
-parallel writer subagents, ~1.5M subagent tokens in ~17 minutes, producing ten voices that
-had to be rewritten by one author anyway (`docs/failure_modes.md`). Watch `/usage` whenever a
-session dispatches several subagents at once, and see the rule in `docs/WORKFLOW.md` §8 about
-what parallelism is and is not good for.
+The agent that does the derivations dominates the spend. The largest spike in the project that
+this template came from was not a strong model on a hard problem. It was **fan-out**: ten
+parallel writer subagents used about 1.5M subagent tokens in about 17 minutes. They produced ten
+voices, and one author had to rewrite them (`docs/failure_modes.md`). Watch `/usage` when a
+session dispatches several subagents at the same time. See the rule in `docs/WORKFLOW.md` §8
+about what parallelism is good for and what it is not good for.

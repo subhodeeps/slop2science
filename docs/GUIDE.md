@@ -1,119 +1,134 @@
-# Guide — how this repository is driven by Claude Code
+# Guide — how Claude Code drives this repository
 
-For a researcher who has never used Claude Code. It explains the **mechanism**;
-`docs/WORKFLOW.md` explains how to actually do a piece of work with it.
+This guide is for a researcher who has never used Claude Code. It explains the **mechanism**.
+`docs/WORKFLOW.md` explains how to do a piece of work with it.
 
 ## 1. What Claude Code is, here
 
-An agentic CLI: you give it a prompt in a terminal, and it reads files, runs shell commands,
-edits and writes files, and reports back — within the permissions this repository grants it.
-Every claim it makes about this project's science is expected to be backed by a command it
-actually ran and that you can rerun.
+Claude Code is an agentic command-line tool. You give it a prompt in a terminal. It reads
+files, runs shell commands, edits and writes files, and reports back. It works inside the
+permissions that this repository grants. Each claim that it makes about the science of this
+project must have a command behind it. Claude must have run the command, and you must be able to
+run it again.
 
-Everything it does here is shaped by files under version control, not by anything private to
-an account or a model. That is the point: **the configuration is part of the reproducibility
-record**, like a derivation script.
+Files under version control shape everything that Claude does here. Nothing private to an
+account or a model shapes it. **The configuration is part of the reproducibility record**, like
+a derivation script.
 
-## 2. The configuration surface, and when each piece fires
+## 2. The configuration, and when each piece acts
 
-| Piece | Fires | Purpose |
+| Piece | When it acts | Purpose |
 |---|---|---|
-| `CLAUDE.md` | every session, always | The charter: **the PI's authority and what is the PI's to decide** (including which language implements what, and how the tools interoperate: by choice, or by the default profile), the project's two halves — reproduction and new work — source-first discipline, the five-point discrepancy form, toolchain rules, session protocol, the interruption guardrail. Kept deliberately short — detail is referenced, never restated — and its size budget is checked by `make check-docs`, because a file that loads every session grows by accretion. |
-| `docs/STATUS.md`, `docs/conventions.md` | every session (`@`-imported by `CLAUDE.md`) | Current state only (reproduction **and** extension), and the conventions register. Budgeted and checked, because they load every time; history lives in `docs/status_history.md`, which does not. |
-| `.claude/rules/*.md` | automatically, when Claude reads a file matching the rule's `paths:` | Narrow, path-scoped constraints. You never invoke these; touching a matching file loads them. |
-| `.claude/skills/*/SKILL.md` | when its `description`/`when_to_use` matches the task, or by name (`/skill-name`) | Procedures: how to do a category of work. Each under ~100 lines; occasional detail sits in the skill's `reference/`, loaded only if needed. |
-| `.claude/agents/*.md` | dispatched by you, or by the session judging a subtask fits | Subagents: separate context windows with their own tools, skills and model. |
-| `.claude/hooks/*` | on the tool-use or session event named in `.claude/settings.json`, or in a subagent's own frontmatter | Enforcement that does **not** depend on the model following an instruction. Also the continuity machinery: the handoff injected at session start with its age, a snapshot written before compaction, and a condensed transcript kept outside the repository. |
-| `handoff.md` | read into the opening context at every session start, **with its age** | Prose from the last session to the next: what was in progress, what is suspected but unshown, what to watch out for. Written at `/checkpoint` and `/session-close`; how to write one is `docs/handoff_guide.md`. Committed and shareable — unlike the transcript. Never evidence: anything in it worth relying on gets established and moved to a record. |
-| `.claude/settings.json` | every session | Permissions, environment, hook registration. |
-| `.claude/models.md` | read by you and by agent frontmatter | The one place model choices are recorded. |
-| `Makefile` | on demand | The canonical commands. Skills and the session protocol invoke these rather than raw tool calls. |
+| `CLAUDE.md` | every session, always | The charter. It states **the authority of the PI and the decisions that belong to the PI**. These include which language implements which work, and how the tools interoperate (by choice or by the default profile). It states the two parts of the project, reproduction and new work. It states source-first discipline, the five-item discrepancy form, the toolchain rules, the session protocol and the interruption guardrail. It is short on purpose. It references detail and never restates it. `make check-docs` checks its size budget, because a file that loads in every session grows by accretion. |
+| `docs/STATUS.md`, `docs/conventions.md` | every session (`CLAUDE.md` imports them with `@`) | The current state only (reproduction **and** extension), and the conventions register. They have a budget and a check, because they load every time. The history is in `docs/status_history.md`, which does not load. |
+| `.claude/rules/*.md` | automatically, when Claude reads a file that matches the `paths:` of the rule | Narrow constraints for specific paths. You never invoke them. If Claude touches a matching file, the rule loads. |
+| `.claude/skills/*/SKILL.md` | when its `description` or `when_to_use` matches the task, or by name (`/skill-name`) | Procedures: how to do a category of work. Each skill has about 100 lines or fewer. Occasional detail is in the `reference/` of the skill. It loads only when needed. |
+| `.claude/agents/*.md` | you dispatch it, or the session decides that a subtask fits | Subagents. Each has a separate context window with its own tools, skills and model. |
+| `.claude/hooks/*` | on the tool-use or session event that `.claude/settings.json` names, or in the frontmatter of a subagent | Enforcement that does **not** depend on the model that follows an instruction. Hooks also run the continuity machinery: the handoff that the session start injects with its age, a snapshot before compaction, and a condensed transcript outside the repository. |
+| `handoff.md` | the opening context of each session, **with its age** | Prose from the last session to the next session: what was in progress, what someone suspects but did not show, and what to watch for. Write it at `/checkpoint` and `/session-close`. `docs/handoff_guide.md` explains how to write one. It is committed and shareable, unlike the transcript. It is never evidence. If something in it is worth relying on, establish it and move it to a record. |
+| `.claude/settings.json` | every session | Permissions, environment and hook registration. |
+| `.claude/models.md` | read by you and by the frontmatter of agents | The one place that records model choices. |
+| `Makefile` | on demand | The canonical commands. Skills and the session protocol call these commands. They do not use raw tool calls. |
 
-Nothing is hidden. If you want to know why Claude Code did something here, the answer is in
-one of those files, not in a model you cannot inspect.
+Nothing is hidden. If you want to know why Claude Code did something here, one of these files
+has the answer. A model that you cannot inspect does not have it.
 
-## 3. A session, start to close
+## 3. A session, from start to close
 
-1. Claude Code loads `CLAUDE.md` + `docs/STATUS.md` + `docs/conventions.md`;
+1. Claude Code loads `CLAUDE.md`, `docs/STATUS.md` and `docs/conventions.md`.
    `session_context.sh` prints which tools are present, the current phase and the next task.
-2. You give a prompt. A substantial research prompt is recorded verbatim in
-   `docs/prompts/<ID>_<topic>.md` **before** work starts
+2. You give a prompt. Record a substantial research prompt word for word in
+   `docs/prompts/<ID>_<topic>.md` **before** the work starts
    (`.claude/rules/research-sessions.md`).
-3. Work happens — derivation, implementation, literature, verification — directly or via
-   subagents (§4).
-4. `make check`, `make test` and the relevant validation run before anything is called done.
-5. The session ends with `/session-close`: account for every changed file, update STATUS and
-   the reproduction matrix, record decisions, propose (never perform) a commit.
-6. The next session reads that close before doing anything else.
+3. The work happens: derivation, implementation, literature and verification. Claude does it
+   directly or through subagents (§4).
+4. `make check`, `make test` and the relevant validation run before anyone calls anything done.
+5. The session ends with `/session-close`. Claude accounts for each changed file, updates STATUS
+   and the reproduction matrix, records decisions, and proposes a commit. Claude never makes
+   the commit by itself.
+6. The next session reads that close before it does anything else.
 
 ## 4. Subagents: why, and which one
 
-A subagent is a separate context window with its own tools and model. Two reasons to use one:
-a large or noisy task (a full derivation, a literature sweep) would otherwise fill the
-session's context with material it does not need to keep; and a role with a genuine
-independence requirement can be structurally prevented from seeing or touching what it is
-checking.
+A subagent is a separate context window with its own tools and model. There are two reasons to
+use one. First, a large or noisy task fills the context of the session with material that the
+session does not need to keep. Examples: a full derivation or a literature sweep. Second, a role
+that must be independent can have a structure that stops it from seeing or touching what it
+checks.
 
-| Subagent | For | Notably |
+| Subagent | For | Notes |
 |---|---|---|
-| `derivation` | Symbolic derivation, source reconstruction, asymptotics, limits | Writes `symbolic/**` and `derivation/**`. Has project memory for confirmed conventions and pitfalls — not results. |
-| `implementation` | Solvers, discretization, convergence, precision | Consumes physics only from `symbolic/generated/`; never invents an equation. |
-| `literature` | Sources, benchmarks, convention reconciliation | The only agent with web access, and the only one that writes under `papers/`. |
-| `verification` | Independent audit after any derivation, export, solver change or result | **Cannot edit project files even if it wants to** — a hook blocks it. Reports findings; does not fix them. |
-| `paper-writer` | A topic's report or paper | Only script-verified equations as results; only recorded numbers; writes in chunks; one author. |
-| `status-reporter` | Factual status and progress reports | Never derives or verifies; every claim traces to a named file. |
-| `explore` | Fast read-only lookup before substantive work | Returns file:line and excerpt. No synthesis — the caller does that. |
+| `derivation` | symbolic derivation, source reconstruction, asymptotics, limits | It writes `symbolic/**` and `derivation/**`. It has project memory for confirmed conventions and pitfalls. It has no memory of results. |
+| `implementation` | solvers, discretization, convergence, precision | It takes physics only from `symbolic/generated/`. It never invents an equation. |
+| `literature` | sources, benchmarks, reconciliation of conventions | It is the only agent with web access. It is the only agent that writes under `papers/`. |
+| `verification` | independent audit after each derivation, export, solver change or result | **It cannot edit project files, even if it wants to.** A hook blocks it. It reports findings. It does not fix them. |
+| `paper-writer` | the report or paper of a topic | It uses only script-verified equations as results and only recorded numbers. It writes in chunks. One author writes the document. |
+| `status-reporter` | factual status and progress reports | It never derives or verifies. Each claim traces to a named file. |
+| `explore` | fast read-only lookup before substantive work | It returns file:line and an excerpt. It does not synthesize. The caller does that. |
 
-Model routing, and the reasoning behind it: `.claude/models.md`.
+`.claude/models.md` has the model routing and the reasoning behind it.
 
 ## 5. How the tools connect
 
-Physics is derived once, in whichever tool owns the topic, and **never hand-transcribed**:
+The project derives physics one time, in the tool that owns the topic. Nobody ever transcribes
+it by hand:
 
     symbolic/<topic>/stage_NN_*.<ext>        the derivation, with labelled printed checks
             |  scripts/run  (serialises kernels, applies a timeout, logs to logs/)
             v
-    symbolic/<topic>/out/*                   the owning tool's own record of the run
+    symbolic/<topic>/out/*                   the record of the owning tool for the run
             |
     symbolic/<topic>/export_NN_*.<ext>       codegen
             v
-    symbolic/generated/<lang>/               machine-written; Edit/Write blocked by a hook
+    symbolic/generated/<lang>/               machine-written; a hook blocks Edit and Write
             |  make codegen-check            regenerates and fails on any diff from git
             v
-    src/<lang>/                              production code; consumes generated code only
+    src/<lang>/                              production code; uses generated code only
             |  scripts/run
             v
     validation/<topic>/                      results, residuals, convergence, JSON records
 
-If a coefficient a solver needs is not in `symbolic/generated/`, the correct response is to
-stop and derive and export it — never to write it by hand "for now".
+If a solver needs a coefficient that is not in `symbolic/generated/`, stop. Derive it and
+export it. Never write it by hand "for now".
 
-## 6. Enforced automatically vs. depends on the prompt
+## 6. What the system enforces, and what depends on the prompt
 
-**Enforced regardless of what any prompt says** (hooks, not instructions):
+**The system enforces these rules whatever a prompt says** (hooks, not instructions):
 
-- `papers/**`, `symbolic/generated/**`, `validation/**/records/**`, `validation/**/accepted/**`
-  and `data/accepted/**` cannot be edited directly — `guard_paths.py`, configured in
-  `.claude/guard_paths.json`.
-- An existing derivation stage or export script cannot be overwritten by `Write` — same hook.
-- The `verification` subagent cannot write project files — `readonly_agent.py`.
-- **No subagent can push, commit, rebase, reset, branch or stage-everything** —
-  `subagent_git_guard.py`, registered in each Bash-capable subagent's frontmatter. Reading git
-  is allowed; changing history or the remote is not. A subagent has a fresh context and cannot
-  see what else is in flight, so the commit is the main session's to propose.
-- Every prompt is captured — `log_prompt.py`.
-- A state snapshot is written before every compaction — `precompact_checkpoint.sh`.
-- A condensed transcript is kept **outside the repository** — `capture_session.py`.
+- Nobody can edit `papers/**`, `symbolic/generated/**`, `validation/**/records/**`,
+  `validation/**/accepted/**` and `data/accepted/**` directly. `guard_paths.py` enforces this,
+  with the configuration in `.claude/guard_paths.json`.
+- `Write` cannot overwrite an existing derivation stage or export script. The same hook
+  enforces this.
+- The `verification` subagent cannot write project files. `readonly_agent.py` enforces this.
+- **No subagent can push, commit, rebase, reset, branch or stage everything.**
+  `subagent_git_guard.py` enforces this. The frontmatter of each subagent that can use Bash
+  registers it. A subagent can read git. It cannot change the history or the remote. A
+  subagent has a fresh context and cannot see what else is in progress. Therefore the main
+  session proposes the commit.
+- `log_prompt.py` captures each prompt.
+- `precompact_checkpoint.sh` writes a state snapshot before each compaction.
+- `capture_session.py` keeps a condensed transcript **outside the repository**.
 
-**Checked on demand, with no scientific toolchain needed**: `make check` runs the hook
-self-tests (synthetic payloads through each hook, so a broken guard is noticed), reference
-resolution, evidence-tag resolution, and the staleness guard. The same tier runs in CI on
-every push.
+**You can run these checks on demand, with no scientific toolchain.** `make check` runs these
+checks:
 
-**Depends on the prompt, and on the model actually following it**: the five-point form being
-used correctly; "verified" being claimed only for what a re-runnable procedure checked;
-print-before-assert in a new script; a session actually stopping at a usage limit rather than
-rushing; and **asking the PI rather than defaulting** when a decision is the PI's — the one
-guarantee here that no hook can enforce, and the one the rest depends on. These are process, not code. `docs/WORKFLOW.md` §8 and `docs/failure_modes.md` cover
-what to watch for — and if an instruction here keeps being missed, the fix is usually to move
-it from prose into a rule, a skill, or a hook, in that order of strength.
+- the hook self-tests (synthetic payloads through each hook, so that you notice a broken guard)
+- reference resolution
+- evidence-tag resolution
+- the staleness guard
+
+The same tier runs in CI on each push.
+
+**These items depend on the prompt and on the model that follows it:**
+
+- correct use of the five-item form
+- the claim "verified" only for what a re-runnable procedure checked
+- print-before-assert in a new script
+- a session that stops at a usage limit and does not hurry
+- **asking the PI, not choosing a default,** when a decision belongs to the PI. No hook can
+  enforce this. The other items depend on it.
+
+These items are process. They are not code. `docs/WORKFLOW.md` §8 and `docs/failure_modes.md`
+explain what to watch for. If an instruction here keeps failing, move it from prose into a rule,
+then into a skill, then into a hook. This is the order of increasing strength.

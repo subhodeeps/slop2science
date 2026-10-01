@@ -1,64 +1,64 @@
-# Writing a handoff
+# Write a handoff
 
-How to write `handoff.md`: the prose note one session leaves for the next. Read this when you
-are writing one — it costs nothing until then, which is why it lives here rather than as
-comments inside the file itself.
+This guide explains how to write `handoff.md`: the note that one session leaves for the next
+session. Read it when you write a handoff. It costs nothing until then. This is why it is here
+and not in comments inside the file.
 
-Mechanism (who reads it, when, and how the age is stamped): `docs/GUIDE.md` §2 and
-`.claude/hooks/session_context.sh`. Where it sits among the other continuity artifacts:
-`TEMPLATE_GUIDE.md` §4a.
+For the mechanism (who reads the handoff, when, and how the hook stamps its age), see
+`docs/GUIDE.md` §2 and `.claude/hooks/session_context.sh`. For the place of the handoff among
+the other continuity artifacts, see `TEMPLATE_GUIDE.md` §4a.
 
-## 1. What it is for
+## 1. What a handoff is for
 
-`docs/STATUS.md` records the project's **state**. `docs/status_history.md` records what
-**happened**. Neither can hold what was in your head when you stopped:
+`docs/STATUS.md` records the **state** of the project. `docs/status_history.md` records what
+**happened**. Neither can hold what you knew when you stopped:
 
-- the stage that is half-written and whether it currently runs;
-- the number that looked wrong, before you knew why;
-- the thing you suspect and have not shown;
-- the approach you already tried that does not work, so nobody tries it again;
-- the question you would ask the PI if they were here.
+- the stage that is half-written, and whether it runs now
+- the number that looked wrong, before you knew why
+- the thing that you suspect and did not show
+- the approach that you tried and that does not work, so that nobody tries it again
+- the question that you would ask the PI if the PI were here
 
-All of that is provisional, and some of it will turn out to be wrong. That is exactly why it
-does not belong in a record — and exactly why losing it is expensive. Reconstructing a
-suspicion takes as long as having it did.
+All of this is provisional. Some of it will be wrong. For this reason it does not belong in a
+record. For the same reason, losing it is expensive. To rebuild a suspicion takes as long as it
+took to form it.
 
 ## 2. The one rule that matters
 
 **A handoff is never evidence.**
 
-It is unverified by construction. If something in it turns out to be worth relying on, it
-gets established properly — a script, a printed check, a labelled result — moved into a
-record, and then **the handoff line is deleted**. A handoff entry that has been promoted and
-left behind is a claim with two homes and one of them unversioned.
+Nobody verified it. If something in it is worth relying on, establish it properly with a
+script, a printed check or a labelled result. Move it into a record. Then **delete the line in
+the handoff**. A handoff line that someone promoted and left behind is a claim with two homes,
+and one home has no version control.
 
-Precedence, when they disagree: `docs/decision_log.md`, `docs/STATUS.md`,
-`docs/reproduction_and_extension.md` and the validation records are right; the handoff is
-stale. Never resolve a conflict in the handoff's favour, and never quietly pick one — record
-the inconsistency (`docs/failure_modes.md` entry 9 is what happens otherwise: a report writer
-copied a claim from a working note that the decision log contradicted, and it shipped).
+If files disagree, this is the order of precedence. `docs/decision_log.md`, `docs/STATUS.md`,
+`docs/reproduction_and_extension.md` and the validation records are right. The handoff is old.
+Never resolve a conflict in favour of the handoff. Never pick one silently. Record the
+inconsistency. `docs/failure_modes.md` entry 9 shows what happens otherwise. A report writer
+copied a claim from a working note that the decision log contradicted. The claim shipped.
 
-## 3. Write it for a stranger arriving in three months
+## 3. Write for a stranger who arrives in three months
 
-You do not know who reads it or when. It might be you tomorrow; it might be a collaborator
-after a term away; it might be you in March having forgotten the whole thing. So:
+You do not know who reads the handoff or when. The reader can be you tomorrow. It can be a
+collaborator after a term away. It can be you in March, when you have forgotten everything. So
+follow these rules:
 
-- **No pronouns without referents.** "It stopped converging" — what did?
-- **No session-local shorthand.** "the second one", "that weird factor", "the thing from
-  yesterday" all evaporate overnight.
-- **Name files and identifiers.** `symbolic/topic1/stage_04_reduce.wls`, `D-007`, `N=80`,
-  not "the reduction script".
-- **Say whether things currently run.** "Stage 04 is written and passes; stage 05 exists and
-  does not run yet" is worth ten lines of narrative.
+- **Do not use a pronoun without a referent.** "It stopped converging": what stopped?
+- **Do not use shorthand from the session.** "The second one", "that odd factor" and "the thing
+  from yesterday" are gone by the next day.
+- **Name files and identifiers.** Write `symbolic/topic1/stage_04_reduce.wls`, `D-007` and
+  `N=80`. Do not write "the reduction script".
+- **State if each item runs now.** "Stage 04 passes. Stage 05 exists and does
+  not run yet" is worth ten lines of narrative.
 
-The hook stamps the file's age into context precisely because prose reads as current. At
-three days old a handoff is context; at three months it describes a project that has moved
-on. Write so that a reader who is *told* it is 90 days old can still use it.
+The hook stamps the age of the file into the context, because prose looks current. At 3 days a
+handoff is context. At 3 months it describes a project that moved on. Write so that a reader
+who knows that the file is 90 days old can still use it.
 
 ## 4. The shape
 
-Four headings. Use them; they are in this order because that is the order a returning session
-needs them.
+Use four headings, in this order. A returning session needs them in this order.
 
 ```markdown
 # Handoff
@@ -76,13 +76,14 @@ needs them.
 <the one concrete next action, matching STATUS's immediate next task>
 ```
 
-**"What I believe but have not established" is the heading that earns the file.** It has
-nowhere else to live: too uncertain for STATUS, too specific for the decision log, and the
-single most expensive thing to reconstruct. Every entry under it names what would settle it,
-so it is a lead rather than a rumour.
+**The heading "What I believe but have not established" is the reason for the file.** It has no
+other place to live. It is too uncertain for STATUS. It is too specific for the decision log.
+It is the most expensive item to rebuild. Each entry under it names what would settle it. Then
+the entry is a lead and not a rumour.
 
-**"Next" must agree with `docs/STATUS.md`'s immediate next task.** If it does not, one of the
-two is wrong — fix it now, at the close, not at the next session's start.
+**"Next" must agree with the immediate next task in `docs/STATUS.md`.** If it does not agree,
+one of the two is wrong. Fix it now, at the close. Do not wait for the start of the next
+session.
 
 ## 5. A good handoff
 
@@ -90,38 +91,38 @@ two is wrong — fix it now, at the close, not at the next session's start.
 # Handoff
 
 ## Where I stopped
-Stage 04 (`symbolic/topic1/stage_04_reduce.wls`) is written and passing — 18 checks, and its
-write-up `derivation/topic1/04_reduce.md` is committed with it. Stage 05 exists as a file but
-is a sketch: it runs to the substitution and then stops. It is NOT in `stages.txt` yet, on
-purpose, so `make stages` stays clean.
+Stage 04 (`symbolic/topic1/stage_04_reduce.wls`) is written and passes. It has 18 checks. Its
+write-up `derivation/topic1/04_reduce.md` is committed with it. Stage 05 is a file, but it is
+a sketch. It runs to the substitution and then stops. It is NOT in `stages.txt` yet, on
+purpose. Then `make stages` stays clean.
 
 ## What I believe but have not established
-- The source's Eq. (12) looks like it is missing a factor of 2 in the second term. Derived by
-  hand only, not scripted. What would settle it: redo the reduction from Eq. (9) in stage 05
-  and compare coefficient by coefficient — and if it holds up, it is a five-point discrepancy
-  record, not a fix.
-- The residual at N=80 is ~1e-7 where N=40 gave ~1e-9. That is the wrong direction. It might
-  be conditioning rather than a bug, but I have not looked. What would settle it: run the
-  same case in extended precision; if the residual improves, it is conditioning.
+- Eq. (12) of the source seems to miss a factor of 2 in the second term. I derived this by hand
+  only. No script checks it. What would settle it: redo the reduction from Eq. (9) in stage 05
+  and compare it coefficient by coefficient. If the result holds, record a five-item
+  discrepancy. Do not fix the source.
+- The residual at N=80 is about 1e-7. At N=40 it was about 1e-9. This is the wrong direction. It
+  can be conditioning and not a bug, but I did not look. What would settle it: run the same case
+  in extended precision. If the residual improves, the cause is conditioning.
 
 ## Watch out for
-`make stages TOPIC=topic1` is clean, but only because stage 05 is out of the manifest. Do not
-add it until it actually terminates, or every subsequent run fails and the failure looks like
-stage 04's.
+`make stages TOPIC=topic1` is clean, but only because stage 05 is not in the manifest. Do not
+add stage 05 until it terminates. If you add it too early, all later runs fail, and the
+failure looks like a failure of stage 04.
 
-I lost about an hour reading Eq. (12) from the PDF text layer before realising the tarball
-has the LaTeX. Use `papers/source/2504.01234v2/ms.tex` — the macros are in `macros.sty` and
-`\calJ` expands with a factor I nearly missed.
+I lost about one hour when I read Eq. (12) from the PDF text layer. The tarball has the LaTeX.
+Use `papers/source/2504.01234v2/ms.tex`. The macros are in `macros.sty`. `\calJ` expands with a
+factor that I almost missed.
 
 ## Next
-Finish stage 05: complete the substitution, add the coefficient-by-coefficient comparison
-against source Eq. (12), and only then add it to `stages.txt`. This is STATUS's immediate
-next task.
+Finish stage 05. Complete the substitution. Add the coefficient-by-coefficient comparison with
+Eq. (12) of the source. Then add the stage to `stages.txt`. This is the immediate next task in
+STATUS.
 ```
 
-Why it works: every claim is either marked as unestablished with a test attached, or names a
-file and a check count. It says what does not run. It warns about a trap that is invisible
-from the repository. And "Next" is one action, not a wish list.
+Why this works: each claim is either marked as not established, with a test, or it names a file
+and a check count. It states what does not run. It warns about a trap that the repository does
+not show. "Next" is one action. It is not a wish list.
 
 ## 6. A bad handoff, annotated
 
@@ -132,75 +133,79 @@ paper. Fixed the issue with the residual. Should be able to finish the solver ne
 just need to tidy a few things up. Also see my note about the factor.
 ```
 
-Every line fails:
+Each line fails:
 
 | Written | Problem |
 |---|---|
-| "Made good progress" | Unfalsifiable. Progress on what, to what state? |
-| "The master equation works now and matches the paper" | A **result claimed in a handoff**. If it is verified it belongs in STATUS with its script and check label; if it is not, saying "matches" is exactly the false confidence the project guards against. |
-| "Fixed the issue with the residual" | Which issue, in which file, verified how? The next session cannot tell whether to trust it. |
-| "just need to tidy a few things up" | Unbounded. Which things? |
-| "see my note about the factor" | Which note? A dangling reference to something only you can find. |
-| no mention of what is broken | The most valuable line is the missing one. |
+| "Made good progress" | Nobody can falsify it. Progress on what, and to which state? |
+| "The master equation works now and matches the paper" | This is a **result claimed in a handoff**. If someone verified it, it belongs in STATUS with its script and check label. If nobody verified it, "matches" is the false confidence that the project guards against. |
+| "Fixed the issue with the residual" | Which issue, in which file, verified how? The next session cannot decide if it can trust the statement. |
+| "just need to tidy a few things up" | It has no limit. Which things? |
+| "see my note about the factor" | Which note? The reference points to something that only you can find. |
+| no mention of what is broken | The most valuable line is the one that is missing. |
 
 ## 7. Length and mechanics
 
-- **Overwrite; never append.** A handoff that has become a log is a handoff nobody reads, and
-  the log already exists in `docs/status_history.md`. If a line is still true next session,
-  the next session rewrites it.
-- **Aim for 10–30 lines.** Long enough for the four headings, short enough to read in the
-  first ten seconds of a session. It is injected into the opening context, so length is a
-  real cost paid on every session start.
-- **Delete a heading with nothing under it** rather than writing "N/A". An empty "Watch out
-  for" is information: nothing bit you. (This is why the seeded `handoff.md` ships with no
-  headings at all — a file that opens with four empty ones would break this rule on its own
-  first line.)
-- **HTML comments are stripped when it is injected**, so a comment is a safe place for a note
-  to yourself that the next session does not need.
-- Written at `/session-close` (step 6a) and at `/checkpoint` (step 5) — the checkpoint case
-  matters, because refreshing the handoff is worth doing even when no commit is proposed.
+- **Overwrite the file. Never append.** Nobody reads a handoff that becomes a log.
+  `docs/status_history.md` already has the log. If a line is still true in the next session,
+  the next session writes it again.
+- **Aim for 10 to 30 lines.** Use enough room for the four headings. Keep it short enough to
+  read in the first ten seconds of a session. The hook injects it into the opening context.
+  Therefore its length is a real cost at each session start.
+- **Delete a heading that has nothing under it.** Do not write "N/A". An empty "Watch out for"
+  is information: nothing caused a problem. This is why the seeded `handoff.md` has no headings.
+  A file that starts with four empty headings would break this rule on its first line.
+- **The hook strips HTML comments** when it injects the file. A comment is a safe place for a
+  note to yourself that the next session does not need.
+- Write the handoff at `/session-close` (step 6a) and at `/checkpoint` (step 5). The checkpoint
+  case matters. A refreshed handoff has value also when nobody proposes a commit.
 
-## 8. It is committed and shareable — the transcript is not
+## 8. The handoff is committed and shareable. The transcript is not.
 
-`handoff.md` is tracked and shared with anyone the repository is shared with. The condensed
-session transcript is deliberately **outside** the repository
-(`.claude/hooks/capture_session.py`, `docs/failure_modes.md` C2), because sharing permissions
-inherit downward and cannot be subtracted from a subfolder.
+Git tracks `handoff.md`. Anyone who has the repository can read it. The condensed session
+transcript is **outside** the repository on purpose (`.claude/hooks/capture_session.py`,
+`docs/failure_modes.md` C2). Sharing permissions inherit downward, and you cannot subtract them
+from a subfolder.
 
-So: **write nothing in the handoff you would not want a collaborator, a reviewer or a
-supervisor to read.** Frustration with a source paper, a guess about why someone's published
-number is off, an aside about a colleague's code — that is transcript material, not handoff
-material. Keep the handoff technical.
+Therefore **write nothing that you would not want a collaborator, a reviewer or a supervisor
+to read.** Keep these items out of the handoff:
+
+- frustration with a source paper
+- a guess about why the published number of someone is wrong
+- an aside about the code of a colleague
+
+That is transcript material. It is not handoff material. Keep the handoff technical.
 
 ## 9. Special cases
 
-**The session was interrupted, or hit a usage limit.** This is when the handoff matters most
-and gets written worst. Say explicitly what was *completed* versus *started and left
-incomplete* (CLAUDE.md §8a), and name any file an interrupted step left behind. Scope shrinks
-under interruption — the handoff is where you record that it did, so the next session does not
-resume from a false picture.
+**An interruption or a usage limit stopped the session.** In this case the handoff matters most,
+and people write it worst. State what the session *completed* and what it *started and left
+incomplete* (CLAUDE.md §8a). Name each file that an interrupted step left behind. Under an
+interruption the scope gets smaller. Record in the handoff that it did. Then the next session
+does not resume from a false picture.
 
-**Nothing much happened.** Say so, briefly, and say why: blocked on a PI decision, waiting on
-a source, spent the session reading. "Nothing to report" with no reason reads as an
-abandoned session.
+**Nothing much happened.** Say so briefly, and say why. The reasons can be: blocked on a PI
+decision, waiting for a source, or the session was spent on reading. "Nothing to report" with no
+reason looks like an abandoned session.
 
-**The work is in a broken state.** Say that first, in the first line, before anything else.
-A returning session that runs `make test` and sees failures it did not cause will spend real
-time deciding whether the repository is broken or the tests are. One sentence prevents it.
+**The work is in a broken state.** Say that first, in the first line, before anything else. A
+returning session runs `make test` and sees failures that it did not cause. It then spends real
+time to decide if the repository is broken or the tests are broken. One sentence prevents this.
 
-**Handing off to a person rather than a session.** Same file, same discipline — it is already
-written for a stranger. Add the one thing a session does not need and a person does: where the
-open questions for the PI are (`docs/STATUS.md` open questions, tagged).
+**You hand off to a person and not to a session.** Use the same file and the same discipline.
+The file is already written for a stranger. Add one item that a person needs and a session
+does not need. State where the open questions for the PI are (`docs/STATUS.md`, open
+questions, tagged).
 
 ## 10. Checklist
 
-- [ ] Overwrote the file; did not append
-- [ ] Every file, identifier and number named explicitly — no "it", no "the thing"
-- [ ] Said what is in a working state and what is not
-- [ ] No result claimed as established; anything verified has been moved to a record and the
-      handoff line deleted
-- [ ] Each suspicion has what-would-settle-it attached
-- [ ] "Next" matches `docs/STATUS.md`'s immediate next task
-- [ ] Interruptions recorded as completed-versus-incomplete
-- [ ] Nothing here you would not want a collaborator to read
-- [ ] Under ~30 lines
+- [ ] I overwrote the file. I did not append.
+- [ ] I named each file, identifier and number explicitly. There is no "it" and no "the thing".
+- [ ] I stated what works and what does not.
+- [ ] The handoff claims no established result. I moved each verified item to a record and
+      deleted its line in the handoff.
+- [ ] Each suspicion has what would settle it.
+- [ ] "Next" agrees with the immediate next task in `docs/STATUS.md`.
+- [ ] I recorded interruptions as completed or incomplete.
+- [ ] The file has nothing that I would not want a collaborator to read.
+- [ ] The file has about 30 lines or fewer.
