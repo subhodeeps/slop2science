@@ -101,7 +101,7 @@ This file states the one canonical form. No other file restates it. Every other 
 here. Use the form exactly as written.
 
 **Do not let a suspicion become a finding.** A model prefers to assert what the user wants to
-be true (`docs/failure_modes.md` 0c). A discrepancy that the PI already suspects is therefore
+be true (`docs/failure_modes/model.md` 0c). A discrepancy that the PI already suspects is therefore
 the easiest one to "confirm". Establish items 2 and 3 independently of item 1. Where it
 matters, use a session that did not receive the expected answer.
 
@@ -159,7 +159,7 @@ investigation. A stage that you start and do not finish is worse than a stage th
 start.
 
 `/session-close` records what the session completed, what it left incomplete, and each file that
-an interrupted step left behind (`docs/failure_modes.md` entry 5). A resuming session reads the
+an interrupted step left behind (`docs/failure_modes/inherited.md` entry 5). A resuming session reads the
 previous close first. **During an interruption, the scope gets smaller. It never gets larger.**
 An agent that cannot complete its instructions reports what it did not do. It does not do other
 work.

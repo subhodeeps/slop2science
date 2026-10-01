@@ -35,7 +35,7 @@ and one home has no version control.
 If files disagree, this is the order of precedence. `docs/decision_log.md`, `docs/STATUS.md`,
 `docs/reproduction_and_extension.md` and the validation records are right. The handoff is old.
 Never resolve a conflict in favour of the handoff. Never pick one silently. Record the
-inconsistency. `docs/failure_modes.md` entry 9 shows what happens otherwise. A report writer
+inconsistency. `docs/failure_modes/inherited.md` entry 9 shows what happens otherwise. A report writer
 copied a claim from a working note that the decision log contradicted. The claim shipped.
 
 ## 3. Write for a stranger who arrives in three months
@@ -164,7 +164,7 @@ Each line fails:
 
 Git tracks `handoff.md`. Anyone who has the repository can read it. The condensed session
 transcript is **outside** the repository on purpose (`.claude/hooks/capture_session.py`,
-`docs/failure_modes.md` C2). Sharing permissions inherit downward, and you cannot subtract them
+`docs/failure_modes/anticipated.md` C2). Sharing permissions inherit downward, and you cannot subtract them
 from a subfolder.
 
 Therefore **write nothing that you would not want a collaborator, a reviewer or a supervisor

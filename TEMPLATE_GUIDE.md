@@ -111,7 +111,7 @@ one file that is a record, a note and a log at the same time. Then the file is n
 The last row matters most, and people get it wrong most often. A transcript holds half-formed
 reasoning and dead ends. Sharing permissions of a repository inherit downward. You cannot
 subtract them from a subfolder. A web interface does not hide a folder with a dot prefix
-(`docs/failure_modes.md` C2). The design depends on this property: *never shared*.
+(`docs/failure_modes/anticipated.md` C2). The design depends on this property: *never shared*.
 
 `handoff.md` carries its **age** into the context on purpose. At three days, it is context. At
 three months, it describes a project that moved on. To believe it silently is worse than to have

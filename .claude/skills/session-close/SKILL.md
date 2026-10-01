@@ -52,7 +52,8 @@ is near or when an interruption stopped the session (CLAUDE.md §8a).
 
 6. **Decisions and prompts.** Append each PI decision to `docs/decision_log.md` in the `D-NNN`
    form. Fill in the `## Outcome` section of the prompt record of this session in
-   `docs/prompts/`.
+   `docs/prompts/`. If something went wrong in the session, add an entry to
+   `docs/failure_modes/project.md`.
 
 6a. **Write `handoff.md`.** Overwrite it. Do not append. Write what the records cannot hold. Write
    what was in progress. Write what you believe and have not established. Write what cost time
