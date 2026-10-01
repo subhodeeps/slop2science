@@ -1,6 +1,6 @@
 ---
 name: session-close
-description: End-of-session procedure - account for every changed file, run the checks, update STATUS and the reproduction matrix, record decisions and open issues, and propose (never perform) a commit.
+description: End-of-session procedure. Account for each changed file, run the checks, update STATUS and the reproduction matrix, and record decisions and open issues. Propose a commit. Never make the commit.
 disable-model-invocation: true
 model: haiku
 allowed-tools: Bash(make check) Bash(make test) Bash(make codegen-check *) Bash(git status) Bash(git status *) Bash(git diff *) Bash(git log *) Read Edit Write
@@ -8,63 +8,64 @@ allowed-tools: Bash(make check) Bash(make test) Bash(make codegen-check *) Bash(
 
 # Session close
 
-Run at the end of every session, and **instead of** finishing remaining work when a usage
-limit is near or the session was interrupted (CLAUDE.md §8a).
+Run this at the end of every session. Run it **instead of** the remaining work when a usage limit
+is near or when an interruption stopped the session (CLAUDE.md §8a).
 
-1. **What changed.** `git status` and `git diff --stat`.
+1. **What changed.** Run `git status` and `git diff --stat`.
 
-2. **Orphaned-artefact check.** List every untracked and modified file and account for each
-   one: which step produced it, and why it is expected. Any file left over from an
-   interrupted step, or from a step that ran past its prompt's stated scope, is reported **by
-   name with a disposition** — kept-and-flagged / reviewed-and-fine / needs PI decision. Never
-   silently committed, never silently deleted. This check exists because an unrequested
-   script once sat in a validation directory for weeks with nothing recording where it came
-   from (`docs/failure_modes.md`).
+2. **Orphaned-artefact check.** List each untracked and modified file. Account for each file:
+   which step produced it, and why you expect it. Report each
+   file that an interrupted step left behind, or that a step created beyond the stated scope of
+   its prompt. Report it **by name, with a disposition.** The dispositions are: kept and flagged, reviewed and fine, or needs a PI decision.
+   Never commit such a file silently. Never delete it silently. This check exists because an
+   unrequested script once stayed in a validation directory for weeks. Nothing recorded where
+   it came from (`docs/failure_modes.md`).
 
-3. **Checks.** Run `make check` (always — it needs no toolchain). Run `make test` if code
-   changed. If stage or export scripts changed, run `make stages TOPIC=<topic>` and
+3. **Checks.** Always run `make check`. It needs no toolchain. Run `make test` if code changed.
+   If stage or export scripts changed, run `make stages TOPIC=<topic>` and
    `make codegen-check TOPIC=<topic>`.
 
-   Report **every** unresolved reference and every staleness warning `make check` prints. A
-   session does not close silently over a broken reference it can see. A genuine finding is
-   fixed at its source before the commit is proposed — or, if it is a false positive, the
-   checker is corrected. It is never left unmentioned.
+   Report **each** unresolved reference and each staleness warning that `make check` prints. A
+   session does not close silently over a broken reference that it can see. Fix a real finding at
+   its source before you propose the commit. If it is a false positive, correct the checker.
+   Never leave it unmentioned.
 
-4. **History, then state.** Append this session's full record — what was done, the evidence,
-   the commits — to the end of `docs/status_history.md`. *Then* update `docs/STATUS.md`,
-   which holds current state only, loads every session, and has a budget `make check-docs`
-   checks (if it warns, move detail to the history, do not compress wording):
+4. **History, then state.** Append the full record of this session to the end of
+   `docs/status_history.md`: what you did, the evidence and the commits. *Then* update
+   `docs/STATUS.md`. It holds the current state only, it loads in every session, and it has a
+   budget that `make check-docs` checks. If it warns, move detail to the history. Do not
+   compress the wording.
 
-   - current phase; one concrete immediate next task;
-   - move an item between *Derived*, *Validated* and *Open* **only with the evidence**
-     (script path + command + result). Nothing is "validated" without a re-runnable check;
-   - **if the session was interrupted or hit a usage limit**: say explicitly what was
-     completed versus started-and-left-incomplete, so the next session does not resume from a
-     false picture;
-   - last validation: date, command, outcome, commit.
+   - Update the current phase and give one concrete immediate next task.
+   - Move an item between *Derived*, *Validated* and *Open* **only with the evidence** (script
+     path, command and result). Nothing is "validated" without a re-runnable check.
+   - **If an interruption or a usage limit stopped the session**, state explicitly what the
+     session completed and what it started and left incomplete. Then the next session does not
+     resume from a false picture.
+   - Update the last validation: date, command, outcome and commit.
 
-5. **Reproduction and extension.** Update `docs/reproduction_and_extension.md` for anything
-   reproduced, established, attempted, found discrepant, or found not to work this session —
-   **both** tables, plus the new-work deliverables. This is what the PI actually reads.
-   A session that advanced the extension and only updated the reproduction table has
-   mis-recorded itself. A negative extension result is recorded, not dropped.
+5. **Reproduction and extension.** Update `docs/reproduction_and_extension.md` for anything that
+   the session reproduced, established, attempted, found discrepant, or found not to work. Update
+   **both** tables and the new-work deliverables. The PI reads this file. If a session advanced
+   the extension and updated only the reproduction table, the session recorded itself wrongly.
+   Record a negative extension result. Do not drop it.
 
-6. **Decisions and prompts.** Append any PI decisions to `docs/decision_log.md` in the
-   `D-NNN` form. Fill in the `## Outcome` section of this session's prompt record in
+6. **Decisions and prompts.** Append each PI decision to `docs/decision_log.md` in the `D-NNN`
+   form. Fill in the `## Outcome` section of the prompt record of this session in
    `docs/prompts/`.
 
-6a. **Write `handoff.md`.** Overwrite it — do not append — with what the records cannot hold:
-   what was in progress, what you believe but have not established, what cost time this
-   session, and the one next action. **How to write one, with worked good and bad examples
-   and a checklist: `docs/handoff_guide.md`.** Read it if you have not written a handoff
-   before; the failure mode is a cheerful paragraph claiming results, which is worse than an
-   empty file.
+6a. **Write `handoff.md`.** Overwrite it. Do not append. Write what the records cannot hold. Write
+   what was in progress. Write what you believe and have not established. Write what cost time
+   in this session. Write the one next action. **`docs/handoff_guide.md` explains how to write one, with a good and
+   a bad example and a checklist.** Read it if you have not written a handoff before. The usual
+   failure is a cheerful paragraph that claims results. That is worse than an empty file.
 
-7. **Checklist.** Tick completed boxes in `docs/implementation_checklist.md` — only with
+7. **Checklist.** Tick the completed boxes in `docs/implementation_checklist.md`, only with
    evidence.
 
-8. **Propose a commit** message: conventional, scoped, listing the checks actually run and
-   their results. **Do not commit or push** unless the PI says so.
+8. **Propose a commit message.** Use a conventional, scoped message. List the checks that you ran
+   and their results. **Do not commit or push** unless the PI says so.
 
-9. **Report**, under 20 lines: changed files, checks run with results, orphaned artefacts
-   found and their disposition, open issues, and the next task.
+9. **Report**, in fewer than 20 lines: the changed files, the checks that you ran with their
+   results, the orphaned artefacts that you found with their dispositions, the open issues, and
+   the next task.

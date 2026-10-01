@@ -1,7 +1,7 @@
 ---
 name: derivation-workflow
-description: The reproducible derivation cycle - one stage per script, print-before-assert checks with stable labels, a write-up citing every equation, then export. Use for any symbolic derivation stage, source reconstruction, asymptotic analysis or limit check.
-when_to_use: 'Trigger phrases: derive; derivation stage; reconstruct the equations; linearize; reduce the system; indicial exponents; asymptotic analysis; series expansion; limiting case; export coefficients'
+description: The reproducible derivation cycle: one stage for each script, print-before-assert checks with stable labels, a write-up that cites each equation, then export. Use it for any symbolic derivation stage, source reconstruction, asymptotic analysis or limit check.
+when_to_use: 'Trigger phrases: derive, derivation stage, reconstruct the equations, linearize, reduce the system, indicial exponents, asymptotic analysis, series expansion, limiting case, export coefficients'
 paths:
   - "symbolic/**"
   - "derivation/**"
@@ -9,78 +9,77 @@ paths:
 
 # Derivation workflow
 
-Execution details for each tool: the `toolchain` skill. Rules that a hook or a checker
-enforces: `.claude/rules/derivation.md`. Stage template:
-`templates/stage_template.wls` (adapt the header for `.py`/`.jl`). Per-stage checklist:
-`reference/stage_checklist.md`.
+For execution details for each tool, see the `toolchain` skill. For the rules that a hook or a
+checker enforces, see `.claude/rules/derivation.md`. The stage template is
+`templates/stage_template.wls` (adapt the header for `.py` or `.jl`). The checklist for each
+stage is `reference/stage_checklist.md`.
 
 ## The cycle
 
-**1. Derive** — one stage, one script, `symbolic/<topic>/stage_NN_<what>.<ext>`, in the tool
-that owns the topic. Add it to `symbolic/<topic>/stages.txt`.
+**1. Derive.** Use one stage and one script: `symbolic/<topic>/stage_NN_<what>.<ext>`. Use the
+tool that owns the topic. Add the script to `symbolic/<topic>/stages.txt`.
 
-**2. Check, inside the same script** — every non-trivial step gets an explicit check with a
-short quoted label, and **the value is printed before it is asserted**. Order matters: print,
-then assert. Asserting first and reading the output only when something looks wrong is how a
-wrong assertion survives a whole session.
+**2. Check, inside the same script.** Give each non-trivial step an explicit check with a short,
+quoted label. **Print the value before you assert it.** The order matters: print, then assert. If
+you assert first and read the output only when something looks wrong, a wrong assertion survives
+a whole session.
 
-Checks worth having at every stage:
+Make these checks at each stage:
 
-- substitute the result back into what it came from; the residual should be identically zero;
-- a limiting or special case whose answer is known independently;
-- dimensional or scaling consistency;
-- an invariant the result must satisfy that was not used in deriving it;
-- where the stage reproduces the source: a coefficient-by-coefficient comparison against the
-  source's displayed equation, not a visual one.
+- Substitute the result back into what it came from. The residual must be identically zero.
+- Check a limiting or special case with an independently known answer.
+- Check dimensions or scaling.
+- Check an invariant that the result must satisfy and that you did not use in the derivation.
+- Where the stage reproduces the source, compare coefficient by coefficient against the displayed
+  equation of the source. A visual comparison is not enough.
 
-**3. Write up** — `derivation/<topic>/NN_<what>.md`: conventions used, assumptions, the
-displayed equations, and for every displayed equation an evidence tag naming the script and
-the exact check label.
+**3. Write up** in `derivation/<topic>/NN_<what>.md`. State the conventions that you use, the
+assumptions and the displayed equations. For each displayed equation, give an evidence tag that
+names the script and the exact check label.
 
-For an argument that is **not** a mechanical computation — a uniqueness, exhaustiveness,
-limiting, gauge or regularity argument — write it as a **structured proof**: a numbered
-hierarchy where each step is justified by a cited result, by earlier steps, or by child steps,
-and where a step with neither children nor justification is an explicit, labelled gap
-(`reference/structured_proofs.md`). Prose hides exactly the step that is wrong; "after some
-algebra it follows that" is unfalsifiable at the level of the step. For algebra a script
-checks coefficient by coefficient, the script is the proof — cite its label and do not add a
-hierarchy.
+If an argument is **not** a mechanical computation, write it as a **structured proof**. Examples
+are an argument of uniqueness, exhaustiveness, a limit, a gauge or regularity. A structured proof
+is a numbered hierarchy. A cited result, earlier steps or child steps justify each step. A step
+with neither children nor justification is an explicit, labelled gap
+(`reference/structured_proofs.md`). Prose hides exactly the step that is wrong. "After some
+algebra it follows that" is not falsifiable at the level of the step. If a script checks algebra
+coefficient by coefficient, the script is the proof. Cite its label. Do not add a hierarchy.
 
-Evidence tags look like:
+Evidence tags look like this:
 
     [E: `symbolic/<topic>/stage_04_reduce.wls`, "reduced system matches source Eq. (9)"]
 
-A displayed equation with no citable check does not go in the write-up. Algebra done by hand
-between two checked expressions is allowed, stated once, briefly, and marked as such.
+If a displayed equation has no citable check, do not put it in the write-up. You can do algebra by hand
+between two checked expressions. State it one time, briefly, and mark it.
 
-**4. Commit** script and write-up together. Not deferred to a cleanup pass — a write-up
-committed a week after its script is how a stale citation appears.
+**4. Commit** the script and the write-up together. Do not defer this to a cleanup pass. A
+write-up that you commit a week after its script is how a stale citation appears.
 
-**5. Export, if the stage produces coefficients another tool needs** —
-`export_NN_<what>.<ext>` writing to `symbolic/generated/<lang>/`, then
-`make codegen-check TOPIC=<topic>`. Never hand-transcribe.
+**5. Export, if the stage produces coefficients that another tool needs.** Write
+`export_NN_<what>.<ext>` to `symbolic/generated/<lang>/`. Then run
+`make codegen-check TOPIC=<topic>`. Never transcribe by hand.
 
-## Each stage's header
+## The header of each stage
 
     Topic / Stage / Owner tool / Kind (REPRODUCTION|EXTENSION|CROSS-CHECK) /
     Judged against / Inputs / Outputs
 
-`Kind:` and `Judged against:` are not bookkeeping. Reproduction evidence and extension
-evidence carry different weight, and a write-up that lets a benchmark comparison read as if
-it validated the source's own reproduction is a real and easy mistake
-(`docs/WORKFLOW.md` §5).
+`Kind:` and `Judged against:` are not bookkeeping. Reproduction evidence and extension evidence
+have different weight. A write-up can let a benchmark comparison read as if it validated the
+reproduction of the source. This is a real and easy mistake (`docs/WORKFLOW.md` §5).
 
 ## When a check fails
 
-Stop. Report the failing check, its exact output, and its class
-(`.claude/skills/verification/SKILL.md`). Do not adjust the check to pass, change an expected
-value, or widen a tolerance without recording why in the script and the write-up. If the fix
-is not obviously correct, record an open discrepancy in the five-point form instead of
-guessing (CLAUDE.md §3).
+Stop. Report the failing check, its exact output and its class
+(`.claude/skills/verification/SKILL.md`). Do not change the check to make it pass. Do not change
+an expected value. Do not widen a tolerance without a recorded reason in the script and in the
+write-up. If you are not sure that the fix is correct, record an open discrepancy in the
+five-item form. Do not guess (CLAUDE.md §3).
 
 ## When to stop auditing
 
-Once an independent re-derivation confirms a result by a genuinely different route — not the
-same script rerun, not the same route retyped — and either the literature agrees or there is a
-stated reason it cannot be checked against literature, **stop**. A fifth confirmation of
-something four independent routes agree on is not rigour (`docs/failure_modes.md`).
+Stop when an independent derivation confirms a result by a different route. The same
+script run again does not count. The same route typed again does not count. Also, the literature
+must agree, or you must have a stated reason why you cannot check the result against the
+literature. A fifth confirmation of a result that four independent routes confirm is not rigour
+(`docs/failure_modes.md`).
