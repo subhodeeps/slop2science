@@ -158,3 +158,10 @@ Other repositories contributed parts:
   ([barbagroup/agentic-reproducibility](https://github.com/barbagroup/agentic-reproducibility))
   — reproducible-research practice as context engineering. The template follows her
   caveat: the researcher stays responsible for the judgements that these artifacts contain.
+
+> *"We were picking apart a problem in linguistic history … I was powerfully gripped by the
+> vision of transitoriness … Every transition from major to minor in a sonata, every
+> transformation of a myth or a religious cult … nothing but a direct route into the interior of
+> the cosmic mystery, where in the alternation between inhaling and exhaling, between heaven and
+> earth, between Yin and Yang, holiness is forever being created."*
+> — Hermann Hesse, *The Glass Bead Game*
