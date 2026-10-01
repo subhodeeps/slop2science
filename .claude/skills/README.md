@@ -1,35 +1,34 @@
 # Project skills
 
-Each skill is a folder with `SKILL.md`, plus optional `reference/` files (loaded only when
-the skill actually needs them) and `templates/` (copied into the repository, never edited in
-place).
+Each skill is a folder with `SKILL.md`. A skill can also have `reference/` files and
+`templates/`. Claude loads a `reference/` file only when the skill needs it. Copy a template
+into the repository. Never edit a template in place.
 
 | Skill | Invoked by | Purpose |
 |---|---|---|
-| `init-paper` | **you only**: `/init-paper` | One-time initialization of this template for a new paper. Deletes itself when done. |
-| `source-audit` | Claude (auto) or `/source-audit` | Reconstruct what the source states, what its equations imply, and where it is inconsistent — before any code. |
-| `derivation-workflow` | Claude (auto) | The derive → check → write up → commit → export cycle, with the print-before-assert discipline and the per-stage checklist. |
-| `solver-workflow` | Claude (auto) | Building and auditing a production solver from generated coefficients, in the order that makes each step cheap. |
-| `toolchain` | Claude (auto) or `/toolchain` | Running Mathematica, Julia and Python through the common wrapper; environments, precision tiers, codegen hand-off. |
-| `literature-audit` | Claude (auto) | Primary-source and convention auditing; benchmark provenance; reading equations from a PDF correctly. |
-| `verification` | Claude (auto) | Independent audit checklists and the failure taxonomy. Used by the read-only `verification` agent. |
-| `external-code` | Claude (auto) | Every piece of code this project did not write: provenance, licence, attribution, and PI drop-folder intake. |
-| `report-writing` | `paper-writer` (auto) | Writing a report as a paper a researcher can follow by hand; provenance in an appendix, not after every equation. |
-| `checkpoint` | **you only**: `/checkpoint` | Mid-session safe save: account for changes, run the checks, refresh the handoff, propose a commit of coherent work. |
-| `session-close` | **you only**: `/session-close` | Account for every changed file, run the checks, update state, write the handoff, propose a commit. |
-| `sync-template` | **you only**: `/sync-template` | Pull harness improvements from the upstream template, touching no scientific content. |
-| `parallel-safety` | Claude (auto) | What parallelises safely and what must not; the partition rules before dispatching concurrent agents. |
+| `init-paper` | **you only**: `/init-paper` | One-time initialization of this template for a new paper. The skill deletes itself when it is done. |
+| `source-audit` | Claude (auto) or `/source-audit` | Reconstruct what the source states, what its equations imply and where it is inconsistent. Do this before any code. |
+| `derivation-workflow` | Claude (auto) | The cycle derive, check, write up, commit, export. It has the print-before-assert discipline and the checklist for each stage. |
+| `solver-workflow` | Claude (auto) | Build and audit a production solver from generated coefficients, in the order that makes each step cheap. |
+| `toolchain` | Claude (auto) or `/toolchain` | Run Mathematica, Julia and Python through the common wrapper. It covers environments, precision tiers and the codegen hand-off. |
+| `literature-audit` | Claude (auto) | Audit primary sources and conventions. It covers benchmark provenance and how to read equations from a source correctly. |
+| `verification` | Claude (auto) | Checklists for independent audit, and the failure taxonomy. The read-only `verification` agent uses it. |
+| `external-code` | Claude (auto) | All code that this project did not write: provenance, licence, attribution and intake from the drop folder of the PI. |
+| `report-writing` | `paper-writer` (auto) | Write a report as a paper that a researcher can follow by hand. Put provenance in an appendix, not after each equation. |
+| `checkpoint` | **you only**: `/checkpoint` | Safe save during a session: account for the changes, run the checks, refresh the handoff and propose a commit of coherent work. |
+| `session-close` | **you only**: `/session-close` | Account for each changed file, run the checks, update the state, write the handoff and propose a commit. |
+| `sync-template` | **you only**: `/sync-template` | Pull harness improvements from the upstream template. Do not touch scientific content. |
+| `parallel-safety` | Claude (auto) | What is safe to run in parallel and what is not. The partition rules to apply before you dispatch concurrent agents. |
 
 ## Conventions
 
-- A skill stays under about 100 lines. Detail that is only sometimes needed goes in
-  `reference/`, which costs nothing until it is read.
-- Trigger phrases live in `when_to_use`. After `/init-paper`, these carry **this project's**
-  vocabulary — a skill that never fires is usually a skill whose trigger phrases were left
-  generic.
-- Shared executable code lives in `symbolic/common/` and `src/`, never inside a skill, so
-  that scripts can load it directly.
+- Keep a skill under about 100 lines. Put detail that you need only sometimes in `reference/`.
+  It costs nothing until someone reads it.
+- Put trigger phrases in `when_to_use`. After `/init-paper`, these phrases carry the
+  vocabulary of **this project**. A skill that never starts usually has generic trigger
+  phrases.
+- Put shared executable code in `symbolic/common/` and `src/`. Never put it inside a skill.
+  Then scripts can load it directly.
 - A skill describes *how to do a category of work*. A rule (`.claude/rules/`) states a
-  constraint on a path. A hook enforces something regardless of what the model decides.
-  If an instruction keeps being missed, it is in the wrong one of those three
-  (`docs/GUIDE.md` §6).
+  constraint on a path. A hook enforces a requirement whatever the model decides. If people
+  keep missing an instruction, it is in the wrong one of these three (`docs/GUIDE.md` §6).
