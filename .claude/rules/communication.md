@@ -22,8 +22,10 @@ the enforcement.
 
 - **Executable code.** Do not change code only to enforce this rule. This includes identifiers,
   APIs, file names, command lines and configuration keys.
-- **Mathematical notation** and required technical terms. Use the same term every time (for
-  example "ownership registry").
+- **Mathematical notation** and technical terms. STE allows technical names and technical verbs
+  that its dictionary does not contain. Use each term of the project and of the field exactly,
+  with one meaning, and define it at its first use. Do not replace a term with a simpler word if
+  the simpler word is less exact (for example "ownership registry" or "residual").
 - **Quoted text.** Quote papers, error messages, tool output and the prompts of the PI exactly.
 - **Text that a tool reads as data.** Examples: the trigger phrases in `when_to_use`, template
   placeholders and the fixed lines of a hook protocol.

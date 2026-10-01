@@ -27,7 +27,7 @@ is the trade, and the project makes it deliberately.
 | `verification` | `sonnet` | The work follows a checklist with a fixed failure taxonomy. Use `opus` for an audit that must derive again and not only check again. |
 | `status-reporter` | `sonnet` | The work summarises authoritative files. It has no mathematics. |
 | `explore` | `haiku` | Lookup that locates and quotes. It does not synthesize. |
-| `session-close` | `haiku` | The work follows a template over read-only git and make commands. |
+| `session-close` | `sonnet` | It accounts for each changed file, decides what counts as evidence for a state change, and writes the records. The commands are read-only and a checklist guides the work, but the accounting needs judgement. `haiku` is too weak for it. Raise it to `opus` for a close that follows a long, interrupted session. |
 | Main session | project default | It orchestrates, prompts and reviews. It does not do the hard algebra or the independent audits. |
 
 To raise the model of one session, use `/model` when a task needs it. This does not change the

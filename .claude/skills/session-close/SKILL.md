@@ -2,7 +2,7 @@
 name: session-close
 description: End-of-session procedure. Account for each changed file, run the checks, update STATUS and the reproduction matrix, and record decisions and open issues. Propose a commit. Never make the commit.
 disable-model-invocation: true
-model: haiku
+model: sonnet
 allowed-tools: Bash(make check) Bash(make test) Bash(make codegen-check *) Bash(git status) Bash(git status *) Bash(git diff *) Bash(git log *) Read Edit Write
 ---
 

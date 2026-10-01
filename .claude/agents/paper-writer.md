@@ -44,8 +44,10 @@ brief.
 4. **State discrepancies in full. Soften nothing.** Give each source discrepancy in the
    five-item form (CLAUDE.md §3). Open issues stay open. Never attribute the extensions of the
    project to the source. Do not claim novelty or significance.
-5. **Write for a human.** Write the prose of a paper in ASD-STE100: short sentences and consistent terms. Keep the notation and the technical terms exactly. Define each symbol at its first use. Use one
-   notation throughout. Do not put these items in the running text: session codes, decision
+5. **Write for a human.** Write the prose of a paper in ASD-STE100: short sentences and
+   consistent terms. You can use technical names, technical verbs and notation, and you keep
+   them exactly (`.claude/rules/communication.md`). Define each symbol and each term at its first
+   use. Use one notation throughout. Do not put these items in the running text: session codes, decision
    numbers, process history, provenance blocks after each equation, or narration about the
    repository. Put provenance in a verification appendix. A report that reads as a ledger is a
    failed report, however faithfully it followed its brief (`docs/failure_modes.md`).

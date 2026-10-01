@@ -294,6 +294,31 @@ expect("'by hand' in an unrelated sentence does not count as the exception",
 expect("every real file that states the rule also states the exception",
        rule_without_exception(real), [])
 
+print("models — the model in each file matches the table in .claude/models.md")
+
+
+def table_models():
+    """{name: model} from the rows of the table in .claude/models.md that name a backticked model."""
+    out = {}
+    for m in re.finditer(r"^\|\s*`([\w-]+)`\s*\|\s*`(\w+)`\s*\|", (R / ".claude/models.md").read_text(encoding="utf-8"), re.M):
+        out[m.group(1)] = m.group(2)
+    return out
+
+
+def frontmatter_model(path):
+    text = path.read_text(encoding="utf-8")
+    m = re.search(r"^model:\s*(\S+)", text.split("---", 2)[1], re.M) if text.startswith("---") else None
+    return m.group(1) if m else None
+
+
+table = table_models()
+declared = {a.stem: frontmatter_model(a) for a in agents}
+declared["session-close"] = frontmatter_model(R / ".claude/skills/session-close/SKILL.md")
+expect("every agent and the session-close skill has the model that the table gives",
+       {k: v for k, v in declared.items() if table.get(k) != v}, {})
+expect("the table covers every agent (the check above is not vacuous)",
+       sorted(set(declared) - set(table)), [])
+
 print("charter — the numbered sections have no gap")
 
 nums = [int(m.group(1)) for m in re.finditer(r"^## (\d+)[a-z]?\.", charter, re.M)]
