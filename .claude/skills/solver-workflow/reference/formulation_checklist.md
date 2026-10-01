@@ -1,53 +1,58 @@
 # Formulation checklist — before any solver code exists
 
-Answer every question here, in the derivation and verified by a stage script, before writing
-the first line of the solver. Each unanswered question becomes a bug that is indistinguishable
-from a discretization problem later.
+Answer each question here, in the derivation, verified by a stage script, before you write the
+first line of the solver. Each question that you leave open becomes a bug later. You cannot
+distinguish that bug from a discretization problem.
 
 ## The problem
 
-- [ ] What exactly is the unknown, and what is the parameter being solved for?
-- [ ] What equation, in what variable, on what domain? Cite the derivation stage.
-- [ ] Which of the source's equations is this, or what extension of it? (`Kind:`)
+- [ ] What exactly is the unknown? What is the parameter that you solve for?
+- [ ] Which equation, in which variable, on which domain? Cite the derivation stage.
+- [ ] Which equation of the source is this, or which extension of it? (`Kind:`)
 
 ## Singular points and endpoints
 
-- [ ] Every singular point of the domain, located and classified.
-- [ ] The exponents/behaviours at each one, **derived**, not assumed and not generalized from
-      another case by substituting a symbol.
-- [ ] Which behaviour at each endpoint is the physical one, and by what argument.
-- [ ] The factors pulled out to regularize the problem, and what remains after they are.
-- [ ] A check that the remaining function really is regular there.
+- [ ] You located and classified each singular point of the domain.
+- [ ] You **derived** the exponents or behaviours at each singular point. You did not assume
+      them. You did not generalize them from another case by substitution of a symbol.
+- [ ] You know which behaviour at each endpoint is the physical one, and you have the argument.
+- [ ] You know the factors that you pull out to regularize the problem, and what remains after
+      you do.
+- [ ] A check shows that the remaining function is regular there.
 
 ## Domain and discretization
 
-- [ ] The map from the physical domain to the computational one, and why this map.
-- [ ] Where the map concentrates resolution, and whether that is where the solution varies.
-- [ ] The discretization, and what its convergence rate should be for this smoothness.
-- [ ] How boundary conditions are imposed: by construction (factored out) or by row
-      replacement. If rows are replaced, which rows and what that does to the spectrum.
+- [ ] You have the map from the physical domain to the computational domain, and the reason for
+      this map.
+- [ ] You know where the map concentrates resolution, and if the solution varies there.
+- [ ] You have the discretization, and the convergence rate that you expect for this
+      smoothness.
+- [ ] You know how the discretization imposes the boundary conditions: by construction (factored
+      out) or by row replacement. If it replaces rows, you know which rows and what this does to
+      the spectrum.
 
 ## Structure in the unknown parameter
 
-- [ ] How the parameter enters: linearly, polynomially of degree p, transcendentally?
-- [ ] If polynomially: p, read from the generated coefficients rather than assumed.
-- [ ] How the problem is solved in that structure, and what the solution method adds to the
-      solution set that the original problem does not contain.
-- [ ] Expected matrix or system sizes, estimated before assembling anything.
+- [ ] How does the parameter enter? Linearly, polynomially of degree p, or transcendentally?
+- [ ] If it enters polynomially: you read p from the generated coefficients. You did not assume
+      it.
+- [ ] You know how to solve the problem in that structure. You know what the solution method
+      adds to the solution set that the original problem does not contain.
+- [ ] You estimated the sizes of the matrices or systems before you assembled anything.
 
 ## Acceptance
 
-- [ ] The exact-answer problem that will test the full chain.
-- [ ] The residual definition, in the **original** problem, and its norm.
-- [ ] The resolutions and precisions each result will be confirmed at.
-- [ ] The independent benchmark, its method, and the convention conversion in full.
-- [ ] The diagnostics that distinguish a real result from a solver artefact.
-- [ ] What the record will contain (`docs/validation_protocol.md` §12).
+- [ ] You have the problem with an exact answer that tests the full chain.
+- [ ] You defined the residual in the **original** problem, and its norm.
+- [ ] You chose the resolutions and precisions at which you confirm each result.
+- [ ] You have the independent benchmark, its method, and the full convention conversion.
+- [ ] You have the diagnostics that distinguish a real result from a solver artefact.
+- [ ] You know what the record contains (`docs/validation_protocol.md` §12).
 
-## Red flags in a formulation
+## Warning signs in a formulation
 
-- An endpoint exponent obtained by pattern-matching another case rather than derived.
-- A boundary condition chosen because it makes the solver converge.
-- A factorization that removes a singularity without a check that it did.
+- You obtained an endpoint exponent by pattern-matching another case. You did not derive it.
+- You chose a boundary condition because it makes the solver converge.
+- A factorization removes a singularity, and no check shows that it did.
 - "We will filter the spurious ones by eye."
-- A degree in the unknown parameter assumed rather than read off the coefficients.
+- You assumed a degree in the unknown parameter. You did not read it from the coefficients.

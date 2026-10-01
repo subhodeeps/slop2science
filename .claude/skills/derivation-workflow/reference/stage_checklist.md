@@ -1,54 +1,55 @@
-# Per-stage checklist
+# Checklist for each stage
 
-Work through this before calling a derivation stage done. It is deliberately mechanical: the
-failures it catches are the ones that look fine at the time.
+Work through this checklist before you call a derivation stage done. It is mechanical on
+purpose. The failures that it finds look fine at the time.
 
-## Before writing the script
+## Before you write the script
 
-- [ ] Does this stage do exactly one thing? If the name needs "and", split it.
-- [ ] Is the owning tool for this topic declared in `docs/toolchain.md`?
-- [ ] Which previous stage's output does it load? Does that output exist and is it committed?
-- [ ] Is it REPRODUCTION, EXTENSION, or CROSS-CHECK, and judged against what exactly?
+- [ ] Does this stage do exactly one thing? If the name needs "and", split the stage.
+- [ ] Does `docs/toolchain.md` declare the owning tool for this topic?
+- [ ] Which output of a previous stage does the stage load? Does that output exist? Did someone
+      commit it?
+- [ ] Is the stage REPRODUCTION, EXTENSION or CROSS-CHECK? What exactly judges it?
 - [ ] Is there a prompt record for this session (`docs/prompts/<ID>_<topic>.md`)?
 
-## While writing it
+## While you write it
 
-- [ ] Header complete: Topic / Stage / Owner tool / Kind / Judged against / Inputs / Outputs.
-- [ ] Shared helpers loaded from `symbolic/common/`, not copy-pasted.
-- [ ] Every non-trivial step **prints** its result, and then checks it.
-- [ ] Every check has a short, stable, quoted label that a write-up can cite.
-- [ ] Assumptions stated where they are used, not only at the top.
-- [ ] Any simplification that could divide by something records the assumption that it is
-      nonzero — and the stage checks it where the check is cheap.
-- [ ] The script exits non-zero if any check fails.
-- [ ] Results persisted as text under `out/`, not a binary format.
+- [ ] The header is complete: Topic, Stage, Owner tool, Kind, Judged against, Inputs, Outputs.
+- [ ] The script loads shared helpers from `symbolic/common/`. It does not use a copy.
+- [ ] Each non-trivial step **prints** its result and then checks it.
+- [ ] Each check has a short, stable, quoted label that a write-up can cite.
+- [ ] The script states assumptions where it uses them, not only at the top.
+- [ ] A simplification that can divide by something records the assumption that the divisor is
+      not zero. The stage checks the assumption where the check is cheap.
+- [ ] The script exits with a non-zero code if any check fails.
+- [ ] The script saves results as text under `out/`. It does not use a binary format.
 
-## Checks the stage should contain
+## Checks that the stage must contain
 
-- [ ] Back-substitution residual, identically zero.
+- [ ] A back-substitution residual that is identically zero.
 - [ ] A limiting or special case with an independently known answer.
-- [ ] Dimensional or scaling consistency.
-- [ ] An invariant not used in the derivation.
-- [ ] For a reproduction: coefficient-by-coefficient comparison against the source's
-      displayed equation. Not a visual comparison, not "same up to notation".
+- [ ] A check of dimensions or scaling.
+- [ ] An invariant that the derivation did not use.
+- [ ] For a reproduction: a comparison with the displayed equation of the source, coefficient by
+      coefficient. A visual comparison is not enough. "The same up to notation" is not enough.
 - [ ] For an extension: the reduction to the already-verified case, run as a check.
 
-## After running it
+## After you run it
 
-- [ ] Every check passed, and the printed output was actually read — not only the exit code.
-- [ ] Check count recorded, so a later rerun can be compared against it.
-- [ ] Write-up written, citing script and label at every displayed equation.
-- [ ] Any discrepancy with the source recorded in the five-point form.
-- [ ] `stages.txt` updated; `make stages TOPIC=<topic>` reruns the whole topic cleanly from a
+- [ ] Each check passed. Someone read the printed output. The exit code alone is not enough.
+- [ ] The project recorded the check count. Then a later rerun can compare against it.
+- [ ] A write-up exists. It cites the script and the label at each displayed equation.
+- [ ] The five-item form records each discrepancy with the source.
+- [ ] `stages.txt` is current. `make stages TOPIC=<topic>` runs the whole topic cleanly from a
       fresh checkout.
-- [ ] `make check` clean (references and evidence labels resolve).
-- [ ] Script and write-up committed together.
-- [ ] `docs/STATUS.md` and `docs/reproduction_and_extension.md` updated with evidence.
+- [ ] `make check` is clean (references and evidence labels resolve).
+- [ ] You committed the script and the write-up together.
+- [ ] `docs/STATUS.md` and `docs/reproduction_and_extension.md` have the update, with evidence.
 
-## Smells
+## Warning signs
 
-- A check that passes the first time you write it, on a step you expected to be hard.
-- A tolerance that had to be widened to get a pass.
-- A stage that needed its own earlier output edited to work.
-- "It matches the paper" with no coefficient-level comparison.
-- A write-up whose equation you cannot point to a labelled check for.
+- A check passes the first time you write it, on a step that you expected to be hard.
+- You had to widen a tolerance to get a pass.
+- A stage needed an edit of its own earlier output to work.
+- "It matches the paper", with no comparison at the level of the coefficients.
+- A write-up has an equation, and you cannot point to a labelled check for it.

@@ -1,18 +1,19 @@
 # Structured proofs — the write-up format for a non-trivial argument
 
-From Lamport's structured proof style, as recommended by *How to Train Your Slop Cannon*
+This format comes from the structured proof style of Lamport. *How to Train Your Slop Cannon*
+recommends it
 ([Open-Science-Ledger](https://github.com/Open-Science-Ledger/how-to-train-your-slop-cannon)).
 
-Prose hides gaps. A paragraph that says "and therefore, after some algebra, it follows that"
-is unfalsifiable at the level of the individual step, and the step it is hiding is exactly
-the one that is wrong. A numbered hierarchy makes each step small, independently checkable,
-and explicitly linked to what it depends on — and makes a gap **structurally visible** rather
-than something a reader has to notice.
+Prose hides gaps. A paragraph that says "and therefore, after some algebra, it follows that" is
+not falsifiable at the level of a single step. The step that it hides is exactly the step that
+is wrong. A numbered hierarchy makes each step small. A reader can check each step
+independently. The hierarchy links each step explicitly to what it depends on. It makes a gap
+**visible in the structure**. The reader does not have to notice the gap.
 
 ## The form
 
-Every step has a hierarchical ID and a statement, and is justified in exactly one of three
-ways:
+Each step has a hierarchical ID and a statement. Exactly one of three justifications supports
+each step:
 
 ```
 1. <statement>
@@ -38,31 +39,32 @@ ways:
 Q.E.D. by 2, 3, 4.
 ```
 
-- **`ASSUME`** opens a hypothesis scope; the matching `Q.E.D.` closes it.
-- **`CASE`** introduces branches, and the write-up must state why they are exhaustive.
-- **A step with no children and no justification is an exposed gap.** That is the format
-  working as intended: name it, do not bury it. Mark it `GAP:` with what would close it.
-- Where a step is established by a script, its justification is the evidence tag — so the
-  hierarchy and the project's provenance chain are the same object.
+- **`ASSUME`** opens the scope of a hypothesis. The matching `Q.E.D.` closes it.
+- **`CASE`** introduces branches. The write-up must state why the branches are exhaustive.
+- **A step with no children and no justification is an exposed gap.** The format works as
+  intended here. Name the gap. Do not bury it. Mark it `GAP:` with what would close it.
+- If a script establishes a step, the justification is the evidence tag. Then the hierarchy and
+  the chain of provenance of the project are the same object.
 
 ## When to use it
 
-Use it for an argument that is not a mechanical computation: a uniqueness or exhaustiveness
-claim, a limiting argument, a gauge or regularity argument, anything where a reviewer would
-ask "why does that follow?".
+Use it for an argument that is not a mechanical computation. Examples: a claim of uniqueness or
+exhaustiveness, a limiting argument, a gauge or regularity argument, and anything where a
+reviewer asks "why does that follow?".
 
-Do not use it for algebra a script verifies coefficient by coefficient. There, the script
-*is* the proof and the write-up cites its check label — wrapping that in a proof hierarchy
-adds ceremony and no rigour.
+Do not use it for algebra that a script verifies coefficient by coefficient. In that case the
+script *is* the proof. The write-up cites its check label. A proof hierarchy around it adds
+ceremony and no rigour.
 
 ## Why it pays off
 
-- **Verification targets a step, not a document.** The adversarial protocol
-  (`.claude/skills/verification/reference/adversarial_protocol.md`) hands a verifier the
-  numbered artifact and gets back per-step verdicts. That is only possible if the steps exist.
-- **A failure is localized.** When a step fails, expand it into children and re-check the
-  children. Decompose until each block is small enough to check reliably, and the error rate
-  of the whole argument falls with it — the same reason one derivation stage per script is
+- **Verification targets a step. It does not target a document.** The adversarial protocol
+  (`.claude/skills/verification/reference/adversarial_protocol.md`) gives a verifier the
+  numbered artifact and receives a verdict for each step. This is possible only if the steps
+  exist.
+- **A failure is local.** If a step fails, expand it into children and check the children
+  again. Decompose until each block is small enough to check reliably. Then the error rate of
+  the whole argument falls. This is the same reason why one derivation stage for each script is
   the rule.
-- **The dependency structure is explicit.** "By 2.1 and 3" says what a later change would
-  break. Prose does not.
+- **The structure of the dependencies is explicit.** "By 2.1 and 3" states what a later change
+  breaks. Prose does not state it.
