@@ -159,9 +159,12 @@ Other repositories contributed parts:
   — reproducible-research practice as context engineering. The template follows her
   caveat: the researcher stays responsible for the judgements that these artifacts contain.
 
-> *"We were picking apart a problem in linguistic history … I was powerfully gripped by the
-> vision of transitoriness … Every transition from major to minor in a sonata, every
-> transformation of a myth or a religious cult … nothing but a direct route into the interior of
-> the cosmic mystery, where in the alternation between inhaling and exhaling, between heaven and
-> earth, between Yin and Yang, holiness is forever being created."*
-> — Hermann Hesse, *The Glass Bead Game*
+> *"I was powerfully gripped by the vision of transitoriness … [E]very symbol and combination of
+> symbols led … into the center, the mystery and innermost heart of the world … Every transition
+> from major to minor in a sonata, every transformation of a myth or a religious cult … nothing
+> but a direct route into the interior of the cosmic mystery, where in the alternation between
+> inhaling and exhaling, between heaven and earth, between Yin and Yang, holiness is forever
+> being created."*
+> — Hermann Hesse, *The Glass Bead Game* (*Das Glasperlenspiel*, 1943), chapter 3, "Years of
+> Freedom". Translated by Richard and Clara Winston (© 1969 Holt, Rinehart and Winston). Picador
+> edition, ISBN 0-312-27849-7; first eBook edition, November 2012 (eISBN 9781466835023).
