@@ -7,41 +7,45 @@ paths:
 
 # Sources and benchmark data — rules
 
-- `papers/**` is **read-only** and hook-guarded, except the curated logs
-  (`papers/sources.yaml`, the READMEs). Findings go to `docs/literature/<topic>.md`, never
-  into the sources directory.
-- Every source is registered in `papers/sources.yaml` with every identifier that exists for
-  it, its role (primary / benchmark / method-reference / background), and the exact version
-  consulted. A source used but unregistered is a provenance defect.
-- PDFs are gitignored by default; the registry is committed. Whether to commit a publisher's
-  PDF is the PI's call (`TEMPLATE_GUIDE.md` §4).
-- Sources the PI drops in `papers/_drop/` are transient: register, move onward, and empty the
-  folder. The session-start hook reports a non-empty drop folder.
-- A source brought in from a local library (`scripts/library.py import`) is registered
-  `verified: false`. Catalogue metadata can be wrong, so it stays unverified until its
-  identifiers and file have been checked against the document's own first page.
-  `make check-docs` counts the unverified ones.
+- `papers/**` is **read-only**, and a hook guards it. The curated logs are the exception
+  (`papers/sources.yaml` and the READMEs). Put findings in `docs/literature/<topic>.md`. Never
+  put them in the sources directory.
+- Register each source in `papers/sources.yaml`. Give each identifier that exists for the source,
+  its role (primary, benchmark, method-reference or background) and the exact version that you
+  consulted. A source that the project uses and does not register is a provenance defect.
+- Git ignores PDFs by default. Commit the registry. The PI decides whether to commit the PDF of a
+  publisher (`TEMPLATE_GUIDE.md` §4).
+- Sources that the PI drops in `papers/_drop/` are transient. Register each one, move it onward
+  and empty the folder. The session-start hook reports a drop folder that is not empty.
+- Register a source from a local library (`scripts/library.py import`) with `verified: false`.
+  Catalogue metadata can be wrong. The entry stays unverified until someone checks its
+  identifiers and its file against the first page of the document. `make check-docs` counts the
+  unverified entries.
 
-## Reading a source
+## Read a source
 
-- **Read from the best form that exists: the `.tex` source first, then a shipped data or
-  figure file, then the rendered page image, and never the extracted text layer** for
-  anything with a fraction, stacked indices or columns. Say which you used. The order, and
-  what the page is still for when a source exists, is stated once in
-  `.claude/skills/literature-audit/reference/corpus.md`.
-- Record the equation or table number and the version every time a number or equation enters
-  this project. "As given in the paper" is not a citation.
-- Quote the source's own words for anything contested, rather than paraphrasing it into the
-  project's vocabulary — the paraphrase is where a discrepancy gets smoothed away.
+- **Read the best form that exists.** Use the `.tex` source first. Then use a shipped data file
+  or figure file. Then use the rendered page image. **Never use the extracted text layer** for
+  anything with a fraction, stacked indices or columns. State which form you used.
+  `.claude/skills/literature-audit/reference/corpus.md` states the order one time. It also
+  states what the page is still for when a source exists.
+- Each time a number or an equation enters this project, record the equation or table number and
+  the version. "As given in the paper" is not a citation.
+- For a contested item, quote the own words of the source. Do not paraphrase them into the
+  vocabulary of the project. A paraphrase is where a discrepancy disappears.
 
 ## Benchmark data
 
-- Benchmark tables go to `validation/benchmarks/<source><year>_<what>.csv` with a provenance
-  header naming: the source and its identifier, the table/figure it came from, **the method
-  the numbers were actually produced by** (read the source's own caption — never infer it
-  from a previous header or the source's reputation), the units and conventions as printed,
-  and the conversion needed to compare with this project.
-- A provenance header that cites a column must cite one of that file's own columns
+- Put benchmark tables in `validation/benchmarks/<source><year>_<what>.csv`. Start each file
+  with a provenance header. The header names these items:
+  - the source and its identifier
+  - the table or figure that the numbers came from
+  - **the method that produced the numbers.** Read the caption of the source. Never infer the
+    method from an earlier header or from the reputation of the source.
+  - the units and conventions as printed
+  - the conversion that is necessary to compare with this project
+- If a provenance header cites a column, it must cite a column of its own file
   (`make check-docs` enforces this).
-- Same-method agreement and independent-method agreement are different evidence. Label which
-  one a benchmark provides; a same-method check cannot validate the method.
+- Agreement with the same method and agreement with an independent method are different kinds
+  of evidence. Label which one a benchmark gives. A same-method check cannot validate the
+  method.
