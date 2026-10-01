@@ -142,6 +142,13 @@ that paper. Then I used Claude to add ideas from the slop cannon paper:
 - the ladder of rigour
 - the model failure modes in `docs/failure_modes/model.md`
 
+I also had a personal reason. I rarely meet people who work on the problems that interest me.
+Two sources changed how I think about this. Scott Dodelson describes how AI agents now do many
+tasks of a graduate student ([Physics 19, 74](https://physics.aps.org/articles/v19/74)).
+Matthew Schwartz did a full physics calculation with Claude Code, and the result impressed
+me ([post](https://www.anthropic.com/research/vibe-physics),
+[arXiv:2601.02484](https://arxiv.org/abs/2601.02484)).
+
 Other repositories contributed parts:
 
 - [benning-lab/agentic-starter](https://github.com/benning-lab/agentic-starter) — the handoff
