@@ -43,23 +43,44 @@ for a result. Nothing logs it, nothing serialises it, and it leaves no record of
 
 ## Notes for each tool
 
-**Mathematica.** Use plain-text `.wls`. Never use notebooks. Notebooks cannot run here, and they
-are for the own exploration of the PI. Put shared helpers in `symbolic/common/*.wl`, loaded by
-path from `PROJECT_ROOT`. Avoid binary formats that depend on a version. Persist with text
-output. Each kernel launch is slow. Batch the work of a stage into one script. Do not use many
-calls.
+**Mathematica.**
 
-**Julia.** The environment is `src/julia` (`Project.toml` and `Manifest.toml`, **both
-committed**). The manifest pins the exact environment behind each result. `make setup`
-instantiates it. Write numerics generic in `T<:AbstractFloat`. Then the same code runs in
-working precision, double-double precision and arbitrary precision. Each call pays the cost of
-start-up and compilation. Batch the work into one script.
+- Use plain-text `.wls`. Never use notebooks as the record. Notebooks cannot run here. They are
+  for the own exploration of the PI, and they live in `notes/`.
+- Run each script with `scripts/run`. If `wolframscript` is not on `PATH`, set
+  `WOLFRAMSCRIPT=/path/to/wolframscript` in the shell or in the `env` of
+  `.claude/settings.local.json`.
+- Put shared helpers in `symbolic/common/*.wl`. Load them by path from `PROJECT_ROOT`. Run their
+  self-tests before you rely on them.
+- Avoid binary formats that depend on a version. Persist results as text.
+- Each kernel launch is slow. Batch the work of a stage into one script.
 
-**Python.** The environment is `src/python`, built with uv (`pyproject.toml` and `uv.lock`
-committed, `.venv` not committed). `make setup` runs `uv sync`. `scripts/run x.py` runs inside
-the environment. Use `mpmath` or `gmpy2` for generic precision where you need extended
-precision. State where a computation silently drops to machine precision. A NumPy call in the
-middle of an `mpmath` chain is the usual cause, and the output does not show it.
+**Julia.**
+
+- The environment is `src/julia` (`Project.toml` and `Manifest.toml`, **both committed**). The
+  manifest pins the exact environment behind each result. `make setup` instantiates it.
+- Write numerics generic in `T<:AbstractFloat`. Then the same code runs in working precision,
+  double-double precision and arbitrary precision.
+- Each call pays the cost of start-up and compilation. Batch the work into one script.
+
+**Python.**
+
+- The environment is `src/python`, managed with [uv](https://docs.astral.sh/uv/). Commit
+  `pyproject.toml` and `uv.lock`. Do not commit `src/python/.venv/`. `make setup` runs
+  `uv sync`. To add a dependency, run `uv add --project src/python <pkg>`, and record the reason
+  in `docs/decision_log.md`.
+- `scripts/run x.py` runs inside the environment (`uv run --project src/python`). Then a result
+  does not depend on which interpreter is first on `PATH`. `PYTHON=...` overrides this
+  explicitly. Without uv, a project script fails loudly.
+- Use `mpmath` or `gmpy2` for extended precision. State where a computation silently drops to
+  machine precision. A NumPy call in the middle of an `mpmath` chain is the usual cause, and the
+  output does not show it.
+- Python also runs the checkers and hooks of this repository (`scripts/check_docs.py`,
+  `.claude/hooks/*.py`). They are infrastructure and are outside the ownership registry.
+
+Julia and Python each have an environment only if the project uses the language. If it does not,
+delete `src/julia` or `src/python`. `docs/toolchain.md` states which libraries each environment
+carries.
 
 ## Hand-off between tools
 

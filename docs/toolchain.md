@@ -123,46 +123,11 @@ These rules hold for every route, whatever the PI chooses:
 
 To add a fourth tool to the pipeline is a PI decision. Log it in `docs/decision_log.md`.
 
-## Mathematica
+## Notes for each tool
 
-- Invocation: always use `scripts/run <script.wls>`. It exports `PROJECT_ROOT`, runs from the
-  repository root, and serialises kernels with `flock`. Licences commonly limit concurrent
-  kernels. This matters as soon as two subagents run at the same time. The wrapper applies
-  `SYMBOLIC_TIMEOUT` and writes a log.
-- If `wolframscript` is not on `PATH`, set `WOLFRAMSCRIPT=/path/to/wolframscript` in the shell or
-  in the `env` of `.claude/settings.local.json`.
-- Shared code: `symbolic/common/*.wl`, loaded by path from `PROJECT_ROOT`. Run its self-tests
-  before you rely on it.
-- **Scripts are the record. Notebooks are not the record.** Notebooks cannot run here. They are
-  for the own exploration of the PI, and they live in `notes/`.
-- Avoid binary formats that depend on a version. Persist results as text.
-
-## Julia
-
-- Environment: `src/julia` (`Project.toml` **and** `Manifest.toml`, both committed). The manifest
-  pins the exact environment behind each result. `make setup` instantiates it.
-- Write numerics generic in `T<:AbstractFloat`. Then the same code runs in working precision,
-  double-double precision and arbitrary precision.
-- Each call pays the cost of start-up and compilation. Batch a task into one script. Do not use
-  many invocations.
-
-## Python
-
-- Environment: `src/python`, managed with [uv](https://docs.astral.sh/uv/). Commit
-  `pyproject.toml` and `uv.lock`. Do not commit the venv at `src/python/.venv/`. `make setup`
-  runs `uv sync`. To add a dependency, run `uv add --project src/python <pkg>`. This updates both
-  files. Record the reason in `docs/decision_log.md`.
-- `scripts/run <script>.py` runs inside that environment (`uv run --project src/python`). Then a
-  result does not depend on which interpreter is first on `PATH`. `PYTHON=...` overrides it
-  explicitly. Without uv, a project script fails loudly. It does not run in the wrong place.
-- As for Julia, the environment exists only if the project uses Python. If it does not, delete
-  `src/python`.
-- Libraries: see **Libraries** below.
-- Use `mpmath` or `gmpy2` for extended precision. **State where a chain silently drops to machine
-  precision.** A NumPy call in the middle of an `mpmath` computation is the usual cause. Nothing
-  in the output shows it.
-- Python also carries the own checkers and hooks of this repository (`scripts/check_docs.py`,
-  `.claude/hooks/*.py`). Those are infrastructure. They are outside the ownership registry.
+The `toolchain` skill owns the execution notes for Mathematica, Julia and Python. They cover
+invocation, environments, precision and how Python runs through `uv`. They load only when
+someone runs scientific code. `Libraries` below states which libraries each environment carries.
 
 ## Libraries
 
