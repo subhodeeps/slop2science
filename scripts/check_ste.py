@@ -56,13 +56,13 @@ for f in args:
             para += " " + line.strip()
             continue
         if para:
-            clean = re.sub(r"`[^`]*`", "X", re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", para))
+            clean = re.sub(r"\*+", "", re.sub(r"`[^`]*`", "X", re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", para)))
             for s in re.split(r"(?<=[.!?])\s+(?=[A-Z*\"“`(])", clean.strip()):
                 w = len(s.split())
                 if w > 25: hits.append((start, f"{w} words: {s[:70]}..."))
             para = ""
         if n != 10**9 and line.strip():  # list item: check as a sentence
-            clean = re.sub(r"`[^`]*`", "X", re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", line))
+            clean = re.sub(r"\*+", "", re.sub(r"`[^`]*`", "X", re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", line)))
             w = len(clean.split())
             if w > 25: hits.append((n, f"list item {w} words: {clean.strip()[:60]}..."))
     for n, line in prose(text):
