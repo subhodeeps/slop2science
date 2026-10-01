@@ -163,12 +163,14 @@ Other repositories contributed parts:
 ## Bugs and improvements
 
 If you use this template for research and find a bug or an improvement, file a bug report in this
-repository. Thank you for your help. Include these items:
+repository. Include these items:
 
 - the file or command with the problem
 - what happened
 - what you expected
 - the tool versions that you used (`make check-env` prints them)
+
+Thank you for your help.
 
 > *"I was powerfully gripped by the vision of transitoriness … [E]very symbol and combination of
 > symbols led … into the center, the mystery and innermost heart of the world … Every transition
