@@ -32,15 +32,16 @@ say no, the decision is final. The charter states this rule.
   record of how the project produced it.
 - Continuity between sessions. The project keeps the current status, a handoff note and the
   captured prompts. Guards protect the sources and the accepted results.
-- One plot style, `amore`, for every figure. Labels use LaTeX. Colours come from muted blue,
-  green and red palettes. Notes inside a plot use a monospace font. The `plotting` skill applies
+- One plot style, `amore`, for every figure. I made it for my own papers. Labels use LaTeX.
+  Colours come from muted palettes, chosen in pairs that work together. Notes inside a plot use a
+  monospace font. The `plotting` skill applies
   the style, and Claude looks at each rendered figure before it calls the figure done.
   `make check` fails if a plotting script does not use the style. `make plot-examples` makes
   these three figures again from `src/python/amore/examples.py`.
 
 <p align="center">
   <img src="docs/figures/amore_blue.png" width="32%" alt="Example figure in the blue palette">
-  <img src="docs/figures/amore_red.png" width="32%" alt="Example figure in the red palette">
+  <img src="docs/figures/amore_teal.png" width="32%" alt="Example figure in the teal, amber and plum palettes">
   <img src="docs/figures/amore_green.png" width="32%" alt="Example contour figure in the green palette">
 </p>
 
@@ -162,8 +163,8 @@ me ([post](https://www.anthropic.com/research/vibe-physics),
 
 Other repositories contributed parts:
 
-- [hosilva/physrev_mplstyle](https://github.com/hosilva/physrev_mplstyle) — the plot style is
-  inspired by its Physical Review style sheet.
+- [hosilva/physrev_mplstyle](https://github.com/hosilva/physrev_mplstyle) — its Physical Review
+  style sheet was a starting point for `amore`.
 
 - [benning-lab/agentic-starter](https://github.com/benning-lab/agentic-starter) — the handoff
   with its age, transcripts outside the repo, source formats over PDFs.

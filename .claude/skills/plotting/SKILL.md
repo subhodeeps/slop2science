@@ -22,27 +22,33 @@ The plot style `amore` is in `src/python/amore/`:
 
 1. Import `amore` and call `amore.use()` before you make a figure. Do not set the fonts, the
    frame width, the tick direction or the grid by hand. The style owns them.
-2. Take each colour from `amore.palette("blue")`, `amore.palette("green")` or
-   `amore.palette("red")`. Each palette has four tones:
+2. Take each colour from a palette: `amore.palette(name)` with `name` one of `blue`, `green`,
+   `red`, `teal`, `amber` or `plum`. Each palette has four tones:
    - `ink` for a reference or an exact curve
    - `main` for the computed result
    - `light` for a fill
    - `shade` for a background band
-3. For a contour plot or an image, use `amore.cmap(name)`. For a signed field, use
+3. Choose palettes that work together. For two quantities, use teal and amber
+   (split-complementary) or red and green (complementary). For three quantities, use teal,
+   amber and plum (close to a triad, about 120 degrees apart). Blue stands alone. Do not put two
+   neighbouring hues (blue and teal, for example) on two different quantities.
+4. For a contour plot or an image, use `amore.cmap(name)`. For a signed field, use
    `amore.diverging("red", "green")` with `vmin = -vmax`, so that zero is at the centre.
-4. Draw a line on top of a colour map (flow lines, guides) in `amore.OVERLAY` at
+5. Draw a line on top of a colour map (flow lines, guides) in `amore.OVERLAY` at
    `amore.OVERLAY_ALPHA`. This is a dark neutral grey. White vanishes on the light centre of a
    map. Black competes with the contour lines. A coloured line looks like a quantity.
-5. Use one palette for one family of figures. Then one quantity has one colour in the whole
+6. Use one palette for one family of figures. Then one quantity has one colour in the whole
    document.
-6. Write each axis label, legend entry and mathematical symbol in LaTeX. Write a text note
+7. Write each axis label, legend entry and mathematical symbol in LaTeX. Write a text note
    inside the axes in monospace. `amore.shade(ax, x0, x1, "label")` does this, or use
    `\texttt{...}`.
-7. Mark a region with `amore.shade()`. Show a detail with `amore.inset()`. Put a status line,
-   for example the figure that you reproduce, with `amore.tag()`.
-8. Save with `amore.save(fig, path)`. It writes a PDF for the paper and a PNG for review, side
-   by side.
-9. A script makes each figure from the records (CLAUDE.md §10). Never edit a figure by hand.
+8. Mark a region with `amore.shade()`. Show a detail with `amore.inset()`. Put a status line,
+   for example the figure that you reproduce, with `amore.tag(ax, text, loc)`. Choose the corner
+   where it hides no data.
+9. Save with `amore.save(fig, path)`. It writes a PDF for the paper and a PNG for review, side
+   by side. For figures that sit side by side, use `layout="constrained"` and
+   `exact_size=True`, so that each file has the same size.
+10. A script makes each figure from the records (CLAUDE.md §10). Never edit a figure by hand.
 
 ## Look at the figure before you call it done
 
