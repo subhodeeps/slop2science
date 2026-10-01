@@ -20,8 +20,16 @@ PASSIVE = r"\b(is|are|was|were|be|been|being)\s+(\w+ed|written|made|done|run|giv
 def prose(text):
     """Lines of running prose: not code, tables, headings, quotes, comments or indented blocks."""
     out, fence, comment = [], False, False
+    front = text.startswith("---\n")  # YAML frontmatter: check only description and when_to_use
     for n, line in enumerate(text.splitlines(), 1):
         st = line.strip()
+        if front:
+            if n > 1 and st == "---":
+                front = False
+            elif st.startswith(("description:", "when_to_use:")):
+                out.append((n, st.split(":", 1)[1].strip().strip("'\"")))
+                out.append((n, ""))
+            continue
         if st.startswith("```"):
             fence = not fence
             out.append((n, ""))  # a code block ends the paragraph before it
