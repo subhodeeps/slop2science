@@ -34,7 +34,8 @@ It interviews you. Then it writes these items:
   D-003).
 
 Then it deletes its own placeholder scaffolding. It prints a checklist of what only you can do:
-fetch the paper, decide open conventions and install tools.
+decide open conventions and install tools. You do not fetch or register the paper yourself. You
+give `/init-paper` an arXiv link, or you put the BibTeX entry and the PDF in `papers/_drop/`.
 
 If you run it again on an initialized project, it refuses. To change one answer, edit the file.
 

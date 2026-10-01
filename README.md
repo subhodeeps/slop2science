@@ -32,13 +32,19 @@ say no, the decision is final. The charter states this rule.
   record of how the project produced it.
 - Continuity between sessions. The project keeps the current status, a handoff note and the
   captured prompts. Guards protect the sources and the accepted results.
+- Simplified Technical English. All prose follows ASD-STE100: the documents, the code comments,
+  the commit messages and what Claude writes to you. A lint in `make check` enforces the
+  measurable rules.
 - One plot style, `amore`, for every figure. I developed it over the past few years for the
   figures in my own papers.
 
 <p align="center">
-  <img src="docs/figures/amore_blue.png" width="32%" alt="Example figure in the blue palette">
-  <img src="docs/figures/amore_teal.png" width="32%" alt="Example figure in the teal, amber and plum palettes">
-  <img src="docs/figures/amore_green.png" width="32%" alt="Example contour figure in the green palette">
+  <img src="docs/figures/amore_blue.png" width="49%" alt="Example figure in the blue palette">
+  <img src="docs/figures/amore_teal.png" width="49%" alt="Example figure in the teal, amber and plum palettes">
+</p>
+<p align="center">
+  <img src="docs/figures/amore_green.png" width="49%" alt="Example contour figure with the diverging red and green map">
+  <img src="docs/figures/amore_parula.png" width="49%" alt="Example density plot with contours in the fakeparulapastel map: the curvature invariant of a Kerr black hole near its ring singularity">
 </p>
 
 `docs/failure_modes.md` lists the failure that each feature prevents and the cost of each fix.
@@ -48,13 +54,18 @@ say no, the decision is final. The charter states this rule.
 ```bash
 git clone <this repo> my-paper-project
 cd my-paper-project && rm -rf .git && git init
-$EDITOR papers/sources.yaml        # register the paper
 ```
 
-Then run `/init-paper` in Claude Code. It asks you for these items:
+Then run `/init-paper` in Claude Code. For the paper, give it one of these:
+
+- an arXiv link. Claude fetches the LaTeX source, the PDF and the details of the paper.
+- a BibTeX entry and the PDF. Put both in `papers/_drop/` first. Claude checks the entry against
+  the PDF.
+
+In both cases Claude registers the paper. You do not edit `papers/sources.yaml`. `/init-paper`
+then asks you for these items:
 
 - the project name
-- the paper
 - what you want to establish
 - what counts as the new work
 - which tool owns which topic
@@ -71,57 +82,70 @@ make check-env   # what is installed here
 
 ## Tools and libraries
 
-I use Mathematica, Python and Julia. The template has a configuration for all three. It has
-one runner (`scripts/run`) for any of them. It has separate test and codegen paths.
+I use Mathematica, Python and Julia. The template has a configuration for all three.
 
-Julia and Python each get their own environment if you use them. Julia uses `Project.toml` and
-`Manifest.toml`. Python uses a virtual environment that [uv](https://docs.astral.sh/uv/)
-creates from `pyproject.toml` and `uv.lock`. A language that you do not use has no environment.
+- **One runner.** `scripts/run` runs a file in any of the three tools. Each tool has its own
+  test and codegen path.
+- **Environments.** Julia and Python each get their own environment if you use them. Julia uses
+  `Project.toml` and `Manifest.toml`. Python uses a virtual environment that
+  [uv](https://docs.astral.sh/uv/) creates from `pyproject.toml` and `uv.lock`. A language that
+  you do not use has no environment.
+- **Libraries.** `/init-paper` asks which libraries you need. It starts from a short default
+  list. For Python the list is numpy, scipy, mpmath, sympy and matplotlib. For Julia it is the
+  linear algebra, extended-precision and JSON packages. The project installs only the libraries
+  that you choose.
+- **One owner for each topic.** Any of the three tools can own any topic. If you do not choose,
+  the default profile applies. Mathematica does algebra, in plain `.wls` scripts. Julia does
+  numerics. Python does plotting and ML. `/init-paper` lets you change this. The registry in
+  `docs/toolchain.md` records each choice. With three capable tools, it is easy to derive one
+  equation twice, and each version can pass its own checks. Claude does not move work between
+  languages by itself.
+- **Sources.** The project prefers the arXiv LaTeX source to the PDF. The `.tex` file is what
+  the authors wrote. Text extraction from a PDF is a reconstruction. The tarball also contains
+  the figures and sometimes the data.
+- **Your reference library.** If you keep a Zotero or Calibre library, the project can search
+  it. It can import one item, with full metadata and BibTeX, into `papers/imported/`. The tool is
+  read-only and has no browse mode, because a large library fills the context of a session. It
+  marks each import unverified until a person compares it with the paper. It never reads your
+  notes and annotations.
 
-`/init-paper` asks which libraries you need. It starts from a short default list. For Python
-the list is numpy, scipy, mpmath, sympy and matplotlib. For Julia it is the linear algebra,
-extended-precision and JSON packages. The project installs only the libraries that you choose.
+  ```bash
+  scripts/py scripts/library.py search --author Chandrasekhar
+  scripts/py scripts/library.py import --zotero 101 --dry-run
+  ```
 
-Any of the three tools can own any topic. If you do not choose, the default profile applies.
-Mathematica does algebra, in plain `.wls` scripts. Julia does numerics. Python does plotting
-and ML. `/init-paper` lets you change this.
+- **Plots.** Figures use `amore` (`src/python/amore/`). Labels use LaTeX. Notes inside a plot
+  use a monospace font. A colour bar sits above the plot, outside it, and the plot keeps the same
+  size as a line plot. The `plotting` skill applies the style, and Claude looks at each
+  rendered figure before it calls the figure done. `make check` fails if a plotting script does
+  not use the style. `make plot-examples` makes the four figures under Features and the chart
+  below again, from `src/python/amore/examples.py`.
+- **Colours.** `amore` has eight palettes of four tones, 32 colours in total. It also has a
+  diverging red-to-green map and a pastel parula map, `fakeparulapastel`. The palettes go round
+  the colour wheel, and slate is a neutral for reference data. In each palette the tones step up
+  in lightness, from an ink for curves and labels to a shade for background bands. Tests check
+  each colour against measurable rules:
+  - the tones of a palette differ in lightness by a minimum step (CIELAB L*)
+  - each ink has a contrast of at least 7:1 on white, so it can label a curve
+  - no two palettes look alike (a minimum CIELAB colour difference)
+  - the `fakeparulapastel` map rises in lightness at every step
 
-Figures use `amore` (`src/python/amore/`). Labels use LaTeX. Colours come from muted palettes,
-chosen in pairs that work together. Notes inside a plot use a monospace font. The `plotting`
-skill applies the style, and Claude looks at each rendered figure before it calls the figure
-done. `make check` fails if a plotting script does not use the style. `make plot-examples` makes
-the three figures under Features again from `src/python/amore/examples.py`.
-
-The project writes down each choice. With three capable tools, it is easy to derive one
-equation twice. The result is two versions of one equation. Each version can pass its own
-checks. The registry in `docs/toolchain.md` records the owner of each topic. Claude does not
-move work between languages by itself.
-
-For sources, the project prefers the arXiv LaTeX source to the PDF. The `.tex` file is what the
-authors wrote. Text extraction from a PDF is a reconstruction. The tarball also contains the
-figures and sometimes the data.
-
-If you keep a Zotero or Calibre library, the project can search it. It can import one item,
-with full metadata and BibTeX, into `papers/imported/`:
-
-```bash
-scripts/py scripts/library.py search --author Chandrasekhar
-scripts/py scripts/library.py import --zotero 101 --dry-run
-```
-
-The tool is read-only. It only searches. It has no browse mode, because a large library fills
-the context of a session. The tool marks each import unverified until a person compares it with
-the paper. The tool never reads your notes and annotations.
+<p align="center">
+  <img src="docs/figures/amore_palettes.png" width="80%" alt="All 32 colours of the amore palettes, with their hex codes, lightness and colour maps">
+</p>
 
 ## Layout
 
     CLAUDE.md          the charter, loaded every session   docs/         state, protocol, records
-    handoff.md         note to the next session            papers/       sources (read-only)
+    handoff.md         note to the next session            papers/       sources; _drop/ for your files
     .claude/           agents, skills, rules, hooks        symbolic/     stage scripts, generated code
-    derivation/        the write-ups                       src/          production code, per language
+    derivation/        the write-ups                       src/          production code; amore plot style
     validation/        runs, records, benchmarks           tests/        unit and regression
+    data/              generated output                    figures/      figures, made by scripts
     reports/           the paper                           notes/        probes, open leads
-    code/              other people's code, filed          scripts/      wrappers and checks
+    code/              other people's code; _drop/, pi/    scripts/      wrappers and checks
+    Makefile           every command: make help            logs/         tool output; files not committed
+    TEMPLATE_GUIDE.md  why the template is built this way  .github/      CI: the repository checks on each push
 
 `docs/GUIDE.md` explains how the parts fit together. `docs/WORKFLOW.md` explains how to do a
 piece of work.
@@ -167,6 +191,8 @@ Other repositories contributed parts:
 
 - [hosilva/physrev_mplstyle](https://github.com/hosilva/physrev_mplstyle) — its Physical Review
   style sheet was a starting point for `amore`.
+- [BIDS/colormap](https://github.com/BIDS/colormap) — the "fake parula" values (CC0) behind the
+  pastel parula map of `amore`.
 
 - [benning-lab/agentic-starter](https://github.com/benning-lab/agentic-starter) — the handoff
   with its age, transcripts outside the repo, source formats over PDFs.
