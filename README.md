@@ -32,12 +32,8 @@ say no, the decision is final. The charter states this rule.
   record of how the project produced it.
 - Continuity between sessions. The project keeps the current status, a handoff note and the
   captured prompts. Guards protect the sources and the accepted results.
-- One plot style, `amore`, for every figure. I made it for my own papers. Labels use LaTeX.
-  Colours come from muted palettes, chosen in pairs that work together. Notes inside a plot use a
-  monospace font. The `plotting` skill applies
-  the style, and Claude looks at each rendered figure before it calls the figure done.
-  `make check` fails if a plotting script does not use the style. `make plot-examples` makes
-  these three figures again from `src/python/amore/examples.py`.
+- One plot style, `amore`, for every figure. I developed it over the past few years for the
+  figures in my own papers.
 
 <p align="center">
   <img src="docs/figures/amore_blue.png" width="32%" alt="Example figure in the blue palette">
@@ -89,6 +85,12 @@ extended-precision and JSON packages. The project installs only the libraries th
 Any of the three tools can own any topic. If you do not choose, the default profile applies.
 Mathematica does algebra, in plain `.wls` scripts. Julia does numerics. Python does plotting
 and ML. `/init-paper` lets you change this.
+
+Figures use `amore` (`src/python/amore/`). Labels use LaTeX. Colours come from muted palettes,
+chosen in pairs that work together. Notes inside a plot use a monospace font. The `plotting`
+skill applies the style, and Claude looks at each rendered figure before it calls the figure
+done. `make check` fails if a plotting script does not use the style. `make plot-examples` makes
+the three figures under Features again from `src/python/amore/examples.py`.
 
 The project writes down each choice. With three capable tools, it is easy to derive one
 equation twice. The result is two versions of one equation. Each version can pass its own
