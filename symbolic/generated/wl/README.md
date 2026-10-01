@@ -1,1 +1,3 @@
-# generated Wolfram code — machine-written, hook-blocked. See ../README.md
+# Generated Wolfram code
+
+A tool wrote this code. A hook blocks edits. See `../README.md`.

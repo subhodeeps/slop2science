@@ -1,1 +1,3 @@
-# generated Julia code — machine-written, hook-blocked. See ../README.md
+# Generated Julia code
+
+A tool wrote this code. A hook blocks edits. See `../README.md`.
