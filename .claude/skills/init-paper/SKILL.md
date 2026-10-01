@@ -29,6 +29,18 @@ placeholder with no answer silently becomes a permanent wrong default.
    (the reports and the README). Offer the wording as a choice: a name alone, or a name with an
    acknowledgement such as "(with help from Claude)". The PI decides the wording. Never take the
    name from `git config` or from the repository.
+1b. **Licence.** The section Copying of `README.md` states the present policy of the template.
+   The MIT licence covers all files. The CC BY 4.0 licence is an option for the documentation,
+   the reports, and the images (plots and figures). Offer three choices:
+   - **Adopt the policy** for the files of the project.
+   - **Choose another licence.** The PI supplies the licence text.
+   - **No licence yet.**
+
+   Also ask for the copyright holder (the legal name) and the year. Never take them from
+   `git config` or from the repository. Tell the PI to check if the institute or a funder has a
+   say in the licence. Claude does not decide this. **If the PI skips the question, apply "No
+   licence yet"**, and say so in the first lines of the init report. A licence is a grant in the
+   name of the PI. Claude never grants one that nobody chose.
 2. **Primary source.** This is the paper that the project reproduces. Ask the PI for one of
    these two:
    - an arXiv link or identifier (`$ARGUMENTS` can give it)
@@ -102,6 +114,21 @@ subtly wrong.
    §1).
 1a. `docs/author.txt`. Replace the author line with the answer to question 1a. Keep the comment
    lines. `scripts/report_pdf.sh` reads this line for each document that has no author.
+1b. The licence. **Keep `LICENSE-MIT.txt`, `LICENSE-CC-BY.txt` and the copyright line of the
+   template author.** The files of the template are in the project, and the MIT licence requires
+   its notice with each substantial part of them. Then follow the answer to question 1b:
+   - *Adopt the policy.* Add the line `Copyright (c) <year> <holder>` under the existing line in
+     `LICENSE-MIT.txt`, and the same line in the section Copying of `README.md`. Do not add a
+     line that is already there.
+   - *Another licence.* Put the text that the PI supplied in `LICENSE-<name>.txt`. Never write a
+     licence text from memory, because an exact text matters. Change the section Copying to say
+     which files each licence covers.
+   - *No licence yet.* Change the section Copying to say that the files from the template keep
+     the licences of the template, and that the licence of the other files is not decided. Put
+     the open question in `handoff.md` and in `docs/STATUS.md`.
+
+   Write decision `D-004` in `docs/decision_log.md`: "policy adopted (chosen)", "another licence
+   (chosen)" or "no licence yet (applied: the PI did not choose)".
 2. `docs/toolchain.md`. Fill the ownership registry between the `REGISTRY-START/END` markers. Use
    one row for each topic and each solver. Name the owning tool. Take it from the answers of the
    PI or from the default profile. Remove the notes for a tool that this project does not use.
@@ -148,7 +175,8 @@ override the project adopted. State if the PI chose it or if it applied because 
 choose.
 
 1. Each file that you wrote, with a one-line summary of what it now says.
-2. **What only the PI can do.** The PI must install missing tools, and decide each convention that is `OPEN`. The PI must settle each question of
+2. **What only the PI can do.** The PI must install missing tools, and decide each convention that is `OPEN`. The PI must decide the licence of the project, if the answer
+   to question 1b was "no licence yet". The PI must settle each question of
    language ownership that the default profile does not cover. If the profile applied because the
    PI did not choose, the PI must confirm it or change it.
 3. The first session to run: the source audit, with `docs/prompts/A1_source_audit.md`.

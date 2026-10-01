@@ -29,6 +29,10 @@ It interviews you. Then it writes these items:
 - `docs/prompts/A1_source_audit.md`: the first curated prompt record, ready to run.
 - The `description` and `when_to_use` lines of agents and skills, so that the triggers match your
   vocabulary.
+- `docs/author.txt`: the author line of each document that the project converts to PDF.
+- The licence notice: the copyright line of the PI in `LICENSE-MIT.txt` and in the section
+  Copying of `README.md` (the choice of the PI, decision D-004). The notice of the template
+  author stays, because the MIT licence requires it with the parts that you inherit.
 - The package names in `src/julia/Project.toml` and `src/python/pyproject.toml`, and the library
   lists `src/python/packages.txt` and `src/julia/packages.txt` (the choice of the PI, decision
   D-003).

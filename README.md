@@ -212,6 +212,8 @@ Other repositories contributed parts:
   ([barbagroup/agentic-reproducibility](https://github.com/barbagroup/agentic-reproducibility))
   — reproducible-research practice as context engineering. The template follows her
   caveat: the researcher stays responsible for the judgements that these artifacts contain.
+- The dual licence (see Copying): the wording of the notice comes from a project by Egor Tensin. A [Software Engineering Stack Exchange answer](https://softwareengineering.stackexchange.com/questions/318777/mit-license-vs-creative-commons-for-images-and-other-assets)
+  quotes it.
 
 ## Bugs and improvements
 
@@ -234,3 +236,32 @@ Thank you for your help.
 > — Hermann Hesse, *The Glass Bead Game* (*Das Glasperlenspiel*, 1943), chapter 3, "Years of
 > Freedom". Translated by Richard and Clara Winston (© 1969 Holt, Rinehart and Winston). Picador
 > edition, ISBN 0-312-27849-7; first eBook edition, November 2012 (eISBN 9781466835023).
+
+## Copying
+
+Copyright (c) 2026 Subhodeep Sarkar.
+
+This project is free software. It has no warranty, not even for merchantability or fitness for
+a particular purpose.
+
+The MIT licence lets you use, copy, modify and share all files in this repository, alone or
+together. The file `LICENSE-MIT.txt` has the terms.
+
+You can also choose to use, copy, modify and share the documentation of this project under the
+Creative Commons Attribution 4.0 International licence. The file `LICENSE-CC-BY.txt` has the
+terms. The documentation is:
+
+- all images, plots and figures, for example those in `docs/figures/`
+- the reports, in `reports/`
+- all Markdown files (`*.md`), but not the code blocks in them
+- the docstrings and the comments in code files
+
+The code has the MIT licence alone. The code is each script, hook, filter, header and
+configuration file, and the code blocks in Markdown files. A file can hold both kinds. For
+example, a Python file is code, and its docstrings are also documentation.
+
+This dual licence keeps one licence for the whole project. Users who want a licence for text and
+images can choose this one.
+
+Material from other people keeps the terms of its owners. This includes the quotations in this
+file and the CC0 colour values from BIDS/colormap.

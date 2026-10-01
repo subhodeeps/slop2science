@@ -25,6 +25,8 @@ alternatives, nobody can revisit it. Someone can only reverse it.
   the registry in `docs/toolchain.md` cites its entry here (CLAUDE.md §5). This includes the
   adoption of the default profile. State if the PI chose it, or if it applied because the PI did
   not choose.
+- **The licence of the project and its copyright holder.** The choice is the PI's alone. Record
+  it here, with the institute or funder check (`/init-paper`, question 1b).
 - **Which extension work is in scope, and which is not.** This is the boundary between
   reproduction and new work, and the purpose of the new work (CLAUDE.md §2).
 - Each change to the scientific or numerical architecture (CLAUDE.md §9).
