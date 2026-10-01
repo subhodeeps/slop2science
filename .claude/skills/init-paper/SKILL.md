@@ -41,9 +41,8 @@ placeholder with no answer silently becomes a permanent wrong default.
 5. **Topics.** A topic is a unit of work. Each topic gets its own `symbolic/<topic>/`,
    `derivation/<topic>/` and `validation/<topic>/`. Topics are usually a progression of
    increasing difficulty. The first topic is where the work starts.
-6. **Tools.** Show the **default profile** from `docs/toolchain.md`. It assigns algebra to
-   Mathematica `.wls`, numerics to Julia, and plotting, ML and work that depends on the Python
-   ecosystem to Python, with default routes between them. Ask which of these the PI wants:
+6. **Tools.** Show the **default profile** and its default routes from `docs/toolchain.md`. Ask
+   which of these the PI wants:
    - **Accept it**, "defaults".
    - **Override parts of it.** State which topic or kind goes to which tool, and which routes
      change.

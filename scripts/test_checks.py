@@ -251,6 +251,29 @@ expect("the startup load is the charter, its two imports and the one rule withou
 expect("the charter is under 200 lines", load["files"]["CLAUDE.md"] < 200, True)
 expect("the startup total is within its budget", load["total"] <= cd.STARTUP_BUDGET, True)
 
+print("toolchain — the default-profile assignment has one owner")
+
+PROFILE_OWNERS = {"docs/toolchain.md", "README.md"}   # the owner, and the human overview
+PROFILE_RE = re.compile(r"algebra[^.\n]{0,80}mathematica|mathematica\s+(?:does|for)\s+algebra|"
+                        r"numerics[^.\n]{0,40}julia", re.I)
+
+
+def profile_restated(files):
+    """Files, other than the owner and the overview, that restate which tool the default profile
+    gives to algebra and to numerics. About eight files did, and one copy can drift."""
+    return sorted(p for p, t in files.items()
+                  if p not in PROFILE_OWNERS and not p.startswith("docs/prompts/")
+                  and PROFILE_RE.search(" ".join(t.split())))
+
+
+expect("a file that restates the assignment is flagged",
+       profile_restated({"x.md": "Algebra goes to Mathematica and numerics goes to Julia."}), ["x.md"])
+expect("the owner and the overview may state it",
+       profile_restated({"docs/toolchain.md": "Algebra: Mathematica.", "README.md": "Mathematica does algebra."}), [])
+expect("a pointer to the registry is fine",
+       profile_restated({"x.md": "The registry in docs/toolchain.md names the owner tool."}), [])
+expect("no other real file restates the assignment", profile_restated(real), [])
+
 print("derivation write-ups — every statement of the 'no citable check' rule has the same exception")
 
 

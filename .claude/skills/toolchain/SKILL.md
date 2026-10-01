@@ -7,19 +7,11 @@ allowed-tools: Bash(scripts/run *) Bash(scripts/run_stages.sh *) Bash(scripts/ru
 
 # Toolchain
 
-Mathematica, Julia and Python have **equal capability** here. The PI decides which one is the
-record for a topic or a solver (CLAUDE.md §1). The ownership registry in `docs/toolchain.md`
-records the decision. The decision is per topic, or it is the **default profile** that the file
-defines. The default profile has three kinds of work. Algebra goes to Mathematica `.wls`.
-Numerics goes to Julia. Plotting, ML and work that depends on the Python ecosystem go to Python.
-
-If the registry has no row for your work, apply the default profile **by kind of work**. Write
-the row first, and cite the decision that adopted the profile. That applies a recorded PI
-decision. It is not a choice by you. **Stop and ask the PI** in three cases. The work fits no kind in the
-profile. The kind is not clear. The PI declined the profile. Do not copy what another
-topic did. Do not move work into a different language because it is easier there. The same rule
-applies to hand-offs. Use the default routes. If you need a quantity in a tool that the routes do
-not deliver it to, ask. Do not write a converter.
+The registry in `docs/toolchain.md` names the tool that owns each topic and solver. It also
+defines the default profile (CLAUDE.md §5). If the registry has no row for your work, apply the
+default profile by kind of work. Write the row first and cite the decision. If the work fits no
+kind, or the kind is not clear, **stop and ask the PI.** Use the default routes for hand-offs.
+Do not write a converter.
 
 ## One path of invocation
 

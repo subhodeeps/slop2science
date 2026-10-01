@@ -63,9 +63,8 @@ Context:      Three tools of equal capability are available. Without an explicit
               debugging derives the same quantity in two of them. Both results are committed,
               nothing states which result is authoritative, and both pass their own checks.
 Options:      (a) leave it to the person who works on a topic. (b) Assign each topic and solver
-              explicitly. (c) Adopt the default profile (algebra in Mathematica `.wls`,
-              numerics in Julia, plotting/ML/ecosystem-bound work in Python), and override it
-              where necessary.
+              explicitly. (c) Adopt the default profile (`docs/toolchain.md`) and
+              override it where necessary.
 Decision:     (c), chosen. {{TOOL_A}} is the record for the {{TOPIC_1}} derivation. {{TOOL_B}}
               is the record for its solver. Coefficients pass from the first to the second by
               generated code only. A computation in a third tool is a `CROSS-CHECK`. It never

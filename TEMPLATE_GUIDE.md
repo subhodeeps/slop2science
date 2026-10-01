@@ -64,16 +64,10 @@ restatements created. If you need to invoke a rule, link to it.
 stays under about 100 lines. The history goes to `docs/status_history.md`, which does *not* load
 automatically. In the source project, STATUS reached 504 lines of history before this split.
 
-**Tool ownership is a PI decision. The PI declares it for each topic, not for each language.**
-The three tools have equal capability. The PI assigns each topic, or adopts the default profile.
-The default profile assigns algebra to Mathematica `.wls`, numerics to Julia, and plotting, ML
-and work that depends on the Python ecosystem to Python. The template applies the default
-profile if the PI does not choose, and says so loudly. Claude never invents an assignment.
-Claude never moves existing work. Claude never adds a hand-off between tools. The registry does
-not prevent the use of the wrong tool. It prevents a different defect: two tools that each hold
-a slightly different version of the same equation. Nothing states which one is the record, and
-the checks of neither tool can detect it. `docs/toolchain.md` has an ownership registry and an
-interoperation registry for this reason.
+**Tool ownership is a PI decision.** `docs/toolchain.md` owns the rule, the default profile and
+the registries. The registry exists to prevent one defect: two tools that each hold a slightly
+different version of the same equation. Nothing states which one is the record, and the checks
+of neither tool can detect it.
 
 **Reproduction and extension are equal parts, in one tree.** The template does not treat the
 extension as a follow-on. `docs/reproduction_and_extension.md` tracks both parts and the new-work
