@@ -13,7 +13,7 @@ Semantics, identical across checks.wl / checks.py / checks.jl:
 - ``report_checks()`` prints a labelled tally and exits non-zero if anything failed.
 
 Print-before-assert is not decoration. A check that asserts without ever printing what it
-found is how a false PASS survives a whole session (``docs/failure_modes.md`` entry 1).
+found is how a false PASS survives a whole session (``docs/failure_modes/inherited.md`` entry 1).
 """
 from __future__ import annotations
 

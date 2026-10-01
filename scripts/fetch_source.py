@@ -10,7 +10,7 @@ fractions, stacked indices or matrices it is a lossy one: ligatures vanish, nest
 is reordered, and the result reads as perfectly plausible. The LaTeX source is what the
 authors actually wrote — the equation, not a rendering of it. The three most expensive
 documentation errors in the project this template came from all traced to reading a PDF's
-text layer instead of the page (docs/failure_modes.md entry 2), and the source would have
+text layer instead of the page (docs/failure_modes/inherited.md entry 2), and the source would have
 made two of them impossible.
 
 The tarball also carries what the PDF cannot give back:

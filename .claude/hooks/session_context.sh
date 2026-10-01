@@ -76,7 +76,7 @@ echo "[project] language: write all natural-language text in ASD-STE100 (CLI mes
 
 # --- 3. the working tree, right now ------------------------------------------------
 # An interrupted session's leftovers are visible at the START, not only at close: that is
-# where the orphaned-artefact check is cheap (docs/failure_modes.md entry 5).
+# where the orphaned-artefact check is cheap (docs/failure_modes/inherited.md entry 5).
 if git rev-parse --git-dir >/dev/null 2>&1; then
   branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
   dirty=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' ')

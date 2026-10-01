@@ -362,9 +362,9 @@ def check_stale():
     # 4. Context budget: the files that load into EVERY session.
     #    These have a stated size discipline because their cost is paid on every prompt, and
     #    they grow by accretion -- the project this template came from let its status file
-    #    reach 504 lines of history before anyone measured it (docs/failure_modes.md entry 10).
+    #    reach 504 lines of history before anyone measured it (docs/failure_modes/inherited.md entry 10).
     #    An ERROR, not a warning: a budget that only warns is a budget that is ignored until
-    #    the file is 500 lines of history (docs/failure_modes.md entry 10). Going over means
+    #    the file is 500 lines of history (docs/failure_modes/inherited.md entry 10). Going over means
     #    move detail into a skill, a rule or a referenced doc -- not trim wording.
     BUDGETS = {"CLAUDE.md": 199, "docs/STATUS.md": 100, "docs/conventions.md": 60,
                ".claude/rules/communication.md": 70}

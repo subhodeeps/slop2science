@@ -22,7 +22,7 @@ check each step on its own terms.
 
    **Do not tell the verifier what you hope that it concludes.** A model that receives "check
    that this is right" and a model that receives "attack this" behave differently. The first
-   case is sycophancy that waits to happen (`docs/failure_modes.md` 0c).
+   case is sycophancy that waits to happen (`docs/failure_modes/model.md` 0c).
 
 3. **Iterate until the challenges stop.** Each surviving challenge gets a new child step that
    closes it, or becomes a recorded gap. If you answer a challenge by rewording and not by

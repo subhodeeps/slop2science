@@ -54,7 +54,7 @@ Two points decide if it works:
 
 - **Do not tell the verifier what you hope that it finds.** "Check that this is right" and
   "attack this" produce different behaviour from the same model. The first is sycophancy that
-  waits to happen (`docs/failure_modes.md` 0c).
+  waits to happen (`docs/failure_modes/model.md` 0c).
 - **Two runs of the same model on the same input are not independent.** Where a claim
   matters, a verifier from a different model family shares fewer failure modes. Never report two
   runs of one model as independent confirmation.

@@ -47,7 +47,7 @@ def test_wrong_coefficient_is_detected():
 
     This is the test that establishes the chain has any diagnostic power at all. In the
     project this template came from, a deliberately sign-flipped recurrence converged
-    beautifully and gave confidently wrong answers (docs/failure_modes.md entry 4) — which is
+    beautifully and gave confidently wrong answers (docs/failure_modes/inherited.md entry 4) — which is
     exactly what this test exists to make visible.
     """
     pytest.skip("fill in for this project's chain")
