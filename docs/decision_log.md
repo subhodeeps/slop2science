@@ -1,8 +1,8 @@
 # Decision log
 
-PI decisions, newest last. Append only; never rewrite an entry. A superseded decision gets a
-**new** entry that says what it supersedes and why — the history of why a convention changed
-is often more useful than the convention.
+This file records the decisions of the PI. Put the newest entry last. Append only. Never
+rewrite an entry. A new entry supersedes an old decision. State what it supersedes and why.
+The history of why a convention changed is often more useful than the convention.
 
 ## Format
 
@@ -14,83 +14,83 @@ is often more useful than the convention.
                   must be repeated
     Evidence:     the scripts, records or sources supporting it (or: none, and why)
 
-Every field is filled. `Options:` matters most in a year's time: a decision with no recorded
-alternatives cannot be revisited, only reversed.
+Fill in each field. `Options:` matters most in one year. If a decision has no recorded
+alternatives, nobody can revisit it. Someone can only reverse it.
 
 ## What belongs here
 
-- Any convention the project adopts where the source is ambiguous or the project departs
-  from it.
-- **Which language implements which piece of work, and how the tools interoperate** — every
-  row of `docs/toolchain.md`'s registry cites its entry here (CLAUDE.md §5). That includes
-  adopting the default profile, and whether the PI chose it or it was applied because they
-  did not.
-- **What extension work is in scope**, and what is deliberately not: the boundary between
-  reproduction and new work, and what the new work is for (CLAUDE.md §2).
-- Any change to the scientific or numerical architecture (CLAUDE.md §9).
-- Adding a tool or a dependency to the pipeline, or dropping one.
-- Declaring a discrepancy closed, and on what evidence.
-- Accepting a result whose validation is incomplete, with what is missing stated.
-- A disagreement Claude raised that the PI overruled, where the reasoning is worth keeping
+- Each convention that the project adopts where the source is ambiguous, or where the project
+  departs from the source.
+- **Which language implements which piece of work, and how the tools interoperate.** Each row of
+  the registry in `docs/toolchain.md` cites its entry here (CLAUDE.md §5). This includes the
+  adoption of the default profile. State if the PI chose it, or if it applied because the PI did
+  not choose.
+- **Which extension work is in scope, and which is not.** This is the boundary between
+  reproduction and new work, and the purpose of the new work (CLAUDE.md §2).
+- Each change to the scientific or numerical architecture (CLAUDE.md §9).
+- The addition or removal of a tool or a dependency of the pipeline.
+- The closure of a discrepancy, and the evidence for it.
+- The acceptance of a result with incomplete validation. State what is missing.
+- A disagreement that Claude raised and the PI overruled, if the reasoning has value
   (CLAUDE.md §1).
 
-## What does not
+## What does not belong here
 
-Task ordering, session planning, and anything reversible without consequence. Those go in
-`docs/STATUS.md`.
+Task order, session planning, and anything that you can reverse without consequence. Put these
+in `docs/STATUS.md`.
 
 ---
 
 ## D-001 — <example: the worked shape of an entry; replace or delete> — YYYY-MM-DD
 
-Context:      The source states X in its text, while its Eq. (N) implies Y. Everything
-              downstream depends on which is used, and the two differ by a sign.
-Options:      (a) follow the text; (b) follow the displayed equations; (c) treat it as an
-              error in this project's reading and re-derive.
-Decision:     Follow the displayed equations (b). The project's own derivation independently
-              gives Y, and (c) is ruled out by that derivation.
-Consequences: Affects stages 04–09 and every result downstream. The comparison against the
-              source's own Table 1 must be recomputed in the adopted convention.
-              `docs/conventions.md` row "sign convention" becomes ADOPTED.
-Evidence:     `symbolic/<topic>/stage_04_reduce.wls` check "reduced system matches Eq. (N)";
-              the five-point record in `docs/<topic>_source_audit.md` §N.
-              Whether the source *intended* X remains open and is not decidable numerically —
-              it needs a statement from its authors.
+Context:      The source states X in its text. Its Eq. (N) implies Y. All later work depends on
+              the choice, and the two differ by a sign.
+Options:      (a) follow the text. (b) Follow the displayed equations. (c) Treat it as an
+              error in the reading of this project and derive again.
+Decision:     Follow the displayed equations (b). The derivation of this project gives Y
+              independently, and that derivation rules out (c).
+Consequences: This affects stages 04–09 and all later results. Compute the comparison with
+              Table 1 of the source again, in the adopted convention.
+              The row "sign convention" in `docs/conventions.md` becomes ADOPTED.
+Evidence:     `symbolic/<topic>/stage_04_reduce.wls` check "reduced system matches Eq. (N)",
+              and the five-item record in `docs/<topic>_source_audit.md` §N.
+              The question of whether the source *intended* X stays open. Numerics cannot
+              decide it. It needs a statement from the authors.
 
 ## D-002 — <example: language assignment and interoperation; replace or delete> — YYYY-MM-DD
 
 Context:      Three tools of equal capability are available. Without an explicit assignment,
-              the same quantity ends up derived in two of them during debugging, both
-              committed, with nothing saying which is authoritative — and both pass their own
-              checks.
-Options:      (a) leave it to whoever works on a topic; (b) assign each topic and solver
-              explicitly; (c) adopt the default profile (algebra in Mathematica `.wls`,
-              numerics in Julia, plotting/ML/ecosystem-bound work in Python), overriding where
-              needed.
-Decision:     (c), chosen. {{TOOL_A}} is the record for the {{TOPIC_1}} derivation; {{TOOL_B}}
-              for its solver; coefficients cross from the first to the second by generated
-              code only. Anything computed in a third tool is a `CROSS-CHECK` and never the
-              record. (If the PI had not chosen, this entry would say "applied: the PI did not
-              choose", and the init report would have said so.) Claude asks about anything
-              the profile does not cover.
-Consequences: `docs/toolchain.md`'s ownership and interoperation registries are filled in
-              accordingly; every stage header names its owner tool; `make check-docs` fails
-              if a topic has stage scripts and no registry row.
-Evidence:     None — this is a scope and process decision, not a scientific one. The evidence
-              that it was needed is `docs/failure_modes.md` and the fact that two records for
-              one fact cannot be detected by either tool's own checks.
+              debugging derives the same quantity in two of them. Both results are committed,
+              nothing states which result is authoritative, and both pass their own checks.
+Options:      (a) leave it to the person who works on a topic. (b) Assign each topic and solver
+              explicitly. (c) Adopt the default profile (algebra in Mathematica `.wls`,
+              numerics in Julia, plotting/ML/ecosystem-bound work in Python), and override it
+              where necessary.
+Decision:     (c), chosen. {{TOOL_A}} is the record for the {{TOPIC_1}} derivation. {{TOOL_B}}
+              is the record for its solver. Coefficients pass from the first to the second by
+              generated code only. A computation in a third tool is a `CROSS-CHECK`. It never
+              becomes the record. (If the PI had not chosen, this entry would say "applied: the
+              PI did not choose", and the init report would state it.) Claude asks about
+              anything that the profile does not cover.
+Consequences: Fill in the ownership and interoperation registries of `docs/toolchain.md`
+              accordingly. The header of each stage names its owner tool. `make check-docs`
+              fails if a topic has stage scripts and no registry row.
+Evidence:     None. This is a scope and process decision. It is not a scientific decision.
+              The evidence that it was necessary is `docs/failure_modes.md`, and the fact that
+              the checks of one tool cannot detect two records for one fact.
 
 ## D-003 — <example: library stack for the Python and Julia environments; replace or delete> — YYYY-MM-DD
 
-Context:      Each language the project uses gets its own environment (`src/python` with uv,
-              `src/julia` with `Project.toml`). What goes into them decides what a result can
-              depend on, and a library nobody chose is a dependency nobody checked.
-Options:      (a) install whatever turns out to be needed, as it is needed; (b) the default
-              minimum stack in `src/<lang>/packages.txt`, plus what the PI names.
+Context:      Each language that the project uses gets its own environment (`src/python` with
+              uv, `src/julia` with `Project.toml`). The contents of the environments decide
+              what a result can depend on. A library that nobody chose is a dependency that
+              nobody checked.
+Options:      (a) install what turns out to be necessary, when it is necessary. (b) Install
+              the default minimum stack in `src/<lang>/packages.txt`, plus what the PI names.
 Decision:     (b), chosen. Python: numpy, scipy, mpmath, sympy, matplotlib, plus {{PI_PYTHON}}.
               Julia: the default seven, plus {{PI_JULIA}}. (If the PI had not answered, this
               entry would say "applied: the PI did not choose".)
-Consequences: `make setup` installs the lists and writes `uv.lock` and `Manifest.toml`, which
-              are committed. A later addition is a PI decision, a new line in `packages.txt`
-              and an entry here.
-Evidence:     None — a scope decision, not a scientific one.
+Consequences: `make setup` installs the lists and writes `uv.lock` and `Manifest.toml`. Commit
+              both files. A later addition is a PI decision. It needs a new line in
+              `packages.txt` and an entry here.
+Evidence:     None. This is a scope decision. It is not a scientific decision.

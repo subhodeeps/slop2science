@@ -1,10 +1,12 @@
 # Status history
 
-The session-by-session record, appended at each `/session-close`. **Not auto-loaded**: it
-exists so that `docs/STATUS.md` can hold current state only and stay small.
+This file is the record of each session. `/session-close` appends an entry. The file **does not
+load automatically**. Because of this, `docs/STATUS.md` holds the current state only and stays
+small.
 
-Newest last. Never rewrite an entry — a record that was true when written stays as written,
-even after it is superseded. Corrections are a new entry saying what changed.
+Put the newest entry last. Never rewrite an entry. A record that was true when written stays as
+written, also after something supersedes it. A correction is a new entry that states what
+changed.
 
 ## Entry format
 
