@@ -3,7 +3,7 @@ name: init-paper
 description: Initialize this template for a new paper-reproduction project. Interview the PI, fill each placeholder, write the conventions register and the tool-ownership registry, create the first prompt record, and print what remains to do.
 disable-model-invocation: true
 argument-hint: "[optional: paper arXiv ID or DOI]"
-allowed-tools: Read Grep Glob Edit Write Bash(git status) Bash(git ls-files *) Bash(scripts/py *) Bash(make check) Bash(make check-env)
+allowed-tools: Read Grep Glob Edit Write Agent Bash(git status) Bash(git ls-files *) Bash(scripts/py *) Bash(make check) Bash(make check-env) Bash(make fetch-source *)
 ---
 
 # Initialize this project
@@ -25,9 +25,13 @@ placeholder with no answer silently becomes a permanent wrong default.
    (CLAUDE.md §1, §2).
 1. **Project name.** Keep it short. The project uses it in headings and in the banner of the
    Makefile.
-2. **Primary source.** This is the paper that the project reproduces. Ask for the authors, title,
-   journal or preprint, and identifier. If `$ARGUMENTS` gave an arXiv ID or a DOI, offer it as
-   the default.
+2. **Primary source.** This is the paper that the project reproduces. Ask the PI for one of
+   these two:
+   - an arXiv link or identifier (`$ARGUMENTS` can give it)
+   - a BibTeX entry and the PDF, which the PI puts in `papers/_drop/`
+   Do not ask for the authors or the title, and never ask the PI to edit `papers/sources.yaml`.
+   The `literature` agent reads the details from the source and registers it (section 2,
+   step 0).
 3. **Objective.** Ask for two or three sentences. State what the project produces
    at its end. State what the *production* method is, as opposed to what is only a benchmark.
 3a. **The new work.** Ask what the project intends to establish **beyond** the source. This is
@@ -78,6 +82,16 @@ placeholder with no answer silently becomes a permanent wrong default.
 Write in this order. If a step fails part-way, the project is visibly incomplete. It is not
 subtly wrong.
 
+0. The primary source. Dispatch the `literature` agent with the answer to question 2:
+   - For an arXiv link, it runs `make fetch-source ID=<id> LABEL=<firstauthor><year>`. Then it
+     reads the authors, the title, the version, and any journal reference and DOI from the
+     arXiv record, and adds the BibTeX entry to `papers/refs.bib`.
+   - For files in `papers/_drop/`, it does the intake of the `literature-audit` skill. It
+     checks the BibTeX entry against the first page of the PDF.
+   In both cases it registers the paper in `papers/sources.yaml` with the role `primary`, and
+   returns the authors, title and identifier for `{{PRIMARY_SOURCE}}`. If it cannot reach arXiv
+   (a network policy can block it), stop. Ask the PI to put the BibTeX and the PDF in
+   `papers/_drop/`.
 1. `CLAUDE.md`. Replace `{{PROJECT_NAME}}`, `{{OBJECTIVE}}`, `{{PIPELINE}}`,
    `{{PRIMARY_SOURCE}}` and `{{TOOL_A}}`, `{{TOOL_B}}`, `{{TOOL_C}}`. Change nothing else. §1, §3,
    §4, §6 and §7–§11 are the discipline. They are not project parameters (`TEMPLATE_GUIDE.md`
@@ -94,7 +108,8 @@ subtly wrong.
 5. `docs/STATUS.md`. Set phase 0. Set the immediate next task to the source audit. The project has
    derived nothing and validated nothing. There are no blockers.
 6. `docs/implementation_checklist.md`. Add the phase headings from answer 4, all unticked.
-7. `papers/sources.yaml`. Add the primary source with the role `primary`.
+7. `papers/sources.yaml`. Check that step 0 registered the primary source with the role
+   `primary`. Do not write the entry yourself.
 8. `docs/prompts/A1_source_audit.md`. This is the first curated prompt record. Write it out so
    that the PI can run it. Leave the Outcome empty.
 9. `src/julia/Project.toml` and `src/python/pyproject.toml`. Set the package name. Delete the
@@ -127,8 +142,7 @@ override the project adopted. State if the PI chose it or if it applied because 
 choose.
 
 1. Each file that you wrote, with a one-line summary of what it now says.
-2. **What only the PI can do.** The PI must fetch the paper (`make fetch-source ID=…`), install
-   missing tools, and decide each convention that is `OPEN`. The PI must settle each question of
+2. **What only the PI can do.** The PI must install missing tools, and decide each convention that is `OPEN`. The PI must settle each question of
    language ownership that the default profile does not cover. If the profile applied because the
    PI did not choose, the PI must confirm it or change it.
 3. The first session to run: the source audit, with `docs/prompts/A1_source_audit.md`.

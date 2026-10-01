@@ -1,11 +1,13 @@
 # papers/_drop — the drop folder of the PI
 
-Put a PDF here. The next session finds it, because the session-start hook reports a drop folder
-that is not empty. Then the `literature` agent completes the intake:
+Put a PDF here, with its BibTeX entry in a `.bib` file if you have one. You can also give an
+arXiv link to Claude instead. The next session finds the files, because the session-start hook
+reports a drop folder that is not empty. Then the `literature` agent completes the intake:
 
 1. Identify the paper.
-2. Verify the identifiers.
-3. Register the paper in `../sources.yaml` with a role.
+2. Verify the identifiers and the BibTeX entry against the first page of the PDF.
+3. Register the paper in `../sources.yaml` with a role, and add the BibTeX entry to
+   `../refs.bib`.
 4. Move the file onward.
 5. Leave this folder empty.
 

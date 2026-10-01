@@ -86,9 +86,10 @@ Then label the kind of evidence:
 `papers/_drop/` is transient, and the session-start hook reports it. For each file, do these
 steps:
 
-1. Identify the file.
-2. Verify its identifiers.
-3. Register it in `papers/sources.yaml` with its role.
+1. Identify the file. The PI can add a BibTeX entry in a `.bib` file next to the PDF.
+2. Verify its identifiers, and the BibTeX entry, against the first page of the PDF.
+3. Register it in `papers/sources.yaml` with its role, and add the BibTeX entry to
+   `papers/refs.bib` (`.claude/rules/bibliography.md`).
 4. Move it to `papers/` or `papers/background/`.
 5. Leave the drop folder empty.
 

@@ -13,27 +13,35 @@ paths:
 The plot style `amore` is in `src/python/amore/`:
 
 - `amore.mplstyle` sets the fonts, the colour cycle, the frame, the ticks and the grid.
-- `__init__.py` adds the named palettes and the helpers `use`, `palette`, `cmap`,
-  `diverging`, `shade`, `inset`, `tag` and `save`.
-- `examples.py` makes the three example figures in `README.md` (`make plot-examples`). Read it
-  before you make your first figure.
+- `__init__.py` adds the named palettes and the helpers `use`, `figure`, `palette`, `cmap`,
+  `fakeparulapastel`, `diverging`, `colorbar`, `shade`, `inset`, `tag` and `save`.
+- `examples.py` makes the four example figures and the palette chart in `README.md`
+  (`make plot-examples`). Read it before you make your first figure.
 
 ## Rules
 
 1. Import `amore` and call `amore.use()` before you make a figure. Do not set the fonts, the
    frame width, the tick direction or the grid by hand. The style owns them.
-2. Take each colour from a palette: `amore.palette(name)` with `name` one of `blue`, `green`,
-   `red`, `teal`, `amber` or `plum`. Each palette has four tones:
+2. Take each colour from a palette: `amore.palette(name)` with `name` one of `red`, `amber`,
+   `olive`, `green`, `teal`, `blue`, `plum` or `slate` (8 palettes, 32 colours, shown in
+   `docs/figures/amore_palettes.png`). Each palette has four tones:
    - `ink` for a reference or an exact curve
    - `main` for the computed result
    - `light` for a fill
    - `shade` for a background band
 3. Choose palettes that work together. For two quantities, use teal and amber
    (split-complementary) or red and green (complementary). For three quantities, use teal,
-   amber and plum (close to a triad, about 120 degrees apart). Blue stands alone. Do not put two
-   neighbouring hues (blue and teal, for example) on two different quantities.
-4. For a contour plot or an image, use `amore.cmap(name)`. For a signed field, use
+   amber and plum (close to a triad, about 120 degrees apart). Blue and olive stand alone. Use
+   slate, a neutral, for reference data such as an earlier result. Do not put two neighbouring
+   hues (blue and teal, for example) on two different quantities.
+   A new colour must pass the rules in `tests/python/test_amore.py`: lightness steps, ink
+   contrast and the distance to the other palettes.
+4. For a contour plot or an image, use `amore.cmap(name)`. For a field with a wide range, use
+   `amore.fakeparulapastel()`, a pastel map from violet to yellow. For a signed field, use
    `amore.diverging("red", "green")` with `vmin = -vmax`, so that zero is at the centre.
+   Make a map with `amore.figure(colorbar=True)` and put the bar above the plot with
+   `amore.colorbar()`. The bar covers no data, and the plot keeps the same size as a line plot.
+   A colour bar beside the axes makes the plot smaller than its neighbours.
 5. Draw a line on top of a colour map (flow lines, guides) in `amore.OVERLAY` at
    `amore.OVERLAY_ALPHA`. This is a dark neutral grey. White vanishes on the light centre of a
    map. Black competes with the contour lines. A coloured line looks like a quantity.
