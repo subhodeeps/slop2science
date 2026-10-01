@@ -61,7 +61,7 @@ checks.
 | `derivation` | symbolic derivation, source reconstruction, asymptotics, limits | It writes `symbolic/**` and `derivation/**`. It has project memory for confirmed conventions and pitfalls. It has no memory of results. |
 | `implementation` | solvers, discretization, convergence, precision | It takes physics only from `symbolic/generated/`. It never invents an equation. |
 | `literature` | sources, benchmarks, reconciliation of conventions | It is the only agent with web access. It is the only agent that writes under `papers/`. |
-| `verification` | independent audit after each derivation, export, solver change or result | **It cannot edit project files, even if it wants to.** A hook blocks it. It reports findings. It does not fix them. |
+| `verification` | independent audit after each derivation, export, solver change or result | **It cannot edit project files, even if it wants to.** A hook blocks it. It reports findings. It does not fix them. It records its report as a new file in `docs/audits/`. |
 | `paper-writer` | the report or paper of a topic | It uses only script-verified equations as results and only recorded numbers. It writes in chunks. One author writes the document. |
 | `status-reporter` | factual status and progress reports | It never derives or verifies. Each claim traces to a named file. |
 | `explore` | fast read-only lookup before substantive work | It returns file:line and an excerpt. It does not synthesize. The caller does that. |
@@ -100,7 +100,9 @@ export it. Never write it by hand "for now".
   with the configuration in `.claude/guard_paths.json`.
 - `Write` cannot overwrite an existing derivation stage or export script. The same hook
   enforces this.
-- The `verification` subagent cannot write project files. `readonly_agent.py` enforces this.
+- The `verification` subagent cannot write project files. It can create one new report in
+  `docs/audits/`, and it cannot change that report afterwards. `readonly_agent.py` and
+  `guard_paths.py` enforce this.
 - **No subagent can push, commit, rebase, reset, branch or stage everything.**
   `subagent_git_guard.py` enforces this. The frontmatter of each subagent that can use Bash
   registers it. A subagent can read git. It cannot change the history or the remote. A

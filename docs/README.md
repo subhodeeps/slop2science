@@ -24,6 +24,7 @@ other (`docs/failure_modes/inherited.md` entry 11 explains why).
 | `source_audit_template.md` | the skeleton for the audit of a source paper |
 | `implementation_checklist.md` | progress for each item. Tick an item only with evidence. |
 | `decision_log.md` | PI decisions, `D-NNN`, append-only |
+| `audits/` | audit reports of the `verification` agent, one new file for each audit |
 | `status_history.md` | the record of each session (does not load automatically) |
 | `literature/` | literature notes for each topic, and reconciliations of conventions |
 | `prompts/` | records of session prompts: curated records and machine captures |
