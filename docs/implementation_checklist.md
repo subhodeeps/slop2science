@@ -4,9 +4,12 @@ This file tracks progress for each item. It is the companion of `docs/STATUS.md`
 only with evidence**: a script and its check count, or a record. Never tick a box because a
 file exists.
 
-A tag shows what an open item needs. **[PI]** needs a decision. **[tool]** needs a computation
-on a machine that has the owning tool. **[lit]** needs a source. **[doc]** needs documentation
-only.
+A tag shows what an open item needs:
+
+- **[PI]** needs a decision
+- **[tool]** needs a computation on a machine that has the owning tool
+- **[lit]** needs a source
+- **[doc]** needs documentation
 
 `/init-paper` replaces the phase headings below with the pipeline of this project.
 

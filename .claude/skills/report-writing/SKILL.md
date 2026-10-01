@@ -1,86 +1,88 @@
 ---
 name: report-writing
-description: How to write a topic's report (reports/<topic>_report.md) as a paper a physicist can follow and redo by hand, from already-verified stages, audits and records. Use when writing or regenerating a report, never mid-derivation.
-when_to_use: 'Trigger phrases: write the report; assemble the report; methods section; write it up as a paper; regenerate the report'
+description: How to write the report of a topic (reports/<topic>_report.md) as a paper that a physicist can follow and redo by hand. The sources are stages, audits and records that you already verified. Use it when you write or regenerate a report. Never use it in the middle of a derivation.
+when_to_use: 'Trigger phrases: write the report, assemble the report, methods section, write it up as a paper, regenerate the report'
 paths:
   - "reports/**"
 ---
 
 # Report writing
 
-Two documents can come out of a topic, and they are not the same document:
+A topic can produce two documents. They are not the same document:
 
-- a **methods report** — the full verified derivation and validation chain, for the PI and
-  for whoever continues the work;
-- a **manuscript** — the project's own new work, written for publication, in which the
+- a **methods report**: the full verified derivation and validation chain, for the PI and for
+  the people who continue the work
+- a **manuscript**: the new work of the project, written for possible publication. The
   reproduction is background and the extension is the contribution (CLAUDE.md §2).
 
-The rules below apply to both. What differs is the weighting: a methods report shows every
-verified step; a manuscript states the reproduction compactly ("the source's Eqs. (1)–(9) were
-reconstructed independently; see the methods appendix") and spends its length on what is new.
-**The PI decides which document is being written, what it claims, its scope and its
-authorship** — ask if the brief does not say, and never decide a claim.
+The rules below apply to both. The weighting is different. A methods report shows each verified
+step. A manuscript states the reproduction compactly ("we reconstructed Eqs. (1)–(9) of the
+source independently. See the methods appendix") and spends its length on what is new. **The PI
+decides which document you write, what it claims, its scope and its authorship.** Ask if the
+brief does not say. Never decide a claim.
 
-**The reader is a researcher in the field, not an auditor.** They must be able to (a) follow
-and redo the algebra by hand and (b) reproduce the results. They do not know this project's
-internal vocabulary and should not have to learn it.
+**The reader is a researcher in the field. The reader is not an auditor.** The reader must be
+able to (a) follow and redo the algebra by hand and (b) reproduce the results. The reader does
+not know the internal vocabulary of this project and must not have to learn it.
 
-A report written for an auditor instead of that reader fails even when it satisfies every
-mechanical requirement it was given. The project this template came from produced exactly
-that — a provenance block after every equation, an internal classification line on every
-section, session codes in running text — and it had to be thrown away and rewritten. It did
-what its brief said. The brief was wrong (`docs/failure_modes.md`).
+A report for an auditor fails, even if it satisfies each mechanical requirement of its brief.
+The project that this template came from produced such a report. It had a provenance block after
+each equation, an internal classification line on each section and session codes in the running
+text. The project threw it away and rewrote it. The report did what its brief said. The brief was
+wrong (`docs/failure_modes.md`).
 
-**So start every brief with who the reader is and what they must be able to do**, and put
+**So start each brief with the reader and with what the reader must be able to do.** Put the
 mechanical requirements where they serve that reader: in an appendix.
 
 ## Structure
 
-1. **Introduction** — the problem, what this document establishes, what is reproduction of the
-   source and what is new here. Say which is which plainly, in prose.
-2. **Setup** — conventions, notation, definitions. Every symbol defined at first use, one
-   notation throughout the document, even where sources differ. State the conversions.
-3. **The derivation**, stage by stage. For each: the goal, the operation, the result, and the
-   connecting algebra. Where the source says "standard techniques" or states a result without
-   derivation, **supply the derivation** — that is the main thing this document adds.
-4. **Method** — the production method, in enough detail to reimplement: formulation, boundary
-   treatment, discretization, solution structure, acceptance criteria.
-5. **Results** — with resolution, precision, convergence measure, and benchmark comparisons
-   naming each benchmark's *method*.
-6. **Discrepancies with the source** — a short paragraph each in the text, saying what the
-   source states, what its equations imply, what this project derives, and what was adopted.
-   The full five-point form goes in the appendix.
-7. **Appendix: verification record** — the provenance. Script, check label and result for
-   every equation presented as a result; record for every number. This is where the ledger
-   belongs, and it is genuinely valuable *here*.
-8. **Appendix: discrepancies in full**, five-point form each (CLAUDE.md §3).
+1. **Introduction.** State the problem and what this document establishes. State what is
+   reproduction of the source and what is new here. Say which is which, plainly, in prose.
+2. **Setup.** State the conventions, the notation and the definitions. Define each symbol at its
+   first use. Use one notation in the whole document, also where sources differ. State the
+   conversions.
+3. **The derivation**, stage by stage. For each stage, give the goal, the operation, the result
+   and the connecting algebra. If the source says "standard techniques" or states a result
+   without derivation, **supply the derivation.** This is the main addition of this document.
+4. **Method.** Describe the production method in enough detail to implement it again: the
+   formulation, the treatment of the boundary, the discretization, the solution structure and the
+   acceptance criteria.
+5. **Results.** Give the resolution, the precision, the convergence measure and the benchmark
+   comparisons. Name the *method* of each benchmark.
+6. **Discrepancies with the source.** Write a short paragraph for each one in the text. State
+   what the source states, what its equations imply, what this project derives and what the
+   project adopted. The appendix has the full five-item form.
+7. **Appendix: verification record.** This is the provenance. Give the script, the check label
+   and the result for each equation that the report presents as a result. Give a record for each
+   number. The ledger belongs here, and here it is valuable.
+8. **Appendix: discrepancies in full**, each in the five-item form (CLAUDE.md §3).
 
 ## Hard constraints
 
-- **Only verified results as results.** An equation is either established by a cited script
-  check or derived by hand between two checked expressions — and if the latter, say so, once,
-  briefly. Never invent, "clean up" or silently alter an equation or convention.
-- **Only recorded numbers.** Every digit traces to a record. No unsupported precision.
-- **Nothing softened.** Open issues stay open. Discrepancies are stated, not smoothed. Never
-  attribute the project's extensions to the source, or the source's results to this project —
-  in a manuscript this is not a bookkeeping slip but a misattribution.
-- **Novelty is the PI's to claim.** State plainly what is new and what is reproduction; do
-  not write significance, priority or novelty claims of your own. Where the extension rests
-  on something weaker than an independent benchmark, say what it rests on
-  (`docs/validation_protocol.md` §8).
-- **Never "after some algebra"** in place of the algebra. If it is long, put it in an appendix
-  and point there.
-- **One author, in order.** Do not split the narrative across parallel writers: ten parallel
-  authors produce ten voices, drifting notation and repeated framing, and the result has to be
-  rewritten by one person anyway. Split *reading* and *checking*, never the prose.
-- **Write in chunks** of roughly 250 lines per tool call. A whole-document write hits the
-  output-token limit and produces nothing while appearing to work — the file's line count
-  stops changing and the agent looks alive.
+- **Use only verified results as results.** A cited script check establishes an equation, or you
+  derive it by hand between two checked expressions. In the second case, say so one time,
+  briefly. Never invent, "clean up" or alter silently an equation or convention.
+- **Use only recorded numbers.** Each digit traces to a record. Do not write unsupported
+  precision.
+- **Soften nothing.** Open issues stay open. State the discrepancies. Do not smooth them. Never
+  attribute the extensions of the project to the source. Never attribute the results of the
+  source to this project. In a manuscript this is a misattribution. It is not a bookkeeping slip.
+- **The PI claims novelty.** State plainly what is new and what is reproduction. Do not write
+  your own claims of significance, priority or novelty. If the extension rests on something
+  weaker than an independent benchmark, say what it rests on (`docs/validation_protocol.md` §8).
+- **Never write "after some algebra"** in place of the algebra. If the algebra is long, put it in
+  an appendix and point there.
+- **Use one author, in order.** Do not split the narrative across parallel writers. Ten parallel
+  authors produce ten voices, drifting notation and repeated framing. One person must rewrite the
+  result. Split the *reading* and the *checking*. Never split the prose.
+- **Write in chunks** of about 250 lines for each tool call. A write of the whole document hits
+  the output-token limit and produces nothing while it appears to work. The line count of the
+  file stops changing, and the agent looks alive.
 
 ## Precedence between sources
 
-When the settled record and a working note disagree, the settled record wins:
-`docs/decision_log.md` and the source audit's discrepancy rows outrank the per-leg notes they
-were synthesized from. Where the two disagree, **record the inconsistency** as an open
-question rather than quietly picking one — a report writer once copied a claim from a working
-note that the settled record contradicted, and it shipped.
+If the settled record and a working note disagree, the settled record wins. `docs/decision_log.md`
+and the discrepancy rows of the source audit outrank the notes that they came from. If they
+disagree, **record the inconsistency** as an open question. Do not pick one silently. A report
+writer once copied a claim from a working note that the settled record contradicted. The claim
+shipped.
