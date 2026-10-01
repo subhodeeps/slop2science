@@ -24,9 +24,11 @@ paths:
 
 ## Reading a source
 
-- **Read equations, tables and numbers from the rendered page image**, not the extracted text
-  layer, whenever fractions, stacked sub/superscripts or tabulated columns are involved.
-  Text-layer extraction reorders nested structure silently and confidently.
+- **Read from the best form that exists: the `.tex` source first, then a shipped data or
+  figure file, then the rendered page image, and never the extracted text layer** for
+  anything with a fraction, stacked indices or columns. Say which you used. The order, and
+  what the page is still for when a source exists, is stated once in
+  `.claude/skills/literature-audit/reference/corpus.md`.
 - Record the equation or table number and the version every time a number or equation enters
   this project. "As given in the paper" is not a citation.
 - Quote the source's own words for anything contested, rather than paraphrasing it into the

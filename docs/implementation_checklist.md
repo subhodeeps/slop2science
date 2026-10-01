@@ -24,7 +24,8 @@ machine that has the owning tool, **[lit]** a source, **[doc]** documentation on
 ## Source audit
 
 - [ ] Primary source registered in `papers/sources.yaml` with verified identifiers
-- [ ] Source read in full, as rendered pages, for every equation and table in scope
+- [ ] Source read in full for every equation and table in scope: from the `.tex` where it
+      exists, else the rendered pages (`reference/corpus.md`)
 - [ ] `docs/<topic>_source_audit.md` written from the template
 - [ ] Conventions recorded in `docs/conventions.md`, ambiguous ones marked `OPEN`
 - [ ] Every displayed equation in scope recorded with its number and role (§E)

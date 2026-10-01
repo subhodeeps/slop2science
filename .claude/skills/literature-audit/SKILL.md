@@ -32,7 +32,11 @@ Before reading a PDF at all, check whether the LaTeX source exists:
 fetches the arXiv **e-print tarball** as well as the PDF. The source gives the equation as
 the authors wrote it, the figure files behind every plot, and sometimes the `.dat`/`.csv`
 behind a table — which is a benchmark with real provenance rather than digits read off a
-figure. Full hierarchy and the version-pinning rules: `reference/corpus.md`.
+figure.
+
+**The order is: `.tex` first, then a shipped data or figure file, then the rendered page, and
+never the text layer.** It is stated once, with the reasons, the page's narrow remaining job
+and the version-pinning rules, in `reference/corpus.md`.
 
 The PI may also have the work in a local Zotero or Calibre library — the usual route for
 pre-arXiv papers, books and journal-only works. Those hold thousands of items, so they are
@@ -41,17 +45,19 @@ show` reads all its metadata and `library.py import` brings one item in (a small
 full record, and `sources.yaml` / `refs.bib` entries, marked unverified). Procedure, the
 read-only discipline, and the ways a catalogue entry can lie: `reference/local_libraries.md`.
 
-## Reading equations, tables or values from a PDF
+## When there is no source
 
-When there is no source, or for a figure: **read the rendered page as an image.** Do not rely
-on the extracted text layer for anything with a fraction, a stacked sub/superscript, a matrix,
-or tabulated columns.
+Not every work has one: older papers, books, journal-only works, PDF-only submissions. Then
+**read the rendered page as an image.** Do not rely on the extracted text layer for anything
+with a fraction, a stacked sub/superscript, a matrix, or tabulated columns. (A figure is a
+different case: if there is a source, use its figure file rather than the page.)
 
-This is the highest-yield rule in this skill. In the project this template came from, the
-three most consequential documentation errors — a dropped term in an asymptotic expression, a
+Why this is worth the slowness: in the project this template came from, the three most
+consequential documentation errors — a dropped term in an asymptotic expression, a
 misattributed sign convention, and a mislabelled benchmark column — all traced to reading a
 text/OCR layer of a nested structure instead of the page. Text extraction reorders nested
-structure silently, and the result reads as perfectly plausible.
+structure silently, and the result reads as perfectly plausible. The order and the reasons:
+`reference/corpus.md`.
 
 ## Benchmark data
 

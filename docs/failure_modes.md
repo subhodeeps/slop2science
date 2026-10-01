@@ -101,9 +101,10 @@ instead of the rendered page.
 
 **Cost**: one error survived three sessions and a write-up; a convention was recorded
 backwards; a benchmark was labelled with the wrong method.
-**Mechanism**: read equations, tables and numbers **as a rendered page image**
-(`.claude/skills/literature-audit/SKILL.md`), and require a second independent source before
-one paper's stated equation changes a project convention.
+**Mechanism**: read equations from the **`.tex` source** where one exists, from the **rendered
+page image** where it does not, and never from the text layer
+(`.claude/skills/literature-audit/reference/corpus.md`); and require a second independent
+source before one paper's stated equation changes a project convention.
 
 ### 3. Audits spawning audits
 

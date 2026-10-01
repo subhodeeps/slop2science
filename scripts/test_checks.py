@@ -14,6 +14,7 @@ laptop that has accumulated runtime files and in CI that has none.
 """
 import importlib.util
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -129,6 +130,42 @@ expect("a registry the tools cannot parse is an ERROR, not a silent skip", error
        and "cannot be parsed" in out, True)
 import shutil                          # noqa: E402
 shutil.rmtree(tmp, ignore_errors=True)
+
+print("reading order — stated once, pointed at everywhere else")
+
+READING_RE = re.compile(r"rendered page|page image|text layer|text-layer|\bOCR\b", re.I)
+OWNER = ".claude/skills/literature-audit/reference/corpus.md"
+# Narrative mentions, not instructions: a worked example that happens to say "text layer".
+NARRATIVE = {"docs/handoff_guide.md"}
+
+
+def reading_order_violations(files):
+    """Files that tell the reader how to read a PDF but never point at the one owner of the order.
+
+    Seven files once said "read the rendered page" with no mention of the LaTeX source, because
+    the order had been restated instead of pointed at. The order lives in corpus.md; anything
+    else that mentions reading a rendered page must say where the order is stated.
+    """
+    return sorted(path for path, text in files.items()
+                  if path != OWNER and path not in NARRATIVE
+                  and READING_RE.search(text) and "corpus.md" not in text)
+
+
+expect("a file that says 'read the rendered page' and never points at corpus.md is flagged",
+       reading_order_violations({"x.md": "Read the rendered page, not the text layer."}), ["x.md"])
+expect("the same sentence with a pointer is fine",
+       reading_order_violations({"x.md": "Read the rendered page (see reference/corpus.md)."}), [])
+expect("a file that never mentions reading a PDF is not flagged",
+       reading_order_violations({"x.md": "Nothing to see here."}), [])
+expect("the owner itself is exempt", reading_order_violations({OWNER: "rendered page"}), [])
+expect("a narrative mention is exempt", reading_order_violations(
+       {"docs/handoff_guide.md": "I lost an hour on the PDF text layer."}), [])
+real = {f: (cd.ROOT / f).read_text(encoding="utf-8", errors="replace") for f in cd.tracked("*.md")}
+expect("every real file that mentions it points at corpus.md",
+       reading_order_violations(real), [])
+expect("corpus.md leads with the .tex, and puts the text layer last",
+       (lambda s: s.index(".tex") < s.index("rendered PDF") < s.index("text layer"))(
+           real[OWNER].split("## The reading order, stated once", 1)[1]), True)
 
 print(f"\nchecks: {passed} passed, {failed} failed")
 sys.exit(1 if failed else 0)

@@ -22,6 +22,7 @@ this folder.
 Fetching: `make fetch-source ID=<arxiv-id> LABEL=<firstauthor><year>`. arXiv is fetched; a DOI
 or publisher URL is registered and left for the PI to place in `_drop/`.
 
-**Read equations, tables and numbers from the rendered page, not the extracted text layer.**
-This is where this project's ancestor's three most expensive documentation errors came from
-(`docs/failure_modes.md` entry 2).
+**Read from the `.tex` if the paper is on arXiv (`papers/source/<id>/`), otherwise from the
+rendered page — never from the extracted text layer.** That is where the three most expensive
+documentation errors in this project's ancestor came from (`docs/failure_modes.md` entry 2).
+The order is stated once, in `.claude/skills/literature-audit/reference/corpus.md`.

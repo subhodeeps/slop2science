@@ -23,10 +23,11 @@ read-only and hook-guarded).
 
 - Primary sources only for equations and benchmark numbers. Record the section, equation or
   table number, and the exact version (preprint vN vs. journal) every time.
-- **Read equations, tables and numbers from the rendered page image, not the extracted text
-  layer**, whenever fractions, stacked indices, or tabulated columns are involved. The
-  costliest documentation errors in the project this template came from all traced to OCR of
-  a nested expression (`docs/failure_modes.md`).
+- **Read from the best form that exists: the `.tex` source first (`make fetch-source`), then
+  a shipped data or figure file, then the rendered page image — never the extracted text
+  layer or OCR for an equation.** The costliest documentation errors in the project this
+  template came from all traced to a text layer (`docs/failure_modes.md`). The order is stated
+  once, in `.claude/skills/literature-audit/reference/corpus.md`.
 - Record, for every source: notation, units, sign and orientation conventions, the definition
   of each reported quantity, labelling/ordering of results, and the parameter regime.
 - **Never declare two datasets inconsistent before converting conventions explicitly**, in

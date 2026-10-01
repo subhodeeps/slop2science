@@ -52,7 +52,8 @@ mislabelled as one method while the paper's own text said another, and nothing n
 
 ## When a benchmark and the project disagree
 
-1. Re-read the source's table as a rendered page image.
+1. Re-read the source's table from the `.tex` or a shipped data file if there is one, else
+   as a rendered page image (`reference/corpus.md`) — never the text layer.
 2. Re-check the conversion, in both directions.
 3. Check whether the source's own value is internally consistent with its other tables.
 4. Only then treat it as a discrepancy, and record it in the five-point form (CLAUDE.md §3).

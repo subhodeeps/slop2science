@@ -18,9 +18,11 @@ template (`docs/source_audit_template.md`).
 1. **State the scope**: which sections, equations, tables and figures are in scope. A whole
    paper at once produces a shallow audit; one chapter of a calculation at a time produces a
    usable one.
-2. **Read the paper as rendered pages**, not as extracted text, for every equation, table and
-   number (`.claude/rules/sources.md`). This is not optional and it is the single highest-
-   yield rule in this skill.
+2. **Read the paper from its best form** — the `.tex` from `make fetch-source` if it is on
+   arXiv, otherwise the rendered pages, never the extracted text — for every equation, table
+   and number. Printed equation numbers come from the page: a `.tex` has labels, not numbers.
+   This is not optional. The order, and what to do when the `.tex` and the page disagree, is
+   in `.claude/skills/literature-audit/reference/corpus.md`.
 3. **Fill `docs/source_audit_template.md`** into `docs/<topic>_source_audit.md`. Record, for
    every displayed equation in scope: its number, the section, its variables, its role, and
    what it depends on. Transcribe, do not paraphrase.

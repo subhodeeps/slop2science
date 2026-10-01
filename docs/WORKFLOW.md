@@ -142,8 +142,10 @@ account, with what each one cost, is `docs/failure_modes.md`. In brief:
   literature agrees or demonstrably cannot be consulted.
 - **Claims asserted before being checked.** Print, then assert. Always, not only when
   suspicious.
-- **The same equation misread from a PDF twice.** Read the rendered page, not the text layer.
-  Require a second source before a single paper's equation changes a project convention.
+- **The same equation misread from a PDF twice.** Read the `.tex` if there is one, the
+  rendered page if there is not, never the text layer
+  (`.claude/skills/literature-audit/reference/corpus.md`). Require a second source before a
+  single paper's equation changes a project convention.
 - **Scope creep under interruption.** Scope shrinks under pressure; it never expands. The
   session-close orphan check is the backstop.
 - **Long agent outputs stalling silently.** Write in chunks; check the file's line count and

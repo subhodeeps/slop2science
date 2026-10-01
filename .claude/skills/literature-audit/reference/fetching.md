@@ -32,9 +32,9 @@ un-ignore it deliberately.
 
 ## Reading what you fetched
 
-`.claude/skills/literature-audit/SKILL.md`, "Reading equations, tables or values from a PDF":
-**rendered page image, not the text layer**, for anything with a fraction, stacked indices,
-a matrix, or columns. This is where the expensive mistakes come from.
+`reference/corpus.md` is the one place the order is stated: the `.tex` first, then a shipped
+data or figure file, then the rendered page image, and never the text layer. Where the
+expensive mistakes come from is the last of those.
 
 ## What never to do
 
