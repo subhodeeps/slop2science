@@ -1,7 +1,8 @@
 # Open leads
 
-Things worth returning to, with enough context to resume without re-deriving why they were
-interesting. Not a task list — `docs/STATUS.md` holds the next task.
+This file lists items to return to. Each item has enough context to resume without a new
+derivation of why it was interesting. It is not a task list. `docs/STATUS.md` holds the next
+task.
 
 ## Format
 
@@ -12,8 +13,8 @@ interesting. Not a task list — `docs/STATUS.md` holds the next task.
     What would settle it: <the specific calculation, source or check>
     Status: open | folded into <where> | dropped because <reason>
 
-A lead that is dropped stays here with its reason. "We looked at this and it went nowhere" is
-information, and the alternative is looking at it again in six months.
+Keep a dropped lead in this file, with its reason. "We looked at this and it went nowhere" is
+information. If you delete it, someone looks at it again in six months.
 
 ---
 
