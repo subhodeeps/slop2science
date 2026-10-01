@@ -45,7 +45,7 @@ session, so this table does not list them.
 | `derivation` | Read, Grep, Glob, Bash, Edit, Write, Skill | `subagent_git_guard.py` |
 | `implementation` | Read, Grep, Glob, Bash, Edit, Write, Skill | `subagent_git_guard.py` |
 | `literature` | Read, Grep, Glob, Bash, Write, WebSearch, WebFetch, Skill | `subagent_git_guard.py` |
-| `verification` | Read, Grep, Glob, Bash, Write, Skill | `readonly_agent.py`, `subagent_git_guard.py` |
+| `verification` | Read, Grep, Glob, Bash, Write, Skill | `readonly_agent.py`, `subagent_git_guard.py`, `bash_write_check.py` |
 | `paper-writer` | Read, Grep, Glob, Edit, Write | none |
 | `status-reporter` | Read, Grep, Glob, Edit, Write | none |
 | `explore` | Read, Grep, Glob | none |

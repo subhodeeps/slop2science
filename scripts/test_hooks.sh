@@ -72,6 +72,32 @@ expect "blocks Write over an existing audit (any agent)" 2 "$G" "$(payload Write
 expect "allows Edit to append a correction (main session)" 0 "$G" "$(payload Edit $audit)"
 rm -f "$audit"
 
+echo "bash_write_check.py — detects a shell write by the verification agent"
+W=".claude/hooks/bash_write_check.py"
+wcase() { # description expected_rc setup-command
+  local id="hooktest-$RANDOM-$RANDOM" data
+  data=$(printf '{"tool_use_id":"%s","tool_input":{"command":"x"},"cwd":"%s"}' "$id" "$ROOT")
+  echo "$data" | "$PY" "$W" pre >/dev/null 2>&1
+  eval "$3"
+  echo "$data" | "$PY" "$W" post >/dev/null 2>&1
+  local got=$?
+  if [ "$got" -eq "$2" ]; then pass=$((pass+1)); printf '  ok   %s\n' "$1"
+  else fail=$((fail+1)); printf '  FAIL %s (expected %s, got %s)\n' "$1" "$2" "$got"; fi
+}
+wfile="notes/_hooktest_shell_write.md"
+waudit="docs/audits/20990102_hooktest.md"
+rm -f "$wfile" "$waudit"
+wcase "allows a command that changes nothing"          0 ":"
+wcase "reports a new file from a shell write"          2 "printf 'x\\n' > $wfile"
+wcase "reports a second change to a changed file"      2 "printf 'y\\n' >> $wfile"
+wcase "reports the deletion of a changed file"         2 "rm -f $wfile"
+wcase "allows a new audit report"                      0 "printf 'x\\n' > $waudit"
+cp notes/open_leads.md "$ROOT/.hooktest_backup"
+wcase "reports a change to a clean tracked file"       2 "printf 'z\\n' >> notes/open_leads.md"
+mv "$ROOT/.hooktest_backup" notes/open_leads.md
+rm -f "$wfile" "$waudit"
+expect "does not block on malformed input"             0 "$W" 'not json at all'
+
 echo "log_prompt.py — prompt capture"
 tmp_session="hooktest"
 printf '{"prompt":"%s","session_id":"%s","cwd":"%s"}' \

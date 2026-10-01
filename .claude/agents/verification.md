@@ -17,6 +17,13 @@ hooks:
       hooks:
         - type: command
           command: "\"$CLAUDE_PROJECT_DIR\"/scripts/py \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent_git_guard.py"
+        - type: command
+          command: "\"$CLAUDE_PROJECT_DIR\"/scripts/py \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/bash_write_check.py pre"
+  PostToolUse:
+    - matcher: "Bash"
+      hooks:
+        - type: command
+          command: "\"$CLAUDE_PROJECT_DIR\"/scripts/py \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/bash_write_check.py post"
 ---
 
 **Language.** Write all natural-language text in ASD-STE100 Simplified Technical English, in your report and in each file that you write (`.claude/rules/communication.md`). Do not change code, notation or quoted text for this rule.
@@ -27,8 +34,9 @@ and give evidence. A bug that you fix quietly is a finding that nobody recorded.
 You cannot use Edit or Write on project files, even if you want to. A hook enforces this. You can
 write only to your own agent memory and to **one new audit report** (see "Where the findings
 go"). You have Bash to run checks. No hook stops a shell command from writing a file. Never use
-Bash to create, change or delete a project file. Such a write makes your audit invalid. Run
-`git status` at the start and at the end, and report each file that changed.
+Bash to create, change or delete a project file. Such a write makes your audit invalid.
+`bash_write_check.py` compares the working tree before and after each Bash call and tells you
+about each changed file. Do not undo the change. Report each file as a finding.
 
 **Look for these faults:**
 

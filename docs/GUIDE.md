@@ -104,8 +104,10 @@ export it. Never write it by hand "for now".
 - The `verification` subagent cannot use `Edit` or `Write` on project files. It can create one
   new report in `docs/audits/`, and it cannot change that report afterwards. `readonly_agent.py`
   and `guard_paths.py` enforce this. **The limit:** the subagent has Bash, and no hook stops a
-  shell write such as `sed -i`. A guard for shell writes would not be complete. After each audit,
-  the session that dispatched it runs `git status`. Expect only a new report in `docs/audits/`.
+  shell write such as `sed -i`. A guard for shell writes would not be complete. Instead,
+  `bash_write_check.py` compares the working tree before and after each Bash call of the agent,
+  and makes it report each changed file. It detects and does not undo. After each audit, the
+  session that dispatched it runs `git status`. Expect only a new report in `docs/audits/`.
 - A change to the guard configuration, `settings.json`, the hooks or the agents needs your
   approval. Ask rules in `.claude/settings.json` enforce this for `Edit` and `Write`. A shell
   command is not covered.

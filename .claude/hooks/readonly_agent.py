@@ -5,7 +5,8 @@ The audit layer must not be able to fix what it is auditing, and an instruction 
 not enough: an agent that finds a one-line bug is strongly tempted to fix it, and a fixed bug
 is an unrecorded finding. This hook makes the independence structural for the Edit and Write
 tools. It does not cover Bash: the agent needs Bash to run checks, and a guard for shell writes
-would not be complete. The session that dispatches the audit runs `git status` afterwards.
+would not be complete. bash_write_check.py detects a shell write after each Bash call, and the
+session that dispatches the audit runs `git status` afterwards.
 
 Two kinds of write are allowed. First, anything under .claude/agent-memory/ (recurring
 pitfalls, not results). Second, a NEW audit report: `Write` of a file docs/audits/<date>*.md that
