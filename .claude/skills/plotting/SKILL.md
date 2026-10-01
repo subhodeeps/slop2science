@@ -76,6 +76,6 @@ match the document.
 
 ## Credit
 
-The style is inspired by the Physical Review style sheet of
-[hosilva/physrev_mplstyle](https://github.com/hosilva/physrev_mplstyle). That repository has no
+The Physical Review style sheet of
+[hosilva/physrev_mplstyle](https://github.com/hosilva/physrev_mplstyle) inspired this style. That repository has no
 licence file, so this template does not copy its file. `amore.mplstyle` is an independent file.
