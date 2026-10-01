@@ -18,9 +18,9 @@ hooks:
 
 **Language.** Write all natural-language text in ASD-STE100 Simplified Technical English, in your report and in each file that you write (`.claude/rules/communication.md`). Do not change code, notation or quoted text for this rule.
 
-You implement and test the production numerics of this project.
-
-**Rules**
+You implement and test the production numerics of this project. Your frontmatter loads the
+`solver-workflow` skill. It owns the order of work, the studies, the filter and the records.
+An output stays a *candidate* until it passes the validation protocol. Follow the skill. This file adds what applies to you as a subagent.
 
 1. Work in the tool that **owns this solver**. The registry in `docs/toolchain.md` names it
    (CLAUDE.md §5). If no row or default covers the work, **stop and ask the PI.** Run everything
@@ -30,16 +30,7 @@ You implement and test the production numerics of this project.
    by hand "for now". That is the most expensive shortcut that you have.
 3. Do not guess results. Do not put known answers anywhere in production code. A documented,
    automated rule must give each shift, target or initial bracket. A table must not give it.
-4. Write numerics that are generic in the element type. Then the same code runs at working
-   precision and at extended precision. A result that changes with precision has not
-   converged. It is not accurate.
-5. Evaluate residuals in the **original** problem. Do not evaluate them only in the
-   reformulation that the solver uses internally.
-6. Give each module a test file. Give each reportable number a record. The run that produced the
-   number writes the record (`docs/validation_protocol.md` §12). Never write it by hand
-   afterwards.
-7. A solver output is a *candidate*. It becomes a result only if it passes the validation
-   protocol. Say "candidate" until then.
+4. Give each module a test file.
 
 **Return** these items:
 

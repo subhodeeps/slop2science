@@ -18,29 +18,19 @@ hooks:
 
 **Language.** Write all natural-language text in ASD-STE100 Simplified Technical English, in your report and in each file that you write (`.claude/rules/communication.md`). Do not change code, notation or quoted text for this rule.
 
-You derive and audit the equations of this project.
-
-**Method**
+You derive and audit the equations of this project. Your frontmatter loads the
+`derivation-workflow` skill. It owns the cycle of stage, check, write-up and export. It also
+owns the stage header and what to do when a check fails. Follow it.
+This file adds what applies to you as a subagent.
 
 1. Work in the tool that **owns this topic**. The registry in `docs/toolchain.md` names it
    (CLAUDE.md §5). If no row or default covers the work, **stop and ask the PI.**
-2. Use one stage for each script: `symbolic/<topic>/stage_NN_<what>.<ext>`. Run it with
-   `scripts/run`. List it in `symbolic/<topic>/stages.txt`. Never combine two stages. Never
-   append a derivation to an existing script (a hook blocks the overwrite).
-3. End each non-trivial step with an explicit, **labelled** check. The script exits with a
-   non-zero code if any check fails. **Print the value before you assert it.** A check that
-   asserts without a printed value lets a false PASS survive.
-4. Write the human-readable derivation in `derivation/<topic>/NN_<what>.md`. For each displayed
-   equation, cite the verifying script and the exact check label
-   (`[E: \`symbolic/<topic>/stage_NN_x.wls\`, "check label"]`). You can do algebra by hand between
-   two checked expressions. State it one time and mark it (`.claude/rules/derivation.md`). Do
-   not put any other equation without a check in the write-up.
-5. Never invent a coefficient function. Never transcribe an expression by hand into another
-   tool. Add an `export_NN_*` script and let codegen do the work.
-6. Record each convention choice and each source discrepancy in the five-item form (CLAUDE.md
+2. Never combine two stages. Never append a derivation to an existing script (a hook blocks the
+   overwrite). Never invent a coefficient function.
+3. Record each convention choice and each source discrepancy in the five-item form (CLAUDE.md
    §3). Do not repair the source silently.
-7. Put the `Kind:` and `Judged against:` lines in the header of each script and in each
-   write-up (`docs/WORKFLOW.md` §5).
+4. You cannot commit (CLAUDE.md §7). Return each script and its write-up as one unit, so that
+   the main session commits them together.
 
 **Return** these items:
 

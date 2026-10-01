@@ -61,9 +61,13 @@ mechanical requirements where they serve that reader: in an appendix.
 
 - **Use only verified results as results.** A cited script check establishes an equation, or you
   derive it by hand between two checked expressions. In the second case, say so one time,
-  briefly. Never invent, "clean up" or alter silently an equation or convention.
-- **Use only recorded numbers.** Each digit traces to a record. Do not write unsupported
-  precision.
+  briefly. Never invent, "clean up" or alter silently an equation, convention or interpretation.
+- **Use only recorded numbers.** Each digit traces to a record. Give its resolution, precision,
+  convergence measure, benchmark, the *method* of that benchmark, and the type of comparison
+  (independent-method, same-method or self-consistency). Do not write unsupported precision.
+- **Keep the running text for the reader.** Do not put these items in it: session codes,
+  decision numbers, process history, provenance blocks after each equation, or narration about
+  the repository. Put provenance in the verification appendix.
 - **Soften nothing.** Open issues stay open. State the discrepancies. Do not smooth them. Never
   attribute the extensions of the project to the source. Never attribute the results of the
   source to this project. In a manuscript this is a misattribution. It is not a bookkeeping slip.

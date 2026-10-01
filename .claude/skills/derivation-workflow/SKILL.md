@@ -20,7 +20,8 @@ stage is `reference/stage_checklist.md`.
 tool that owns the topic. Add the script to `symbolic/<topic>/stages.txt`.
 
 **2. Check, inside the same script.** Give each non-trivial step an explicit check with a short,
-quoted label. **Print the value before you assert it.** The order matters: print, then assert. If
+quoted label. The script exits with a non-zero code if any check fails. **Print the value
+before you assert it.** The order matters: print, then assert. If
 you assert first and read the output only when something looks wrong, a wrong assertion survives
 a whole session.
 
@@ -54,7 +55,8 @@ hand between two checked expressions. State it one time, briefly, and mark it
 (`.claude/rules/derivation.md` owns this rule).
 
 **4. Commit** the script and the write-up together. Do not defer this to a cleanup pass. A
-write-up that you commit a week after its script is how a stale citation appears.
+write-up that you commit a week after its script is how a stale citation appears. A subagent
+cannot commit. It returns the two files as one unit, and the main session commits them.
 
 **5. Export, if the stage produces coefficients that another tool needs.** Write
 `export_NN_<what>.<ext>` to `symbolic/generated/<lang>/`. Then run
