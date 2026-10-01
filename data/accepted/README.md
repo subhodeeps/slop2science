@@ -1,2 +1,4 @@
-# data/accepted — written ONLY by validation scripts. Hook-protected against hand edits.
-# A changed number is a new run.
+# data/accepted
+
+Only validation scripts write to this folder. A hook blocks hand edits. A changed number is a
+new run.

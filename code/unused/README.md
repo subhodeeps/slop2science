@@ -1,6 +1,10 @@
 # code/unused
 
-One subdirectory per item, each with a README recording: where it came from,
-its author, its licence, what it is useful for here, and what it is not.
+Use one subdirectory for each item. Each subdirectory has a README that records these items:
+
+- where the item came from
+- its author
+- its licence
+- why the item did not fit this project
 
 Rules: `.claude/skills/external-code/SKILL.md`.

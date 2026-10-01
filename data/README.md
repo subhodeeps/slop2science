@@ -1,6 +1,8 @@
 # data
 
-Generated numerical output. `data/raw/` and `data/tmp/` are gitignored;
-`data/accepted/` is written only by validation scripts and is hook-protected.
+This folder contains generated numerical output.
 
-Nothing here is edited by hand. A changed number is a new run.
+- `data/raw/` and `data/tmp/`: Git ignores these folders.
+- `data/accepted/`: only validation scripts write here. A hook protects this folder.
+
+Never edit a file here by hand. A changed number is a new run.
