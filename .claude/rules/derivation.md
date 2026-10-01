@@ -11,15 +11,9 @@ derivation re-runnable and citable.
 
 ## Ownership
 
-- **The PI decides which language implements a topic** (CLAUDE.md §1, §5). The PI decides per
-  topic, or by the default profile in `docs/toolchain.md`. Write the decision into the registry
-  before work starts. If neither the registry nor the profile covers the work, ask the PI.
-  Never make the choice here.
-- Each topic has exactly one tool as its **record**. Declare it in `docs/toolchain.md` and repeat
-  it in the header of each stage script. Undeclared ownership is a defect. Two records for one
-  fact is a defect.
-- A derivation of the same result in another tool is a **cross-check**. Label it as a
-  cross-check in its header and in `validation/`. It never becomes the record.
+Tool ownership follows the registry in `docs/toolchain.md` (CLAUDE.md §5). Repeat the owner tool
+in the header of each stage script. Label a derivation of the same result in another tool as a
+cross-check, in its header and in `validation/`.
 
 ## One derivation in each file
 
@@ -31,6 +25,13 @@ derivation re-runnable and citable.
 - If a sub-derivation is long enough to stand alone, give it its own numbered stage and
   write-up. Do not make it a section of another stage.
 - The order comes from `symbolic/<topic>/stages.txt`. Never use a shell glob for the order.
+
+## Write-ups
+
+- Give each displayed equation an evidence tag: the verifying script and the exact check label.
+- You can do algebra by hand between two checked expressions. State it one time, briefly, and
+  mark it: "by hand between <label 1> and <label 2>".
+- If an equation has no check and no such mark, do not put it in the write-up.
 
 ## Each script
 

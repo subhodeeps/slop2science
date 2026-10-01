@@ -9,10 +9,8 @@ paths:
 
 - Put production code in `src/<lang>/`, tests in `tests/<lang>/` and validation drivers in
   `validation/<topic>/`. Run everything through `scripts/run`. Run tests through `make test`.
-- **The PI decides the language of a solver and the route by which it receives coefficients**
-  (`docs/toolchain.md`). The decision is a registry row, or the default profile and its default
-  routes. Do not choose either yourself. Do not add a hand-off that neither the registry nor the
-  default routes describe.
+- The language of a solver and the route that gives it coefficients come from the registry in
+  `docs/toolchain.md`.
 - **Coefficients and equations come only from `symbolic/generated/`.** If something that you
   need is missing, stop and report it. Never write it by hand. Never copy it from a paper. Never
   inline it "temporarily".

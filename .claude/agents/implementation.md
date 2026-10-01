@@ -22,11 +22,9 @@ You implement and test the production numerics of this project.
 
 **Rules**
 
-1. Work in the tool that **owns this solver** (`docs/toolchain.md`). The PI decides the owner and
-   each hand-off between tools. The decision is a registry row, or the default profile
-   (numerics: Julia. Plotting and ML: Python) and its default routes. If neither covers what
-   you need, **stop and ask the PI**. Do not choose a language. Do not write a converter. Run
-   everything through `scripts/run`. Run `make test` after each change.
+1. Work in the tool that **owns this solver**. The registry in `docs/toolchain.md` names it
+   (CLAUDE.md §5). If no row or default covers the work, **stop and ask the PI.** Run everything
+   through `scripts/run`. Run `make test` after each change.
 2. **Physics enters only through `symbolic/generated/`.** If a coefficient that you need is not
    there, stop and report it. Do not derive it here. Do not copy it from a paper. Do not write it
    by hand "for now". That is the most expensive shortcut that you have.

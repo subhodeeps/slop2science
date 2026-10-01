@@ -251,6 +251,26 @@ expect("the startup load is the charter, its two imports and the one rule withou
 expect("the charter is under 200 lines", load["files"]["CLAUDE.md"] < 200, True)
 expect("the startup total is within its budget", load["total"] <= cd.STARTUP_BUDGET, True)
 
+print("derivation write-ups — every statement of the 'no citable check' rule has the same exception")
+
+
+def rule_without_exception(files):
+    """Files that say an equation with no citable check stays out, without the exception for
+    algebra by hand between two checked expressions. The agent and the skill once disagreed."""
+    return sorted(p for p, t in files.items()
+                  if re.search(r"no\s+citable\s+check|has\s+no\s+check", t, re.I)
+                  and not re.search(r"algebra\s+by\s+hand|by\s+hand\s+between", t, re.I))
+
+
+expect("a statement of the rule without the exception is flagged",
+       rule_without_exception({"x.md": "If an equation has no citable check, leave it out."}), ["x.md"])
+expect("the same statement with the exception is fine",
+       rule_without_exception({"x.md": "No citable check: leave it out, except algebra by hand."}), [])
+expect("'by hand' in an unrelated sentence does not count as the exception",
+       rule_without_exception({"x.md": "No citable check: leave it out. Never copy by hand."}), ["x.md"])
+expect("every real file that states the rule also states the exception",
+       rule_without_exception(real), [])
+
 print("charter — the numbered sections have no gap")
 
 nums = [int(m.group(1)) for m in re.finditer(r"^## (\d+)[a-z]?\.", charter, re.M)]
