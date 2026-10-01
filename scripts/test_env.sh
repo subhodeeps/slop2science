@@ -89,7 +89,7 @@ echo "env-test: scripts/run_tests.sh"
 mkdir -p "$T/tests/python"; : > "$UV_LOG"; mkdir -p "$T/src/python/.venv"
 ( cd "$T" && PATH="$W/bin:$BASE" scripts/run_tests.sh python >/dev/null 2>&1 )
 check "tests run in the project environment: uv run --project src/python pytest" \
-  'grep -q "^run --project src/python pytest -q tests/python$" "$UV_LOG"'
+  'grep -q "^run --project src/python pytest -q -rs tests/python$" "$UV_LOG"'
 
 out="$(cd "$T" && PATH="$BASE" scripts/run_tests.sh python 2>&1)"
 check "no uv: tests are a loud SKIP, not a pass" 'echo "$out" | grep -q "SKIP python: uv not installed"'

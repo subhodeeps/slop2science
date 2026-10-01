@@ -21,11 +21,11 @@ case "$lang" in
     if [ -f src/python/pyproject.toml ] && [ -z "${PYTHON:-}" ]; then
       command -v uv >/dev/null 2>&1 || { echo "[test] SKIP python: uv not installed (make setup)"; exit 0; }
       [ -d src/python/.venv ] || { echo "[test] SKIP python: no environment yet (make setup)"; exit 0; }
-      uv run --project src/python pytest -q tests/python
+      uv run --project src/python pytest -q -rs tests/python
     else
       scripts/py -c '' >/dev/null 2>&1 || { echo "[test] SKIP python: no interpreter (docs/toolchain.md)"; exit 0; }
       scripts/py -c 'import pytest' >/dev/null 2>&1 || { echo "[test] SKIP python: pytest not installed"; exit 0; }
-      scripts/py -m pytest -q tests/python
+      scripts/py -m pytest -q -rs tests/python
     fi ;;
   *) echo "unknown language: $lang" >&2; exit 64 ;;
 esac

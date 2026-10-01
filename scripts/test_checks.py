@@ -415,5 +415,24 @@ for guarded in (".claude/guard_paths.json", ".claude/settings.json", ".claude/ho
                   gp.glob_to_regex(a[len("Edit(/"):-1]).match(guarded) for a in ask)
     expect(f"an ask rule covers {guarded}", covered, True)
 
+print("check_plots.py — a plotting script uses the amore style and its palettes")
+
+spec_p = importlib.util.spec_from_file_location("check_plots", ROOT / "scripts" / "check_plots.py")
+cp = importlib.util.module_from_spec(spec_p)
+spec_p.loader.exec_module(cp)
+expect("a matplotlib script without amore is flagged",
+       len(cp.violations("import matplotlib.pyplot as plt\nplt.plot([1])\n")), 1)
+expect("a script that imports amore but never calls use() is flagged",
+       len(cp.violations("import matplotlib.pyplot as plt\nimport amore\n")), 1)
+expect("a script with amore.use() passes",
+       cp.violations("import matplotlib.pyplot as plt\nimport amore\namore.use()\n"), [])
+expect("an alias works: import amore as ps; ps.use()",
+       cp.violations("from matplotlib import pyplot\nimport amore as ps\nps.use()\n"), [])
+expect("a hard-coded hex colour is flagged",
+       len(cp.violations("import matplotlib\nimport amore\namore.use()\nc = '#ff0000'\n")), 1)
+expect("a file that does not plot is not checked",
+       cp.violations("import numpy as np\nc = '#ff0000'\n"), [])
+expect("no real file breaks the rule", sum(len(cp.violations((R / f).read_text())) for f in cp.files()), 0)
+
 print(f"\nchecks: {passed} passed, {failed} failed")
 sys.exit(1 if failed else 0)

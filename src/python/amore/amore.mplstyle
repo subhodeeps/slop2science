@@ -1,0 +1,60 @@
+# amore: the plot style for matplotlib figures. Written for this template.
+# Inspired by the Physical Review style of hosilva/physrev_mplstyle (Computer Modern
+# through LaTeX, ticks inside on all four sides, minor ticks), with muted pastel colours,
+# a heavy frame and a light dotted grid. amore/__init__.py has the named palettes.
+
+### Default colour cycle: one deep ink, then muted pastels (blue, red, green, ...)
+axes.prop_cycle : cycler('color', ['2e1a6e', '5c9dc7', 'd2737f', '6fa98a', 'e0a458', '8678b2', '7aa6a6', 'c9b458'])
+
+### Fonts: LaTeX with Computer Modern
+text.usetex      : True
+text.latex.preamble : \usepackage{amsmath}
+font.family      : serif
+font.serif       : Computer Modern Roman
+font.size        : 10
+axes.labelsize   : 11
+xtick.labelsize  : 10
+ytick.labelsize  : 10
+legend.fontsize  : 10
+
+### Frame and grid
+axes.linewidth   : 1.5
+axes.edgecolor   : black
+axes.grid        : True
+grid.linestyle   : :
+grid.linewidth   : 0.5
+grid.color       : gray
+grid.alpha       : 0.5
+axes.axisbelow   : True
+
+### Lines
+lines.linewidth  : 1.2
+
+### Ticks: inside, on all four sides, with minor ticks
+xtick.direction      : in
+ytick.direction      : in
+xtick.top            : True
+ytick.right          : True
+xtick.minor.visible  : True
+ytick.minor.visible  : True
+xtick.major.size     : 4.0
+ytick.major.size     : 4.0
+xtick.minor.size     : 2.0
+ytick.minor.size     : 2.0
+xtick.major.width    : 0.8
+ytick.major.width    : 0.8
+xtick.minor.width    : 0.6
+ytick.minor.width    : 0.6
+xtick.major.pad      : 5.0
+ytick.major.pad      : 5.0
+
+### Legend: no frame
+legend.frameon       : False
+
+### Figure and saving
+figure.figsize       : 6.0, 4.0
+figure.dpi           : 150
+savefig.dpi          : 600
+savefig.bbox         : tight
+savefig.pad_inches   : 0.05
+path.simplify        : True

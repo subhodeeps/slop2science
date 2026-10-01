@@ -8,8 +8,8 @@ SHELL       := /usr/bin/env bash
 PY          ?= scripts/py
 TOPIC       ?= {{DEFAULT_TOPIC}}
 
-.PHONY: help check-env setup test test-julia test-python stages codegen codegen-check \
-        check check-refs check-evidence check-docs check-init test-hooks test-checks test-library test-env lint-ste lint-ste-md lint-ste-code status fetch-source \
+.PHONY: help check-env setup test test-julia test-python stages codegen codegen-check plot-examples \
+        check check-refs check-evidence check-docs check-plots check-init test-hooks test-checks test-library test-env lint-ste lint-ste-md lint-ste-code status fetch-source \
         libraries search-library report new-record clean-logs
 
 help: ## list targets
@@ -17,7 +17,7 @@ help: ## list targets
 
 # --- tool-free tier ----------------------------------------------------------------
 
-check: test-hooks test-checks test-library test-env lint-ste-md check-refs check-evidence check-docs ## all repository checks (no scientific toolchain needed)
+check: test-hooks test-checks test-library test-env lint-ste-md check-refs check-evidence check-docs check-plots ## all repository checks (no scientific toolchain needed)
 
 check-init: ## fail if {{PLACEHOLDERS}} remain (expected to fail in the template itself)
 	@$(PY) scripts/check_docs.py init
@@ -51,6 +51,9 @@ check-evidence: ## fail if an [E: file, "label"] evidence tag cites a label abse
 
 check-docs: ## staleness guard: ownership declared, record consistency, stale write-ups
 	@$(PY) scripts/check_docs.py stale
+
+check-plots: ## fail if a Python plotting script does not use the amore style or hard-codes a colour
+	@$(PY) scripts/check_plots.py
 
 status: ## print docs/STATUS.md
 	@cat docs/STATUS.md
@@ -95,6 +98,9 @@ codegen: ## run the export stages for $(TOPIC) -> symbolic/generated/<lang>/
 
 codegen-check: codegen ## regenerate hand-off code and fail on any diff from git
 	@git diff --exit-code -- symbolic/generated/ && echo "generated code reproducible"
+
+plot-examples: ## regenerate the three amore-style example figures in docs/figures/ (needs LaTeX)
+	@scripts/py src/python/amore/examples.py
 
 report: ## render reports/$(TOPIC)_report.md -> .pdf (pandoc + xelatex)
 	@scripts/report_pdf.sh $(TOPIC)
