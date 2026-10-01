@@ -160,6 +160,12 @@ Other repositories contributed parts:
   — reproducible-research practice as context engineering. The template follows her
   caveat: the researcher stays responsible for the judgements that these artifacts contain.
 
+## Contributions welcome
+
+If you use this template for scientific research and find a bug or an improvement, open an issue
+in this repository. Give the file, what happened, and what you expected. A pull request is
+welcome too. Run `make check` before you send it.
+
 > *"I was powerfully gripped by the vision of transitoriness … [E]very symbol and combination of
 > symbols led … into the center, the mystery and innermost heart of the world … Every transition
 > from major to minor in a sonata, every transformation of a myth or a religious cult … nothing
