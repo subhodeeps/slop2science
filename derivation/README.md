@@ -1,35 +1,37 @@
 # derivation — the human-readable derivations
 
-**A primary deliverable, not a byproduct of the numerics** (CLAUDE.md §2). Each topic's
-derivation must accumulate into a complete, self-contained, re-runnable reconstruction — from
-the source's equations through the reduction to whatever the solver consumes — publishable as
-an appendix or a standalone methods paper in its own right.
+**This is a primary deliverable. It is not a byproduct of the numerics** (CLAUDE.md §2). The
+derivation of each topic must grow into a complete, self-contained, re-runnable reconstruction.
+It starts with the equations of the source. It continues through the reduction to the form that
+the solver uses. It must be publishable as an appendix or as a separate methods paper.
 
 ## Shape
 
-One file per stage: `<topic>/NN_<stage>.md`, mirroring `symbolic/<topic>/stage_NN_<stage>.<ext>`.
+Use one file for each stage: `<topic>/NN_<stage>.md`. It mirrors
+`symbolic/<topic>/stage_NN_<stage>.<ext>`.
 
-Each states: the conventions and assumptions used, the displayed equations, and for **every**
-displayed equation an evidence tag naming the verifying script and its exact check label:
+Each file states the conventions and assumptions that it uses and the displayed equations. For
+**each** displayed equation, it gives an evidence tag. The tag names the script that verifies
+the equation. It also names the exact label of the check:
 
     [E: `symbolic/<topic>/stage_04_reduce.wls`, "reduced system matches source Eq. (9)"]
 
-Under the title, two lines:
+Put two lines under the title:
 
     Kind:           REPRODUCTION | EXTENSION | CROSS-CHECK
     Judged against: <the source's Eq./Table N> | <benchmark/physics, named>
 
-**Never display an equation that no script checks.** Algebra done by hand between two checked
-expressions is allowed, stated once and marked as such.
+**Never display an equation that no script checks.** You can do algebra by hand between two
+checked expressions. State it one time and mark it.
 
 ## Retention
 
-Write-ups and their scripts are the permanent record and are committed together. **Never
-delete one.** Supersede by adding a new numbered stage and noting the change in the old
-script's header and in `docs/decision_log.md`. A hook blocks overwriting an existing stage
-script, because the write-ups cite these scripts by name.
+The write-ups and their scripts are the permanent record. Commit them together. **Never delete
+one.** To supersede a stage, add a new numbered stage. Note the change in the header of the old
+script and in `docs/decision_log.md`. A hook blocks the overwrite of an existing stage script,
+because the write-ups cite these scripts by name.
 
-Full rules: `.claude/rules/derivation.md`. Per-stage checklist:
+Full rules: `.claude/rules/derivation.md`. Checklist for each stage:
 `.claude/skills/derivation-workflow/reference/stage_checklist.md`.
 
 ## Topic index

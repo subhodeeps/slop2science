@@ -24,6 +24,7 @@ def prose(text):
         st = line.strip()
         if st.startswith("```"):
             fence = not fence
+            out.append((n, ""))  # a code block ends the paragraph before it
             continue
         if "<!--" in st and "-->" not in st:
             comment = True
@@ -32,6 +33,8 @@ def prose(text):
             comment = "-->" not in st
             continue
         if fence or not st or st.startswith(("<!--", "---", "|", "#", ">")) or line.startswith("    "):
+            if not fence:
+                out.append((n, ""))
             continue
         out.append((n, line))
     return out

@@ -1,12 +1,13 @@
 # docs/literature — literature notes by topic
 
-One file per topic: `<topic>.md`. What a source establishes, its conventions, and the explicit
-conversions needed to compare it with this project.
+Use one file for each topic: `<topic>.md`. The file states what a source establishes and its
+conventions. It also states the explicit conversions that you need to compare the source with
+this project.
 
-Written by the `literature` agent (`.claude/skills/literature-audit/SKILL.md`). Findings go
-here; the sources themselves stay read-only in `papers/`.
+The `literature` agent writes these files (`.claude/skills/literature-audit/SKILL.md`). Put
+findings here. The sources stay read-only in `papers/`.
 
-Every number or equation recorded here carries its source, the section or table it came from,
-and the version consulted. **These are working notes**: where one disagrees with
-`docs/decision_log.md` or a source audit's discrepancy row, the settled record wins and the
-inconsistency is recorded (`docs/failure_modes.md` entry 9).
+Each number or equation that you record here carries its source, the section or table that it
+came from, and the version that you consulted. **These are working notes.** If a note
+disagrees with `docs/decision_log.md` or with a discrepancy row of a source audit, the settled
+record wins. Record the inconsistency (`docs/failure_modes.md` entry 9).
