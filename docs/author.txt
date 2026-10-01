@@ -1,0 +1,5 @@
+# The default author of each document that scripts/report_pdf.sh converts, and that has no
+# `author:` in its YAML header. The first line below that is not blank or a comment is the
+# author. /init-paper asks the PI for this line and replaces it. The PI chooses the wording,
+# for example a name alone, or a name with an acknowledgement.
+Subhodeep Sarkar (with help from Claude)

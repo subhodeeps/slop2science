@@ -41,16 +41,23 @@ environment variables:
 ## Title, author and abstract
 
 The title page takes them from a YAML header in the Markdown. The first level-1 heading is the
-title. For each of the three that the document lacks, the script asks a model (`sonnet`, set in
-`.claude/models.md`) with the `claude` command. The model reads the text of the document, so the
-text leaves the machine. `META=0` stops the request. The rules for the model: use only what the
-document states, give no author unless the document names one, and write the abstract in
-ASD-STE100. The call runs in an empty folder with the project settings off. Then no project hook
-(the prompt log, for one) records the text of the document.
+title.
+
+- **Author.** A document with no `author:` gets the default author of the project. That is
+  `REPORT_AUTHOR`, or else the first line of `docs/author.txt` that is not a comment. The PI
+  chooses the wording, and `/init-paper` writes the file. An empty `REPORT_AUTHOR` means no
+  default author. Without one, the model reads the document for an author that it names.
+- **Title and abstract.** For each one that the document lacks, the script asks a model
+  (`sonnet`, set in `.claude/models.md`) with the `claude` command. The model reads the text of
+  the document, so the text leaves the machine. `META=0` stops the request. The rules for the
+  model: use only what the document states, and write the abstract in ASD-STE100. The call runs
+  in an empty folder with the project settings off. Then no project hook (the prompt log, for
+  one) records the text of the document.
 
 - The answer is in `reports/<name>.meta.json`. Later builds read it and do not ask again.
   `META=refresh` asks again.
-- A YAML header in the Markdown always wins. To fix an entry, put it in the header.
+- A YAML header in the Markdown always wins, also over the default author. To fix an entry,
+  put it in the header.
 - The build never fails because of this step. Without `claude` or `jq` it skips the step.
 - **Show the person the generated entries.** The abstract is text that a model wrote. The
   person must read it before the PDF goes to anyone.

@@ -12,6 +12,8 @@
 #   - an image uses its PDF when one is beside it (PDF over PNG over JPG), else the named file;
 #   - a missing title, author or abstract is asked of a model once (a fake one here), the answer
 #     is saved, a YAML header wins over it, and a failing or absent model never fails the build;
+#   - a document without an author gets the default author (REPORT_AUTHOR, else docs/author.txt),
+#     a YAML author wins over it, and with a default author the model is not asked for one;
 #   - that model call runs in an empty folder with the project settings off, so no project hook
 #     (the prompt log, for one) records the text of the document.
 set -uo pipefail
@@ -26,6 +28,7 @@ check() { if eval "$2"; then ok "$1"; else bad "$1"; fi; }
 W="$(mktemp -d)"; trap 'rm -rf "$W"' EXIT
 export REPORT_OUT="$W"
 export META=0                     # no test calls a real model; the metadata tests use a fake one
+export REPORT_AUTHOR=""           # no default author, so no test depends on docs/author.txt
 
 echo "report-test: README.md"
 check "README renders to a PDF" 'scripts/report_pdf.sh README.md >"$W/readme.out" 2>&1 && [ -s "$W/README.pdf" ]'
@@ -103,6 +106,17 @@ check "a YAML title wins over the saved answer"          'cp "$W/bare.meta.json"
 check "a failing model does not fail the build"          'rm -f "$W/bare.meta.json"; FAKE_FAIL=1 meta "$W/bare.md" && [ -s "$W/bare.pdf" ] && grep -q "no usable answer" "$W/meta.out"'
 check "no claude command: the build goes on, with a note" 'rm -f "$W/bare.meta.json"; META=auto CLAUDE_BIN=/nonexistent scripts/report_pdf.sh "$W/bare.md" >"$W/meta.out" 2>&1 && grep -q "needs claude and jq" "$W/meta.out"'
 check "META=0 never asks"                                'n1="$(wc -l < "$CALLS")"; META=0 CLAUDE_BIN="$W/bin/claude" scripts/report_pdf.sh "$W/bare.md" >/dev/null 2>&1; [ "$(wc -l < "$CALLS")" -eq "$n1" ]'
+
+echo "report-test: default author"
+file_author="$(grep -v '^[[:space:]]*\(#\|$\)' docs/author.txt 2>/dev/null | head -1)"
+check "docs/author.txt has an author line"               '[ -n "$file_author" ]'
+printf '## Part\n\nText.\n' > "$W/plain.md"
+author_build() { env "$@" scripts/report_pdf.sh "$W/plain.md" >"$W/author.out" 2>&1; }
+check "no default author, no author on the title page"   'author_build REPORT_AUTHOR= && ! grep -q "author{.\+}" "$W/plain.tex"'
+check "docs/author.txt gives the default author"         'author_build -u REPORT_AUTHOR && grep -qF "author{$file_author}" "$W/plain.tex"'
+check "REPORT_AUTHOR overrides docs/author.txt"          'author_build "REPORT_AUTHOR=Env Author" && grep -q "author{Env Author}" "$W/plain.tex" && ! grep -qF "$file_author" "$W/plain.tex"'
+check "a YAML author wins over the default author"       'REPORT_AUTHOR="Env Author" scripts/report_pdf.sh "$W/own.md" >/dev/null 2>&1 && grep -q "author{Own Author}" "$W/own.tex" && ! grep -q "Env Author" "$W/own.tex"'
+check "with a default author the model is not asked for it" 'rm -f "$W/bare.meta.json"; REPORT_AUTHOR="Env Author" meta "$W/bare.md" && grep -q "keys: title,abstract" "$CALLS.args" && grep -q "author{Env Author}" "$W/bare.tex"'
 
 echo "report-test: $pass passed, $fail failed"
 [ "$fail" -eq 0 ]

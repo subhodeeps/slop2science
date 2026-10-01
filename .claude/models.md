@@ -28,7 +28,7 @@ is the trade, and the project makes it deliberately.
 | `status-reporter` | `sonnet` | The work summarises authoritative files. It has no mathematics. |
 | `explore` | `haiku` | Lookup that locates and quotes. It does not synthesize. |
 | `session-close` | `sonnet` | It accounts for each changed file, decides what counts as evidence for a state change, and writes the records. The commands are read-only and a checklist guides the work, but the accounting needs judgement. `haiku` is too weak for it. Raise it to `opus` for a close that follows a long, interrupted session. |
-| `md-to-pdf` title page | `sonnet` | `scripts/report_pdf.sh` asks for the title, author and abstract that a document lacks. The job is a short summary of one file. `METADATA_MODEL` overrides it. |
+| `md-to-pdf` title page | `sonnet` | `scripts/report_pdf.sh` asks for the title and abstract that a document lacks. It also asks for the author when `docs/author.txt` has none. The job is a short summary of one file. `METADATA_MODEL` overrides it. |
 | Main session | project default | It orchestrates, prompts and reviews. It does not do the hard algebra or the independent audits. |
 
 To raise the model of one session, use `/model` when a task needs it. This does not change the

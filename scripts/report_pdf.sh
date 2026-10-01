@@ -11,15 +11,20 @@
 #   NUMBER=1           number the sections (default: off, because many documents number by hand)
 #   TOC=0              no table of contents (default: on)
 #   PDF_ENGINE=name    xelatex or lualatex (default: xelatex, then lualatex)
-#   META=auto|0|refresh  title, author and abstract that the document lacks (default: auto).
+#   REPORT_AUTHOR=text the default author. It overrides docs/author.txt. An empty value means
+#                      that there is no default author.
+#   META=auto|0|refresh  title and abstract that the document lacks (default: auto).
 #                      auto: ask a model once, and keep the answer in <out>/<name>.meta.json.
 #                      0: never ask, and ignore the saved answer. refresh: ask again.
 #   METADATA_MODEL=sonnet   the model for that request (.claude/models.md). CLAUDE_BIN=claude
 #
 # Title, author and abstract come from a YAML header in the Markdown, and the first level-1
-# heading is the title. For each of the three that is missing, the script asks a model, with
-# the `claude` command. The text of the document goes to that model. A YAML header always wins
-# over the saved answer. The build never fails because of this step.
+# heading is the title. A document without an author gets the default author of the project:
+# REPORT_AUTHOR, else the first line of docs/author.txt that is not blank or a comment
+# (/init-paper writes that file). For each of the title, the abstract (and the author, when
+# the project has no default author) that is missing, the script asks a model, with the
+# `claude` command. The text of the document goes to that model. A YAML header always wins
+# over the default author and over the saved answer. The build never fails because of this step.
 #
 # The reader is CommonMark (commonmark_x), as on GitHub, not pandoc's own Markdown. Pandoc's
 # Markdown reads a line that starts with "ML." or "CIV." inside a paragraph as a Roman-numeral
@@ -59,10 +64,21 @@ yaml_has() {                      # does a YAML header at the top of $src have t
   awk -v k="$1" 'NR==1{if ($0!="---") exit 1; next} /^(---|\.\.\.)[[:space:]]*$/{exit}
                  $0 ~ "^"k"[[:space:]]*:"{f=1} END{exit f?0:1}' "$src"
 }
-meta_json="$out/$base.meta.json"; meta_args=()
+meta_json="$out/$base.meta.json"; meta_args=(); author_args=()
+if [ -n "${REPORT_AUTHOR+x}" ]; then default_author="$REPORT_AUTHOR"
+elif [ -f docs/author.txt ]; then default_author="$(grep -v '^[[:space:]]*\(#\|$\)' docs/author.txt | head -1 || true)"
+else default_author=""; fi
+default_author="$(printf '%s' "$default_author" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
 missing=()
 [ "${#shift_args[@]}" -gt 0 ] || yaml_has title || missing+=(title)
-yaml_has author || missing+=(author)
+if ! yaml_has author; then
+  if [ -n "$default_author" ]; then
+    author_args=(--metadata="author:$default_author")
+    echo "[report] author: $default_author (the default author; a YAML header in the Markdown overrides it)"
+  else
+    missing+=(author)
+  fi
+fi
 yaml_has abstract || missing+=(abstract)
 mode="${META:-auto}"
 if [ "$mode" != 0 ] && [ "${#missing[@]}" -gt 0 ] && { [ "$mode" = refresh ] || [ ! -f "$meta_json" ]; }; then
@@ -105,7 +121,8 @@ opts=(--standalone --from=commonmark_x+tex_math_dollars-fancy_lists
 [ "${NUMBER:-0}" = "1" ] && opts+=(--number-sections)
 
 echo "[report] pandoc: $src -> $tex"
-pandoc "$src" "${shift_args[@]}" "${meta_args[@]}" "${opts[@]}" -o "$tex"
+pandoc "$src" ${shift_args[@]+"${shift_args[@]}"} ${meta_args[@]+"${meta_args[@]}"} \
+  ${author_args[@]+"${author_args[@]}"} "${opts[@]}" -o "$tex"
 
 echo "[report] $engine: $tex -> $pdf"
 if command -v latexmk >/dev/null 2>&1; then

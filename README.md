@@ -108,6 +108,15 @@ I use Mathematica, Python and Julia. The template has a configuration for all th
   scripts/py scripts/library.py import --zotero 101 --dry-run
   ```
 
+- Any Markdown file becomes LaTeX and a PDF with pandoc. The result goes to `reports/`. The
+  author line comes from `docs/author.txt`, which `/init-paper` fills in. If the file has no
+  title or abstract, the script asks a model (`sonnet`) one time and keeps the answer. The model
+  reads the text of the file. A YAML header in the file always wins.
+
+  ```bash
+  make report FILE=README.md      # or: make report TOPIC=<topic>
+  ```
+
 - Figures use `amore` (`src/python/amore/`). Labels use LaTeX. Notes inside a plot use a monospace
   font. A colour bar sits above the plot, outside it, and the plot keeps the same size as a line
   plot. The `plotting` skill applies the style, and Claude looks at each rendered figure before it

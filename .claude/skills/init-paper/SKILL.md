@@ -25,6 +25,10 @@ placeholder with no answer silently becomes a permanent wrong default.
    (CLAUDE.md §1, §2).
 1. **Project name.** Keep it short. The project uses it in headings and in the banner of the
    Makefile.
+1a. **Author line.** Ask for the author line of the documents that the project converts to PDF
+   (the reports and the README). Offer the wording as a choice: a name alone, or a name with an
+   acknowledgement such as "(with help from Claude)". The PI decides the wording. Never take the
+   name from `git config` or from the repository.
 2. **Primary source.** This is the paper that the project reproduces. Ask the PI for one of
    these two:
    - an arXiv link or identifier (`$ARGUMENTS` can give it)
@@ -96,6 +100,8 @@ subtly wrong.
    `{{PRIMARY_SOURCE}}` and `{{TOOL_A}}`, `{{TOOL_B}}`, `{{TOOL_C}}`. Change nothing else. §1, §3,
    §4, §6 and §7–§11 are the discipline. They are not project parameters (`TEMPLATE_GUIDE.md`
    §1).
+1a. `docs/author.txt`. Replace the author line with the answer to question 1a. Keep the comment
+   lines. `scripts/report_pdf.sh` reads this line for each document that has no author.
 2. `docs/toolchain.md`. Fill the ownership registry between the `REGISTRY-START/END` markers. Use
    one row for each topic and each solver. Name the owning tool. Take it from the answers of the
    PI or from the default profile. Remove the notes for a tool that this project does not use.
