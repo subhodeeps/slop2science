@@ -35,6 +35,9 @@ import tempfile
 import time
 from pathlib import Path
 
+import library_meta as lm
+import registry
+
 ROOT = Path(__file__).resolve().parent.parent
 RECORDS = Path(os.environ.get("RESEARCH_RECORDS_DIR")
                or Path.home() / ".claude-research-records")
@@ -61,44 +64,7 @@ def calibre_db():
     return None
 
 
-class ReadOnly:
-    """Read-only connection to a live database, falling back to a scratch copy if locked."""
-
-    def __init__(self, path):
-        self.path = Path(path)
-        self.copied = False
-        self._tmp = None
-        self.conn = None
-
-    def __enter__(self):
-        try:
-            self.conn = sqlite3.connect(f"file:{self.path}?mode=ro", uri=True, timeout=2.0)
-            self.conn.execute("SELECT 1").fetchone()
-            return self
-        except sqlite3.Error:
-            if self.conn:
-                self.conn.close()
-            handle, tmp = tempfile.mkstemp(prefix="libread.", suffix=".sqlite")
-            os.close(handle)
-            self._tmp = Path(tmp)
-            shutil.copy2(self.path, self._tmp)
-            self.conn = sqlite3.connect(f"file:{self._tmp}?mode=ro", uri=True)
-            self.copied = True
-            return self
-
-    def __exit__(self, *exc):
-        if self.conn:
-            self.conn.close()
-        if self._tmp and self._tmp.exists():
-            self._tmp.unlink(missing_ok=True)
-        return False
-
-    def rows(self, sql, params=()):
-        try:
-            return self.conn.execute(sql, params).fetchall()
-        except sqlite3.Error as exc:
-            print(f"  query failed ({exc}) — schema may differ in this version", file=sys.stderr)
-            return []
+ReadOnly = lm.ReadOnly          # one implementation, shared with library_meta.py
 
 
 def count(path, table):
@@ -171,25 +137,30 @@ def zotero_search(path, author, title, doi, limit):
     with ReadOnly(path) as db:
         if db.copied:
             print("  [live Zotero db was locked; queried a scratch copy]")
-        ids, why = set(), []
+        # Every criterion given must match (AND). An earlier version fell through to a union
+        # when the author matched nothing, so `--author Nobody --title X` returned X's hits.
+        sets, why = [], []
         if author:
-            rows = db.rows(
+            sets.append({r[0] for r in db.rows(
                 "SELECT DISTINCT i.itemID FROM items i "
                 "JOIN itemCreators ic ON ic.itemID = i.itemID "
                 "JOIN creators c ON c.creatorID = ic.creatorID "
-                "WHERE c.lastName LIKE ?", (f"%{author}%",))
-            ids |= {r[0] for r in rows}
+                "WHERE c.lastName LIKE ?", (f"%{author}%",))})
             why.append(f"author~{author}")
-        if title or doi:
-            needle, field = (title, "title") if title else (doi, "DOI")
-            rows = db.rows(
-                "SELECT DISTINCT id.itemID FROM itemData id "
-                "JOIN itemDataValues v ON v.valueID = id.valueID "
-                "JOIN fields f ON f.fieldID = id.fieldID "
-                "WHERE f.fieldName = ? AND v.value LIKE ?", (field, f"%{needle}%"))
-            matched = {r[0] for r in rows}
-            ids = (ids & matched) if (author and ids) else (ids | matched)
-            why.append(f"{field}~{needle}")
+        for needle, field in ((title, "title"), (doi, "DOI")):
+            if needle:
+                sets.append({r[0] for r in db.rows(
+                    "SELECT DISTINCT id.itemID FROM itemData id "
+                    "JOIN itemDataValues v ON v.valueID = id.valueID "
+                    "JOIN fields f ON f.fieldID = id.fieldID "
+                    "WHERE f.fieldName = ? AND v.value LIKE ?", (field, f"%{needle}%"))})
+                why.append(f"{field}~{needle}")
+        ids = set.intersection(*sets) if sets else set()
+        # Only real, live works: not the trash, not an attachment or a note.
+        hidden = {r[0] for sql in ("SELECT itemID FROM deletedItems",
+                                   "SELECT itemID FROM itemAttachments",
+                                   "SELECT itemID FROM itemNotes") for r in db.rows(sql)}
+        ids -= hidden
 
         if not ids:
             print(f"  Zotero: no match ({', '.join(why)})")
@@ -218,7 +189,8 @@ def zotero_search(path, author, title, doi, limit):
                       f"{data.get('DOI', '')}".rstrip())
         if total > limit:
             print(f"    … {total - limit} more. Narrow the query rather than raising --limit.")
-        print("    Attachment paths: scripts/library.py attachments --item <ID>")
+        print("    Next: scripts/library.py show --zotero <ID>       (all metadata, read-only)\n"
+              "          scripts/library.py import --zotero <ID> --dry-run")
 
 
 def calibre_search(path, author, title, limit):
@@ -245,6 +217,8 @@ def calibre_search(path, author, title, limit):
         for book_id, book_title, pubdate, name, rel in rows[:limit]:
             print(f"    [{book_id}] {name or '?'} ({str(pubdate or '?')[:4]}) {book_title}")
             print(f"           dir: {rel}")
+        print("    Next: scripts/library.py show --calibre <ID>      (all metadata, read-only)\n"
+              "          scripts/library.py import --calibre <ID> --dry-run")
 
 
 def cmd_search(args):
@@ -299,6 +273,116 @@ def cmd_attachments(args):
     return 0
 
 
+# --------------------------------------------------------------------------- show / bibtex / import
+
+def _open_record(args):
+    """Read ONE item from the named library. Returns (record, db_path)."""
+    if args.zotero is not None:
+        path = zotero_db()
+        if not path:
+            raise lm.LibraryError("no Zotero library found (ZOTERO_DIR)")
+        with ReadOnly(path) as db:
+            return lm.read_zotero(db, path.parent, args.zotero), path
+    path = calibre_db()
+    if not path:
+        raise lm.LibraryError("no Calibre library found (CALIBRE_DIR)")
+    with ReadOnly(path) as db:
+        return lm.read_calibre(db, path.parent, args.calibre), path
+
+
+def _print_record(record):
+    src, fields = record["source"], record["fields"]
+    if src["app"] == "zotero":
+        print(f"Zotero item {src['item_id']} (key {src['item_key']}) — {src['item_type']}"
+              + (f" — group library {src['group_name']}" if src.get("group_name") else ""))
+        people = [f"{c['type']}: " + (c["last"] if c["single_field"] else f"{c['last']}, {c['first']}")
+                  for c in record["creators"]]
+    else:
+        print(f"Calibre book {src['book_id']}")
+        people = [f"author: {a}" for a in record["authors"]]
+    for line in people:
+        print(f"  {line}")
+    for name, value in sorted(fields.items()):
+        text = str(value).replace("\n", " ")
+        print(f"  {name:<20} {text[:300]}{' …' if len(text) > 300 else ''}")
+    for key in ("publishers", "series", "languages", "tags", "collections"):
+        if record.get(key):
+            print(f"  {key:<20} {'; '.join(record[key])}")
+    if record.get("identifiers"):
+        print(f"  {'identifiers':<20} " + "; ".join(f"{k}={v}" for k, v in record["identifiers"].items()))
+    for a in record.get("attachments", []):
+        size = f"{a['size_bytes'] / 1048576:.1f} MB" if a["size_bytes"] else "no file"
+        print(f"  attachment           {a['filename'] or '(none)'}  [{a['content_type']}, "
+              f"{a['path_kind']}, {size}]")
+    for f in record.get("formats", []):
+        size = f"{f['size_bytes'] / 1048576:.1f} MB" if f["size_bytes"] else "missing"
+        print(f"  format               {f['format']}  {size}")
+    if record["schema_gaps"]:
+        print("  NOT READ (schema or query problems — metadata may be incomplete):")
+        for gap in record["schema_gaps"]:
+            print(f"    - {gap}")
+    print("  deliberately not read: " + ", ".join(lm.EXCLUDED_BY_DESIGN))
+
+
+def cmd_show(args):
+    try:
+        record, _ = _open_record(args)
+    except lm.LibraryError as exc:
+        print(f"refused: {exc}", file=sys.stderr)
+        return 1
+    _print_record(record)
+    return 0
+
+
+def cmd_bibtex(args):
+    try:
+        record, _ = _open_record(args)
+    except lm.LibraryError as exc:
+        print(f"refused: {exc}", file=sys.stderr)
+        return 1
+    ref = lm.normalise(record)
+    print("% UNVERIFIED: built from catalogue metadata, not from the document itself")
+    print(lm.to_bibtex(ref, lm.cite_key(ref, set())))
+    return 0
+
+
+def cmd_import(args):
+    try:
+        record, db_path = _open_record(args)
+        plan = lm.build_import(
+            record, label=args.label, role=args.role, max_mb=args.max_mb, no_file=args.no_file,
+            formats=tuple(f.strip() for f in args.formats.split(",") if f.strip()))
+    except (lm.LibraryError, registry.RegistryError) as exc:
+        print(f"refused: {exc}", file=sys.stderr)
+        return 1
+
+    print(f"{'DRY RUN — nothing will be written' if args.dry_run else 'importing'}: "
+          f"{plan['record']['source']['app']} -> label {plan['label']}, BibTeX key {plan['key']}")
+    for f in plan["files"]:
+        size = f"{f['size_bytes'] / 1048576:.1f} MB" if f["size_bytes"] else "—"
+        print(f"  {'COPY' if f['action'] == 'copy' else 'skip'}  {f['name']}  ({size})"
+              + (f"   because: {f['reason']}" if f["reason"] else ""))
+    if not plan["files"]:
+        print("  (no attachments or formats recorded for this item)")
+    print("  metadata: every field, creators, identifiers, tags, collections -> "
+          f"papers/imported/{plan['label']}/metadata.json")
+    print("  bibliography: papers/sources.yaml and papers/refs.bib (both marked UNVERIFIED)")
+    print("\n" + plan["bibtex"])
+    if args.dry_run:
+        return 0
+
+    try:
+        result = lm.execute_import(plan, library_db_mtime=db_path.stat().st_mtime)
+    except (OSError, registry.RegistryError) as exc:
+        print(f"\nfailed, and rolled back — nothing was written: {exc}", file=sys.stderr)
+        return 1
+    print(f"\ndone: papers/imported/{result['label']}/  ({len(result['copied'])} file(s) copied)")
+    print("Still to do, by hand: check the document's OWN first page against these identifiers,\n"
+          "set `role` and `notes` in papers/sources.yaml, then flip `verified:` to true and\n"
+          "delete the UNVERIFIED marker in papers/refs.bib (.claude/rules/bibliography.md).")
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -315,8 +399,30 @@ def main():
     p_att = sub.add_parser("attachments", help="attachment paths for one Zotero item")
     p_att.add_argument("--item", type=int, required=True)
 
+    def add_item_args(parser):
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument("--zotero", help="Zotero itemID (or 8-character key)")
+        group.add_argument("--calibre", type=int, help="Calibre book id")
+
+    p_show = sub.add_parser("show", help="ALL metadata for one item, read-only, writes nothing")
+    add_item_args(p_show)
+    p_bib = sub.add_parser("bibtex", help="print a BibTeX entry for one item, writes nothing")
+    add_item_args(p_bib)
+    p_imp = sub.add_parser(
+        "import", help="import ONE item: small file + full metadata + sources.yaml + refs.bib")
+    add_item_args(p_imp)
+    p_imp.add_argument("--label", help="registry label and directory name (default: BibTeX key)")
+    p_imp.add_argument("--role", help="primary | benchmark | method-reference | background")
+    p_imp.add_argument("--max-mb", type=float, default=lm.DEFAULT_MAX_MB,
+                       help=f"do not copy files larger than this (default {lm.DEFAULT_MAX_MB})")
+    p_imp.add_argument("--no-file", action="store_true", help="record metadata only")
+    p_imp.add_argument("--formats", default="pdf,epub",
+                       help="Calibre formats to consider, in order of preference")
+    p_imp.add_argument("--dry-run", action="store_true", help="show everything, write nothing")
+
     args = parser.parse_args()
-    return {"status": cmd_status, "search": cmd_search, "attachments": cmd_attachments}[args.cmd](args)
+    return {"status": cmd_status, "search": cmd_search, "attachments": cmd_attachments,
+            "show": cmd_show, "bibtex": cmd_bibtex, "import": cmd_import}[args.cmd](args)
 
 
 if __name__ == "__main__":

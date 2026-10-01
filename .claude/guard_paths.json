@@ -5,7 +5,6 @@
     "Patterns are repository-root-relative POSIX globs: '*' matches within one path",
     "segment, '**' matches across segments. Self-tested by scripts/test_hooks.sh."
   ],
-
   "readonly": [
     {
       "glob": "papers/**",
@@ -17,7 +16,7 @@
     },
     {
       "glob": "validation/**/records/**",
-      "reason": "Result records are written by validation scripts with full provenance; rerun the script rather than editing the record (CLAUDE.md §10)."
+      "reason": "Result records are written by validation scripts with full provenance; rerun the script rather than editing the record (CLAUDE.md \u00a710)."
     },
     {
       "glob": "validation/**/accepted/**",
@@ -28,19 +27,18 @@
       "reason": "Accepted data is written only by validation scripts; rerun the script."
     }
   ],
-
   "readonly_exempt": [
+    "papers/refs.bib",
     "papers/sources.yaml",
     "papers/README.md",
     "papers/background/README.md",
     "papers/_drop/README.md",
     "validation/README.md"
   ],
-
   "append_only": [
     {
       "glob": "symbolic/*/stage_*",
-      "reason": "Derivation stage scripts are the permanent record and are cited by name from the write-ups (CLAUDE.md §2, .claude/rules/derivation.md). Add a new numbered stage rather than replacing this one."
+      "reason": "Derivation stage scripts are the permanent record and are cited by name from the write-ups (CLAUDE.md \u00a72, .claude/rules/derivation.md). Add a new numbered stage rather than replacing this one."
     },
     {
       "glob": "symbolic/*/export_*",

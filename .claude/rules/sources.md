@@ -17,6 +17,10 @@ paths:
   PDF is the PI's call (`TEMPLATE_GUIDE.md` §4).
 - Sources the PI drops in `papers/_drop/` are transient: register, move onward, and empty the
   folder. The session-start hook reports a non-empty drop folder.
+- A source brought in from a local library (`scripts/library.py import`) is registered
+  `verified: false`. Catalogue metadata can be wrong, so it stays unverified until its
+  identifiers and file have been checked against the document's own first page.
+  `make check-docs` counts the unverified ones.
 
 ## Reading a source
 

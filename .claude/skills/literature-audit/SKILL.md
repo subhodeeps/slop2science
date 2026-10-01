@@ -36,8 +36,10 @@ figure. Full hierarchy and the version-pinning rules: `reference/corpus.md`.
 
 The PI may also have the work in a local Zotero or Calibre library — the usual route for
 pre-arXiv papers, books and journal-only works. Those hold thousands of items, so they are
-**searched with a targeted query and never browsed**; procedure, the read-only discipline and
-the three ways a catalogue entry can lie: `reference/local_libraries.md`.
+**searched with a targeted query and never browsed**. Once you have the item, `library.py
+show` reads all its metadata and `library.py import` brings one item in (a small file, the
+full record, and `sources.yaml` / `refs.bib` entries, marked unverified). Procedure, the
+read-only discipline, and the ways a catalogue entry can lie: `reference/local_libraries.md`.
 
 ## Reading equations, tables or values from a PDF
 

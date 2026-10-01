@@ -40,5 +40,20 @@ read-only and hook-guarded).
 - Before a single paper's stated equation is treated as ground truth for a discrepancy that
   would change a project convention, cross-check it against a second independent source.
 
+**The PI's local libraries (Zotero, Calibre)** — `scripts/library.py`, procedure in
+`.claude/skills/literature-audit/reference/local_libraries.md`.
+
+- Search with a targeted query for a work you already know you need. There is no browse mode
+  and you do not need one; do not enumerate a library, and do not search the disk for one.
+- `show` reads everything bibliographic about one item. Use it when building a reference.
+- `import` takes exactly **one named item**, only when this project needs that specific work,
+  and **always `--dry-run` first**. Never import "all matches" or a topic's worth of results.
+- Nothing is written to a library; files are copied out. Do not touch a library's own folders.
+- An import is `verified: false`. Catalogue metadata can be wrong. Read the copied document's
+  own first page, check the DOI and any arXiv ID against it, fix what is wrong, and only then
+  set `verified: true` and remove the UNVERIFIED marker in `papers/refs.bib`. Never guess an
+  identifier or a `primaryClass` the catalogue did not give.
+- Notes, annotations and ratings are never read, by design. Do not work around that.
+
 **Return**: sources found with identifiers, what each establishes, the convention conversions
 in full, and the gaps you could not close.

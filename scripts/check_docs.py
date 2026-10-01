@@ -33,6 +33,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))   # for registry.py
+
 ROOT = Path(__file__).resolve().parent.parent
 ALLOWFILE = ROOT / "scripts" / "check_docs.allow"
 
@@ -347,7 +349,24 @@ def check_stale():
                 f"loads into every session. Move detail into a skill, a rule, or a "
                 f"referenced doc; do not compress the wording.")
 
-    # 5. Warnings: a write-up older than a script it cites.
+    # 5. Sources imported from a catalogue are written `verified: false`. Catalogue metadata
+    #    can be wrong (a mislabelled entry, a snapshot standing in for the paper), and the
+    #    bibliography rule is that identifiers are never taken on trust. A warning, not an
+    #    error: the aim is that the count is visible, not that an import blocks the build.
+    try:
+        import registry
+        unverified = [e.get("label") for e in registry.parse_sources(ROOT / "papers" / "sources.yaml")
+                      if e.get("verified") == "false"]
+    except Exception as exc:                     # a malformed registry is its own finding
+        unverified = []
+        errors.append(f"papers/sources.yaml cannot be parsed: {exc}")
+    if unverified:
+        shown = ", ".join(unverified[:5]) + (" ..." if len(unverified) > 5 else "")
+        warnings.append(f"WARNING unverified: {len(unverified)} source(s) in papers/sources.yaml "
+                        f"still `verified: false` ({shown}). Check each one's identifiers and file "
+                        "against the document's own first page, then set `verified: true`.")
+
+    # 6. Warnings: a write-up older than a script it cites.
     def last_commit(rel):
         out = git("log", "-1", "--format=%ct", "--", rel).strip()
         return int(out) if out.isdigit() else 0

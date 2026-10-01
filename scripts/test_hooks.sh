@@ -36,6 +36,8 @@ expect "blocks symbolic/generated/"            2 "$G" "$(payload Write symbolic/
 expect "blocks a result record"                2 "$G" "$(payload Edit  validation/topic/records/r1.json)"
 expect "blocks an accepted table"              2 "$G" "$(payload Write validation/topic/accepted/table.csv)"
 expect "allows the curated source registry"    0 "$G" "$(payload Edit  papers/sources.yaml)"
+expect "allows the curated bibliography"       0 "$G" "$(payload Edit  papers/refs.bib)"
+expect "blocks hand-editing imported material" 2 "$G" "$(payload Write papers/imported/Key1985/metadata.json)"
 expect "allows an ordinary doc"                0 "$G" "$(payload Edit  docs/STATUS.md)"
 expect "allows a derivation write-up"          0 "$G" "$(payload Write derivation/topic/01_setup.md)"
 

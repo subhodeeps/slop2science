@@ -93,5 +93,42 @@ expect("skill-root-relative resolves",
 expect("a path escaping the repository does not resolve",
        cd.resolves("README.md", "../../etc/passwd"), False)
 
+print("check_docs.py — sources imported from a catalogue stay visible until verified")
+import contextlib, io, tempfile      # noqa: E402
+import registry                       # noqa: E402
+
+
+def stale_output(root):
+    saved = cd.ROOT
+    cd.ROOT = root
+    buf = io.StringIO()
+    try:
+        with contextlib.redirect_stdout(buf):
+            errors = cd.check_stale()
+    finally:
+        cd.ROOT = saved
+    return errors, buf.getvalue()
+
+
+tmp = Path(tempfile.mkdtemp(prefix="stale."))
+(tmp / "papers").mkdir()
+reg = tmp / "papers" / "sources.yaml"
+reg.write_text("sources:\n")
+registry.append_source("Imported_1", [("verified", False)], reg)
+registry.append_source("Imported_2", [("verified", False)], reg)
+registry.append_source("Checked_3", [("verified", True)], reg)
+errors, out = stale_output(tmp)
+expect("two unverified sources produce a warning naming the count", "2 source(s)" in out
+       and "verified: false" in out, True)
+expect("the verified one is not counted", "Checked_3" not in out, True)
+expect("a warning does not fail the build", errors, 0)
+
+reg.write_text("sources:\n  - label: Broken\n  this line is not valid\n")
+errors, out = stale_output(tmp)
+expect("a registry the tools cannot parse is an ERROR, not a silent skip", errors >= 1
+       and "cannot be parsed" in out, True)
+import shutil                          # noqa: E402
+shutil.rmtree(tmp, ignore_errors=True)
+
 print(f"\nchecks: {passed} passed, {failed} failed")
 sys.exit(1 if failed else 0)

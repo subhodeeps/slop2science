@@ -41,8 +41,9 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+import registry
+
 ROOT = Path(__file__).resolve().parent.parent
-REGISTRY = ROOT / "papers" / "sources.yaml"
 UA = "claude-code-research-template (paper reproduction; one fetch per paper)"
 
 ARXIV = re.compile(r"^(?:arxiv:)?(\d{4}\.\d{4,5}(?:v\d+)?|[a-z-]+/\d{7}(?:v\d+)?)$", re.I)
@@ -58,16 +59,26 @@ def get(url, timeout=180):
         return response.read()
 
 
+def default_label(identifier):
+    """A valid, readable label derived from an identifier, for when none was given."""
+    stem = re.sub(r"[^A-Za-z0-9._-]+", "_", re.sub(r"^https?://(dx\.)?(doi\.org/)?", "", identifier))
+    return (stem.strip("._-") or "source")[:64]
+
+
 def register(label, identifier, kind, files):
-    entry = (f"\n  - label: {label}\n"
-             f"    {kind}: {identifier}\n"
-             f"    version: FILL IN     # the exact version consulted (vN / journal)\n")
-    for key, value in files.items():
-        entry += f"    {key}: {value}\n"
-    entry += ("    role: FILL IN        # primary | benchmark | method-reference | background\n"
-              "    notes: FILL IN       # what THIS project needs from it, specifically\n")
-    with REGISTRY.open("a", encoding="utf-8") as handle:
-        handle.write(entry)
+    """Append to papers/sources.yaml through the shared writer (scripts/registry.py).
+
+    This used to append text by hand to a registry seeded as `sources: []`, which is invalid
+    YAML as soon as a block item follows it. One writer, one parser, one round-trip test.
+    """
+    fields = [(kind, identifier),
+              ("version", "FILL IN", "the exact version consulted (vN / journal)")]
+    fields += list(files.items())
+    fields += [("role", "FILL IN", "primary | benchmark | method-reference | background"),
+               ("notes", "FILL IN", "what THIS project needs from it, specifically"),
+               ("verified", False, "true only after checking the identifiers and the file "
+                                   "against the document's own first page")]
+    registry.append_source(label, fields)
     print(f"\nregistered '{label}' in papers/sources.yaml — fill in version, role and notes")
 
 
@@ -200,7 +211,7 @@ def main():
     match = ARXIV.match(identifier)
     if not match:
         kind = "doi" if identifier.lower().startswith("10.") or "doi.org" in identifier else "url"
-        register(label or "UNLABELLED", identifier, kind, {"file": "null"})
+        register(label or default_label(identifier), identifier, kind, {"file": None})
         print("\nNot an arXiv ID, so nothing was downloaded — deliberately.")
         print("Place the file in papers/_drop/; the next session's start hook reports it and")
         print("the literature skill completes the intake.")
@@ -212,5 +223,13 @@ def main():
     return fetch_arxiv(arxiv_id, label or arxiv_id.replace("/", "_"), pdf_only)
 
 
+def run():
+    try:
+        return main()
+    except registry.RegistryError as exc:
+        print(f"refused: {exc}", file=sys.stderr)
+        return 1
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(run())

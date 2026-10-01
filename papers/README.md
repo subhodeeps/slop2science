@@ -10,6 +10,9 @@ this folder.
   default**: whether to commit a publisher's PDF is the PI's call, not the template's
   (`TEMPLATE_GUIDE.md` §4). The registry keeps every source identifiable and re-fetchable
   either way.
+- `imported/` — items brought in from the PI's Zotero or Calibre library by
+  `scripts/library.py import`: the file if it was small, plus a `metadata.json`. Gitignored. The
+  registry entry and `refs.bib` (committed) carry the identifiers and provenance.
 - `background/` — secondary literature: works cited by the primary source, method references,
   benchmark sources. Fetched only against a stated need, never speculatively.
 - `_drop/` — the PI's transient drop folder. Gitignored except this README. The session-start

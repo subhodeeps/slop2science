@@ -6,6 +6,11 @@
 papers/**/*.pdf
 papers/**/*.djvu
 papers/source/
+# Files copied out of the PI's Zotero/Calibre libraries by `scripts/library.py import`, plus
+# a metadata.json each (full tags, collections, abstract). Someone else's papers and the PI's
+# own organisation: neither is the template's to publish. The registry and refs.bib, which ARE
+# committed, carry the identifiers and provenance.
+papers/imported/
 !papers/sources.yaml
 
 # --- session transcripts live OUTSIDE the repository entirely -----------------------

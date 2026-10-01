@@ -300,3 +300,18 @@ a first-class status in `docs/conventions.md`; `/init-paper` recording unanswere
 open rather than filling them; and the decision log's `Options:` field, which is impossible to
 fill honestly for a decision nobody made. No hook can enforce this one, which is why it is
 written in the charter's first section rather than its last.
+
+### E. A catalogue entry taken on trust
+
+A reference manager is somebody's years of accumulated, mostly correct, occasionally wrong
+metadata. An entry can carry the right title and the wrong DOI, a PDF that is a different
+version or a different paper, or a saved web page standing in for the article. Importing it
+makes every one of those look authoritative: it now sits in `refs.bib` with a clean key, and
+nothing marks it as less checked than an entry someone verified by hand.
+
+Guarded by: `scripts/library.py import` writes every entry `verified: false`, in the registry
+and as an UNVERIFIED comment in `refs.bib`; `make check-docs` counts the ones still unverified;
+it never guesses an identifier or a `primaryClass` the catalogue did not give; it refuses a
+saved web page and a file catalogued as a PDF that is not one; and verifying means reading
+the copied document's own first page, which is a person's or an agent's job and not a script's
+(`.claude/skills/literature-audit/reference/local_libraries.md`).

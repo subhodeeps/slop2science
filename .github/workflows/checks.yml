@@ -26,6 +26,9 @@ jobs:
       - name: Checker self-tests
         run: make test-checks
 
+      - name: Library tools (synthetic Zotero and Calibre databases)
+        run: make test-library
+
       - name: Reference resolution
         run: make check-refs
 

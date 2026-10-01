@@ -105,10 +105,16 @@ Zotero and Calibre, if you have them. Useful for stuff you already have.
 ```bash
 make libraries
 scripts/py scripts/library.py search --author Chandrasekhar
+scripts/py scripts/library.py import --zotero 101 --dry-run
 ```
 
 Read-only, and search only. There is no browse mode: a large library would eat a session's
 context, and it is not this project's bibliography.
+
+`show` prints everything a library knows about one item. `import` takes one item: it copies
+the file into `papers/imported/` if it is small (25 MB by default), saves the full metadata,
+and adds entries to `papers/sources.yaml` and `papers/refs.bib`, marked unverified until
+someone checks them against the paper. Your Zotero notes and annotations are never read.
 
 For arXiv papers it fetches the LaTeX source as well as the PDF. The `.tex` is what the
 authors wrote; PDF text extraction is a reconstruction. The tarball also has the figures, and
