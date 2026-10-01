@@ -84,47 +84,41 @@ make check-env   # what is installed here
 
 I use Mathematica, Python and Julia. The template has a configuration for all three.
 
-- **One runner.** `scripts/run` runs a file in any of the three tools. Each tool has its own
-  test and codegen path.
-- **Environments.** Julia and Python each get their own environment if you use them. Julia uses
-  `Project.toml` and `Manifest.toml`. Python uses a virtual environment that
-  [uv](https://docs.astral.sh/uv/) creates from `pyproject.toml` and `uv.lock`. A language that
-  you do not use has no environment.
-- **Libraries.** `/init-paper` asks which libraries you need. It starts from a short default
-  list. For Python the list is numpy, scipy, mpmath, sympy and matplotlib. For Julia it is the
-  linear algebra, extended-precision and JSON packages. The project installs only the libraries
-  that you choose.
-- **One owner for each topic.** Any of the three tools can own any topic. If you do not choose,
-  the default profile applies. Mathematica does algebra, in plain `.wls` scripts. Julia does
-  numerics. Python does plotting and ML. `/init-paper` lets you change this. The registry in
-  `docs/toolchain.md` records each choice. With three capable tools, it is easy to derive one
-  equation twice, and each version can pass its own checks. Claude does not move work between
-  languages by itself.
-- **Sources.** The project prefers the arXiv LaTeX source to the PDF. The `.tex` file is what
-  the authors wrote. Text extraction from a PDF is a reconstruction. The tarball also contains
-  the figures and sometimes the data.
-- **Your reference library.** If you keep a Zotero or Calibre library, the project can search
-  it. It can import one item, with full metadata and BibTeX, into `papers/imported/`. The tool is
-  read-only and has no browse mode, because a large library fills the context of a session. It
-  marks each import unverified until a person compares it with the paper. It never reads your
-  notes and annotations.
+- Julia and Python each get their own environment if you use them. Julia uses `Project.toml` and
+  `Manifest.toml`. Python uses a virtual environment that [uv](https://docs.astral.sh/uv/) creates
+  from `pyproject.toml` and `uv.lock`. A language that you do not use has no environment.
+- `/init-paper` asks which libraries you need. It starts from a short default list. For Python the
+  list is numpy, scipy, mpmath, sympy and matplotlib. For Julia it is the linear algebra,
+  extended-precision and JSON packages. The project installs only the libraries that you choose.
+- Any of the three tools can own any topic. If you do not choose, the default profile applies.
+  Mathematica does algebra, in plain `.wls` scripts. Julia does numerics. Python does plotting and
+  ML. `/init-paper` lets you change this. The registry in `docs/toolchain.md` records each choice.
+  With three capable tools, it is easy to derive one equation twice, and each version can pass its
+  own checks. Claude does not move work between languages by itself.
+- The project prefers the arXiv LaTeX source to the PDF. The `.tex` file is what the authors
+  wrote. Text extraction from a PDF is a reconstruction. The tarball also contains the figures and
+  sometimes the data.
+- If you keep a Zotero or Calibre library, the project can search it. It can import one item, with
+  full metadata and BibTeX, into `papers/imported/`. The tool is read-only and has no browse mode,
+  because a large library fills the context of a session. It marks each import unverified until a
+  person compares it with the paper. It never reads your notes and annotations.
 
   ```bash
   scripts/py scripts/library.py search --author Chandrasekhar
   scripts/py scripts/library.py import --zotero 101 --dry-run
   ```
 
-- **Plots.** Figures use `amore` (`src/python/amore/`). Labels use LaTeX. Notes inside a plot
-  use a monospace font. A colour bar sits above the plot, outside it, and the plot keeps the same
-  size as a line plot. The `plotting` skill applies the style, and Claude looks at each
-  rendered figure before it calls the figure done. `make check` fails if a plotting script does
-  not use the style. `make plot-examples` makes the four figures under Features and the chart
-  below again, from `src/python/amore/examples.py`.
-- **Colours.** `amore` has eight palettes of four tones, 32 colours in total. It also has a
-  diverging red-to-green map and a pastel parula map, `fakeparulapastel`. The palettes go round
-  the colour wheel, and slate is a neutral for reference data. In each palette the tones step up
-  in lightness, from an ink for curves and labels to a shade for background bands. Tests check
-  each colour against measurable rules:
+- Figures use `amore` (`src/python/amore/`). Labels use LaTeX. Notes inside a plot use a monospace
+  font. A colour bar sits above the plot, outside it, and the plot keeps the same size as a line
+  plot. The `plotting` skill applies the style, and Claude looks at each rendered figure before it
+  calls the figure done. `make check` fails if a plotting script does not use the style.
+  `make plot-examples` makes the four figures under Features and the chart below again, from
+  `src/python/amore/examples.py`.
+- `amore` has eight palettes of four tones, 32 colours in total. It also has a diverging
+  red-to-green map and a pastel parula map, `fakeparulapastel`. The palettes go round the colour
+  wheel, and slate is a neutral for reference data. In each palette the tones step up in
+  lightness, from an ink for curves and labels to a shade for background bands. Tests check each
+  colour against measurable rules:
   - the tones of a palette differ in lightness by a minimum step (CIELAB L*)
   - each ink has a contrast of at least 7:1 on white, so it can label a curve
   - no two palettes look alike (a minimum CIELAB colour difference)
