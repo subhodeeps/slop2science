@@ -29,6 +29,9 @@ jobs:
       - name: Library tools (synthetic Zotero and Calibre databases)
         run: make test-library
 
+      - name: Language rule (ASD-STE100) in Markdown
+        run: make lint-ste-md
+
       - name: Environment selection (fake uv)
         run: make test-env
 

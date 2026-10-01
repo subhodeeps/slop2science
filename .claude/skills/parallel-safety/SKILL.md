@@ -31,8 +31,8 @@ artifact.** This skill is the constructive half of `docs/failure_modes.md` entry
 - **Anything that writes `symbolic/generated/`.** The codegen diff gate compares against git. Two
   concurrent exports make its result meaningless.
 - **Anything that touches git.** A hook blocks subagents from git
-  (`.claude/hooks/subagent_git_guard.py`), because a concurrent agent cannot see what else is
-  staged.
+  (`.claude/hooks/subagent_git_guard.py`), because a concurrent agent cannot see what else
+  someone staged.
 
 ## If you do parallelise
 

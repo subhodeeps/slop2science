@@ -1,21 +1,35 @@
 # Communication: ASD-STE100
 
-Write to the PI in ASD-STE100 Simplified Technical English. Write Markdown files in the same
-way. The standard is public: ASD-STE100, from the AeroSpace and Defence Industries Association
-of Europe.
+**This rule is permanent and applies to the whole project.** Write all natural-language text in
+ASD-STE100 Simplified Technical English. The standard is public. The AeroSpace and Defence
+Industries Association of Europe (ASD) publishes it. `CLAUDE.md` §11 states the requirement. This
+file holds the details.
+
+Inheritance: this file has no `paths:` limit, so it loads in each session. Each agent in
+`.claude/agents/` names it in its own instructions. Each skill runs inside a session or an agent,
+so each skill inherits it. The `SessionStart` hook repeats the requirement after `/clear` and
+after compaction.
 
 ## Where this rule applies
 
-- every explanation, question, report and task update that Claude gives to the PI
-- every commit message and every pull request description
-- every `.md` file that Claude writes or edits in this repository
+- all CLI communication: explanations, questions, progress updates and answers
+- all reports, summaries, audits and research documents
+- each new file that contains natural-language text
+- each edit to an existing documentation file or text file
+- all Markdown files, status records, handoffs and session notes
+- all code comments and docstrings
+- all commit messages, pull request descriptions and other generated prose
 
 ## Where this rule does not apply
 
-- quoted source text. Quote it exactly. Do not rewrite it.
-- code, commands, file names, identifiers and file content that a tool reads
-- technical names and terms of the project, for example "ownership registry". Use the same name
-  every time.
+- **Executable code.** Do not rewrite, simplify or change code only to enforce this rule. This
+  includes identifiers, APIs, file names, command lines and configuration keys.
+- **Mathematical notation** and required technical terms. Keep each technical term of the project
+  as it is. Use the same term every time (for example "ownership registry").
+- **Quoted text.** Quote source text exactly. This includes quotes from papers, error messages and
+  tool output. It also includes the prompts of the PI, which you record word for word.
+- **Text that a tool reads as data.** Examples: the trigger phrases in `when_to_use`, template
+  placeholders and the fixed lines of a hook protocol.
 
 ## The rules to follow
 
@@ -25,12 +39,26 @@ of Europe.
 3. Use the active voice. Use the present simple tense when possible.
 4. Use "must" for a mandatory action. Use "can" for a possible action. Do not use `should`,
    `may`, `might` or `could`.
-5. Use one word for one meaning. Use the same word for the same thing every time.
-6. Do not use idioms, filler or intensifiers. Delete `simply`, `just`, `very` and `basically`.
+5. Use one word for one meaning. Use the same word for the same thing every time. Use simple
+   words. Do not use idioms.
+6. Remove each word that adds nothing. Do not remove detail that the reader needs. Delete `simply`,
+   `just`, `very` and `basically`.
 7. Do not use contractions. Do not use semicolons.
 8. Use a paragraph of 6 sentences or fewer. Use a list for steps and for 3 or more items.
 9. Put the reason after the instruction, in a separate sentence.
 10. Use digits for numbers. Use a full sentence for a warning.
+
+Technical accuracy comes first. If a rule makes a statement less exact, keep the exact statement
+and write it in the simplest form that stays exact.
+
+## Edit existing text
+
+When you edit a file, write the new and changed text in STE. If you change a sentence, rewrite the
+whole sentence. Do not restructure a whole file only because you edited one line, unless the PI
+asks. When the PI asks for a full pass, change only natural-language text.
+
+Comments and docstrings in code follow the same rules. A comment states what the code does and
+why. Keep it short.
 
 ## Questions to the PI
 
@@ -38,8 +66,19 @@ State the decision in the first sentence. Give the options as a list. Give the e
 option in one sentence. Mark your recommendation. Do not ask a question that the repository
 already answers.
 
-## Check
+## Enforcement
 
-Run `make lint-ste` to screen Markdown files for the measurable rules: sentence length,
-modal verbs, filler words, contractions, semicolons and passive voice. The check does not
-verify the STE Dictionary. It cannot certify compliance. A person must review the result.
+| Method | What it does |
+|---|---|
+| `CLAUDE.md` §11 | The charter loads in each session and states the requirement. |
+| This rule | It loads in each session. It has no `paths:` limit. |
+| Agent instructions | Each file in `.claude/agents/` points to this rule. |
+| `SessionStart` hook | It prints the requirement at the start of each session, after `/clear` and after compaction. |
+| `make test-checks` | It fails if the charter, this rule, an agent or the hook loses the requirement. |
+| `make lint-ste-md` | It fails if a tracked Markdown file breaks a measurable rule. It is part of `make check` and of CI. |
+| `make lint-ste` | It reports the same rules without failure. Use `FILE=` for one file. |
+| `make lint-ste-code` | It reports the same rules for code comments and docstrings. It reports only. |
+
+The lint tools check measurable rules only: sentence length, modal verbs, filler words,
+contractions, semicolons and passive voice. They do not check the STE Dictionary. They cannot
+certify compliance. A person must review the result.

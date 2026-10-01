@@ -72,6 +72,7 @@ echo "[project] tools present: ${present[*]}"
 echo "[project] phase: ${phase:-unknown}"
 [ -n "$task" ] && echo "[project] next task: $task"
 echo "[project] ownership: docs/toolchain.md | commands: make help | close with /session-close"
+echo "[project] language: write all natural-language text in ASD-STE100 (CLI messages, files, comments, commit messages). Not code, notation or quoted text. See .claude/rules/communication.md"
 
 # --- 3. the working tree, right now ------------------------------------------------
 # An interrupted session's leftovers are visible at the START, not only at close: that is

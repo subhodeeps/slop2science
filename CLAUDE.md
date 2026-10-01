@@ -175,8 +175,8 @@ State explicitly what the result rests on.
 
 If a usage limit is near, or if something interrupts a session, complete the current atomic
 step. Then run `/session-close`. Do not hurry the remaining work to beat a limit. Do not start
-a new derivation stage, subagent task or investigation when a limit is near. A stage that is
-started and not finished is worse than a stage that is not started.
+a new derivation stage, subagent task or investigation when a limit is near. A stage that you
+start and do not finish is worse than a stage that you do not start.
 
 `/session-close` must record what the session completed, what it left incomplete, and each
 file that an interrupted step left behind. An orphaned file with no record is the failure that
@@ -201,20 +201,20 @@ record.
 
 ## 11. Communication
 
-Use precise technical language. Do not use motivational filler. If something is uncertain,
-state exactly what is unknown and which calculation resolves it.
+Use precise language. Do not use filler. If something is uncertain, state exactly what is
+unknown and which calculation resolves it.
 
-**Write to the PI in ASD-STE100 Simplified Technical English.** This applies to explanations,
-questions, reports and task updates. The rule is in `.claude/rules/communication.md`. It does
-not apply to quoted source text or to code.
+**Write all natural-language text in ASD-STE100 Simplified Technical English.** This is a
+permanent requirement. It covers CLI messages, reports, Markdown files, handoffs, code comments,
+docstrings and commit messages. It excludes executable code, notation, quoted text and data that
+a tool reads. Details: `.claude/rules/communication.md`.
 
 ## 12. Where the rest lives
 
 - Layout: `README.md`, `docs/GUIDE.md` §2. Guarded paths: `.claude/guard_paths.json`.
 - State: `docs/STATUS.md` (loaded). History: `docs/status_history.md`. Reproduction and new
-  work, claim by claim: `docs/reproduction_and_extension.md`.
+  work: `docs/reproduction_and_extension.md`.
 - Rules: `.claude/rules/`. Skills: `.claude/skills/README.md`. Agents and models:
   `.claude/models.md`.
 - Mechanism: `docs/GUIDE.md`. Practice, ladder of rigour: `docs/WORKFLOW.md`.
-- **How the model fails, and what went wrong here: `docs/failure_modes.md`.** Read it before an
-  audit or a report.
+- **How the model fails: `docs/failure_modes.md`.** Read it before an audit or a report.

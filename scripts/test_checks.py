@@ -204,5 +204,43 @@ expect("docs/toolchain.md defines the profile by kind of work",
        all(s in real["docs/toolchain.md"] for s in ("## Default profile", "**Algebra**", "**Numerics**",
                                                     "Python ecosystem")), True)
 
+print("language rule (ASD-STE100) — the requirement reaches every session, agent and skill")
+
+R = ROOT
+ste_spec = importlib.util.spec_from_file_location("check_ste", R / "scripts" / "check_ste.py")
+ste = importlib.util.module_from_spec(ste_spec)
+ste_spec.loader.exec_module(ste)
+
+
+def ste_hits(markdown):
+    return [h for _, h in ste.judge(ste.md_blocks(markdown))]
+
+
+expect("the screen flags a modal verb, a semicolon and a long sentence",
+       len(ste_hits("Do not do this; you should stop. " + "word " * 30 + ".\n")) >= 3, True)
+expect("the screen skips code blocks, quoted text, tables and headings",
+       ste_hits("# You should\n\n```\nyou should; may\n```\n\n| a may |\n|---|\n\nSee \"it may be\" here.\n"), [])
+expect("the screen skips the when_to_use trigger phrases of a skill",
+       ste_hits("---\nname: x\nwhen_to_use: 'could; should; may'\n---\n\nBody text.\n"), [])
+
+charter = (R / "CLAUDE.md").read_text(encoding="utf-8")
+rule_text = (R / ".claude/rules/communication.md").read_text(encoding="utf-8")
+expect("CLAUDE.md states the requirement and points to the rule",
+       "ASD-STE100" in charter and ".claude/rules/communication.md" in charter, True)
+expect("the rule file exists and has no paths: limit, so it loads in every session",
+       "paths:" not in rule_text.split("# Communication", 1)[0], True)
+expect("the rule covers code comments, docstrings, commit messages and handoffs",
+       all(w in rule_text for w in ("code comments and docstrings", "commit messages", "handoffs")), True)
+expect("the rule excludes executable code, notation and quoted text",
+       all(w in rule_text for w in ("Executable code", "Mathematical notation", "Quoted text")), True)
+agents = sorted((R / ".claude/agents").glob("*.md"))
+expect("every agent names the rule in its own instructions",
+       [a.name for a in agents if "communication.md" not in a.read_text(encoding="utf-8")], [])
+expect("at least one agent exists (the check above is not vacuous)", len(agents) >= 7, True)
+expect("the SessionStart hook repeats the requirement",
+       "ASD-STE100" in (R / ".claude/hooks/session_context.sh").read_text(encoding="utf-8"), True)
+expect("the skills README states that every skill inherits the rule",
+       "inherits the language rule" in (R / ".claude/skills/README.md").read_text(encoding="utf-8"), True)
+
 print(f"\nchecks: {passed} passed, {failed} failed")
 sys.exit(1 if failed else 0)

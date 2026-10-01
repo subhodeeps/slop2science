@@ -117,6 +117,9 @@ checks:
 - reference resolution
 - evidence-tag resolution
 - the staleness guard
+- the language rule: `make lint-ste-md` fails if a Markdown file breaks a measurable ASD-STE100
+  rule, and `make test-checks` fails if the charter, the rule, an agent or the session hook loses
+  the requirement
 
 The same tier runs in CI on each push.
 

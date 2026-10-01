@@ -27,6 +27,8 @@ into the repository. Never edit a template in place.
 - Put trigger phrases in `when_to_use`. After `/init-paper`, these phrases carry the
   vocabulary of **this project**. A skill that never starts usually has generic trigger
   phrases.
+- Each skill inherits the language rule. It runs inside a session or an agent. Both must write in
+  ASD-STE100 (`.claude/rules/communication.md`). Write each new skill in STE.
 - Put shared executable code in `symbolic/common/` and `src/`. Never put it inside a skill.
   Then scripts can load it directly.
 - A skill describes *how to do a category of work*. A rule (`.claude/rules/`) states a
