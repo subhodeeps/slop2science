@@ -1,19 +1,20 @@
 # Conventions register
 
-Short by design: this file loads into every session. One row per convention, with where it is
-fixed. Anything longer than a row belongs in the source audit or a derivation write-up.
+This file is short on purpose, because it loads into every session. It has one row for each
+convention, with the place where the project fixes it. Put longer text in the source audit or
+in a derivation write-up.
 
 **Status legend**
 
 | Status | Meaning |
 |---|---|
-| `SOURCE` | as stated in the primary source |
+| `SOURCE` | as the primary source states it |
 | `ADOPTED` | a PI decision, logged in `docs/decision_log.md` |
-| `OPEN` | not yet settled — to be decided by the source audit or a validation |
+| `OPEN` | not settled yet. The source audit or a validation decides it. |
 | `DERIVED` | fixed by a recorded, re-runnable script |
 
-`OPEN` is a legitimate and useful state. A convention guessed to avoid an empty cell is the
-single most expensive kind of entry in this file, because everything downstream inherits it
+`OPEN` is a valid and useful status. Do not guess a convention to fill an empty cell. A guessed
+convention is the most expensive kind of entry in this file, because all later work inherits it
 silently.
 
 ## Register
@@ -36,12 +37,12 @@ silently.
 
 ## Adding a convention
 
-Add a row, cite where it is fixed, and log the decision if it is a decision. A convention that
-exists only in a chat reply does not exist: the next session will not have it.
+Add a row. Cite the place where the project fixes the convention. If the convention is a
+decision, log the decision. A convention that exists only in a chat reply does not exist. The
+next session does not have it.
 
-## When the source's prose and its equations disagree
+## When the prose and the equations of the source disagree
 
-They do, more often than one expects, and that disagreement is the most valuable thing an
-audit finds. Do not resolve it here. Record both readings in the five-point form
-(CLAUDE.md §3), put `OPEN` in this table, and let a logged PI decision or a validation settle
-it.
+They disagree often. This disagreement is the most valuable result of an audit. Do not resolve
+it in this file. Record both readings in the five-item form (CLAUDE.md §3). Put `OPEN` in the
+table. A logged PI decision or a validation settles it.

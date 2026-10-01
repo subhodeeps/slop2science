@@ -9,7 +9,7 @@ PY          ?= scripts/py
 TOPIC       ?= {{DEFAULT_TOPIC}}
 
 .PHONY: help check-env setup test test-julia test-python stages codegen codegen-check \
-        check check-refs check-evidence check-docs check-init test-hooks test-checks test-library test-env status fetch-source \
+        check check-refs check-evidence check-docs check-init test-hooks test-checks test-library test-env lint-ste status fetch-source \
         libraries search-library report new-record clean-logs
 
 help: ## list targets
@@ -33,6 +33,9 @@ test-library: ## self-test the Zotero/Calibre tools against synthetic databases 
 
 test-env: ## self-test how scripts pick the Python environment (fake uv; no network)
 	@scripts/test_env.sh
+
+lint-ste: ## screen Markdown for the measurable ASD-STE100 rules (report only; FILE=... for one file)
+	@$(PY) scripts/check_ste.py $(FILE)
 
 check-refs: ## fail if a file path cited in Markdown no longer resolves
 	@$(PY) scripts/check_docs.py refs

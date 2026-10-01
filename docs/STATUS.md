@@ -1,62 +1,70 @@
 # Research status
 
-**Current state only.** This file loads into every session, so it has a line budget that
-`make check-docs` enforces.
-The session-by-session record and the evidence behind each line below go in
-`docs/status_history.md`, which is *not* auto-loaded.
+**This file contains the current state only.** It loads into every session. It has a line
+budget, and `make check-docs` enforces the budget.
+Put the history of the sessions, and the evidence for each line below, in
+`docs/status_history.md`. That file does not load automatically.
 
-When a session changes a fact this file states, it updates **that line** — not only the
-history. A STATUS that describes last month is worse than no STATUS, because it is believed.
+If a session changes a fact that this file states, update **that line**. Do not update only
+the history. A STATUS that describes last month is worse than no STATUS, because people
+believe it.
 
 ## Current phase
 
-Phase 0 — not initialized. Run `/init-paper`, then the source audit.
+Phase 0: not initialized. Run `/init-paper`. Then do the source audit.
 
 ## Immediate next task
 
-1. **`/init-paper`** — fill the project's placeholders, ownership registry and conventions.
-2. **Source audit [PI + literature]** — `docs/prompts/A1_source_audit.md` once written.
-   No code before the audit.
+1. **`/init-paper`**: fill in the placeholders, the ownership registry and the conventions of
+   the project.
+2. **Source audit [PI + literature]**: use `docs/prompts/A1_source_audit.md` after someone
+   writes it. Do not write code before the audit.
 
 ## Toolchain
 
-Not yet recorded. After `/init-paper`, state here: which tools this project uses, their
-versions, and which of them are available on which machine. Ownership per topic is in
-`docs/toolchain.md`.
+Not recorded yet. After `/init-paper`, state these items here:
+
+- the tools that this project uses
+- the version of each tool
+- the tools that each machine has
+
+`docs/toolchain.md` records the owner of each topic.
 
 ## Established decisions
 
-None yet. `docs/decision_log.md`.
+None yet. See `docs/decision_log.md`.
 
 ## Derived
 
-Nothing yet. One line per completed derivation stage, each naming its script, its check count
-and its write-up. A line here without a re-runnable script does not belong here.
+Nothing yet. Write one line for each completed derivation stage. Each line names the script,
+the number of checks and the write-up. Do not write a line here if no re-runnable script
+supports it.
 
 ## Validated
 
-Nothing yet. One line per accepted result, each naming its record, resolution, precision and
-the benchmark it was judged against — with that benchmark's *method*.
+Nothing yet. Write one line for each accepted result. Each line names the record, the
+resolution, the precision and the benchmark that judged the result. Name the *method* of that
+benchmark.
 
 ## Reproduction
 
-Nothing yet. What of the source is reproduced, in one line. Judged against the source.
+Nothing yet. Write one line that states what of the source the project reproduced. The source
+judges this part.
 
 ## Extension / new work
 
-Nothing yet. What has been established **beyond** the source, in one line, and what the
-current new-work target is. Judged against physics and independent benchmarks, never against
-the source (CLAUDE.md §2).
+Nothing yet. Write one line that states what the project established **beyond** the source.
+Write one line for the current target of the new work. Physics and independent benchmarks
+judge this part. The source never judges it (CLAUDE.md §2).
 
-This section is not an afterthought to the one above it: the extension is half the project,
-and a STATUS that only tracks reproduction will quietly turn the project into a reproduction
-project.
+This section is as important as the section above it. The extension is half of the project.
+If STATUS tracks only the reproduction, the project quietly becomes a reproduction project.
 
-Both, claim by claim, with evidence: `docs/reproduction_and_extension.md`.
+`docs/reproduction_and_extension.md` has both parts, claim by claim, with the evidence.
 
 ## Open questions
 
-Nothing yet. Each entry says what is unknown, what would resolve it, and who it waits on:
+Nothing yet. Each entry states what is unknown, what resolves it and who it waits for:
 **[PI]** a decision, **[tool]** a computation, **[lit]** a source.
 
 ## Current blockers
@@ -65,4 +73,5 @@ None.
 
 ## Last validation
 
-None yet. Record: date, machine, commit, the exact commands run, and their outcome.
+None yet. Record these items: the date, the machine, the commit, the exact commands that ran
+and their results.
