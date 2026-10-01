@@ -1,231 +1,239 @@
 # Failure modes
 
-Things that actually went wrong in an AI-assisted paper-reproduction project, what each one
-cost, and which mechanism in this repository exists because of it.
+This file lists the things that went wrong in an AI-assisted project that reproduced a paper. For
+each failure, it states what the failure cost and which mechanism in this repository exists
+because of it.
 
-Read this before an audit, before writing a report, and whenever a session is under time
-pressure. It is not a list of hypotheticals: every entry below happened, most of them to
-people who knew better in the abstract.
+Read this file before an audit, before you write a report, and whenever a session is under time
+pressure. The entries are not hypothetical. Each entry happened. Most of them happened to people
+who knew better in the abstract.
 
-**Part 0 is about the model**, not the process: three ways an LLM fails that no amount of
-project discipline prevents, because they are properties of the tool. **Part 1 is inherited**
-from the project this template was extracted from — general to the work, not to that paper.
-**Part 2 is yours**: add to it at every `/session-close` where something went wrong, with the
-same three fields. **Part 3** is anticipated and not yet observed.
+**Part 0 is about the model.** It describes three ways in which an LLM fails. No project
+discipline prevents them, because they are properties of the tool. **Part 1 comes from earlier
+work.** It comes from the project that this template came from. It is general to the work. It
+is not specific to that paper. **Part 2 is yours.** At each `/session-close` where something
+went wrong, add an entry with the same three fields. **Part 3 describes failures that nobody has
+seen yet.**
 
 ---
 
 ## Part 0 — how the model fails
 
-From *How to Train Your Slop Cannon*
-([Open-Science-Ledger](https://github.com/Open-Science-Ledger/how-to-train-your-slop-cannon)),
-which names these three and is worth reading in full. They are the reason several rules in
-this repository look paranoid: each one is a countermeasure to one of them.
+These three failures come from *How to Train Your Slop Cannon*
+([Open-Science-Ledger](https://github.com/Open-Science-Ledger/how-to-train-your-slop-cannon)).
+The guide names them. It is worth reading in full. They are the reason why several rules in this
+repository look paranoid. Each rule is a countermeasure to one of them.
 
 ### 0a. Context rot
 
-**What it is.** As the context window fills, attention starts producing spurious
-correlations and output quality sags. There is no sharp threshold — the guide's calibration
-is that *"quality starts to sag beyond roughly 30% context usage."*
+**What it is.** The context window fills, and attention starts to produce spurious correlations.
+The quality of the output drops. There is no sharp threshold. The guide gives this calibration:
+*"quality starts to sag beyond roughly 30% context usage."*
 
-**What it looks like.** Answers that were sharp early in a session become vague or subtly
-wrong late in it. A file read an hour ago gets mis-remembered. A convention established at
-the start gets quietly violated.
+**What it looks like.** An answer that was sharp early in a session becomes vague or slightly
+wrong late in the session. The model remembers a file that it read an hour ago incorrectly. The
+model quietly violates a convention that the session established at the start.
 
-**Countermeasures here.** The filesystem is the memory, not the conversation: `docs/STATUS.md`
-and `docs/conventions.md` are small and reloaded every session; detail lives in skills and
-`reference/` files loaded only when needed; the context budget on the every-session files is
-a hard error (`make check-docs`). Practically: **`/checkpoint` early and often, and prefer a
-fresh session over a long one.** A `PreCompact` hook writes a snapshot and tells the session
-to record anything held only in its head, because compaction keeps the thread and loses the
-detail.
+**Countermeasures here.** The filesystem is the memory. The conversation is not. `docs/STATUS.md`
+and `docs/conventions.md` are small and reload in every session. Detail lives in skills and
+`reference/` files that load only when needed. The context budget of the files that load in
+every session is a hard error (`make check-docs`). In practice: **run `/checkpoint` early and
+often. Prefer a fresh session to a long session.** A `PreCompact` hook writes a snapshot. It
+tells the session to record anything that only the session holds, because compaction keeps the
+thread and loses the detail.
 
 ### 0b. Hyperfixation
 
-**What it is.** The model locks onto a subgoal and produces increasingly unreliable work to
-"achieve" it before the context runs out. The guide's example is exact: *"an agent that
-cannot make a test suite pass will sometimes delete the failing tests, hard-code the expected
-output, or simply declare success."*
+**What it is.** The model locks onto a subgoal. It produces work that is more and more
+unreliable to "achieve" that subgoal before the context ends. The guide gives this exact example:
+*"an agent that cannot make a test suite pass will sometimes delete the failing tests, hard-code
+the expected output, or simply declare success."*
 
-**What it looks like.** A tolerance widened without explanation. A check rewritten until it
-passes. An assertion that matches the expectation rather than the computation. "Done" with no
-output quoted.
+**What it looks like.** A tolerance that someone widened without an explanation. A check that
+someone rewrote until it passes. An assertion that matches the expectation and not the
+computation. "Done" with no output quoted.
 
-**Countermeasures here.** This is what a whole family of prohibitions is actually for, and
-they read very differently once it has a name: never skip, disable or quarantine a test;
-never widen a tolerance without recording why; never adjust a check to pass; print before
-asserting; a failing check means stop and report, not iterate until green. Plus decomposition
-— one stage per script, small enough that a failure is localized rather than something to be
-escaped.
+**Countermeasures here.** A whole family of prohibitions exists for this failure. They look
+different when you know its name:
+
+- Never skip, disable or quarantine a test.
+- Never widen a tolerance without a recorded reason.
+- Never adjust a check to make it pass.
+- Print before you assert.
+- If a check fails, stop and report. Do not iterate until it is green.
+
+Decomposition also helps. Use one stage for each script. Make it small enough that a failure is
+local. Then the failure is not something to escape.
 
 ### 0c. Sycophancy
 
-**What it is.** Post-training on human preference means the model does not merely assert
-falsehoods fluently — *"it preferentially asserts the falsehoods you would quite like to be
+**What it is.** Post-training on human preference means that the model does not only state
+falsehoods fluently. *"It preferentially asserts the falsehoods you would quite like to be
 true."*
 
-**What it looks like, and why it is the dangerous one here.** A project whose whole method is
-"the PI decides, Claude implements" is *structurally* exposed to this. Say "I think the
-source's Eq. (12) is missing a factor of 2" and a sycophantic model will find the missing
-factor. That is a discrepancy record built on nothing, and it can propagate into a decision,
-a convention and a paper.
+**What it looks like, and why it is the dangerous failure here.** The method of this project is
+"the PI decides, Claude implements". Therefore the project is *structurally* exposed to this
+failure. Suppose that you say "I think Eq. (12) of the source is missing a factor of 2". A
+sycophantic model finds the missing factor. The result is a discrepancy record built on nothing.
+It can spread into a decision, a convention and a paper.
 
-**Countermeasures here.** The five-point form separates *what the source states* from *what
-its equations imply* from *what an independent derivation gives* — precisely so that a
-suspicion cannot be laundered into a finding. Beyond that, the guide's own rule, adopted:
-**treat the model's enthusiasm for your idea with scepticism, and when you want a genuine
-assessment, ask a clean session that does not know your position.** Do not tell the verifier
-what you expect it to find. The `verification` agent exists partly for this, which is why its
-brief should carry the artifact and not your hypothesis about it.
+**Countermeasures here.** The five-item form separates three things: *what the source states*,
+*what its equations imply* and *what an independent derivation gives*. A suspicion then cannot
+become a finding. The project also adopts the rule of the guide: **be sceptical of the
+enthusiasm of the model for your idea. When you want a real assessment, ask a clean session that
+does not know your position.** Do not tell the verifier what you expect it to find. The
+`verification` agent exists partly for this reason. Therefore its brief must carry the artifact.
+It must not carry your hypothesis about the artifact.
 
 ---
 
 ## Part 1 — inherited
 
-### 1. A claim asserted before it was checked
+### 1. A claim that someone asserted before checking it
 
-A derivation script asserted an expected invariant and passed. The printed value, read by
-hand afterwards, said the opposite: the assertion had been written to match the expectation,
-and the check had never compared it to anything.
+A derivation script asserted an expected invariant, and the assertion passed. Later, someone read
+the printed value by hand. The value said the opposite. The author had written the assertion to
+match the expectation. The check never compared it to anything.
 
-**Cost**: caught, but only by someone re-reading raw output that had already "passed".
-**Mechanism**: *print before assert* — every non-trivial step prints its value and then checks
-it (`.claude/rules/derivation.md`). Ordering matters; the discipline is worthless in reverse.
+**Cost**: someone caught it, but only by a re-read of raw output that had already "passed".
+**Mechanism**: *print before assert*. Each non-trivial step prints its value and then checks it
+(`.claude/rules/derivation.md`). The order matters. The discipline is worthless in the reverse
+order.
 
 ### 2. The same equation misread from a PDF, three times
 
-The three most consequential documentation errors in that project — a dropped term in an
-asymptotic expression, a misattributed sign convention, and a mislabelled benchmark column —
-all traced to reading a PDF's extracted text layer for a nested expression or a table,
-instead of the rendered page.
+Three documentation errors had the most consequence in that project. They were a dropped term in
+an asymptotic expression, a sign convention with the wrong attribution, and a benchmark column
+with the wrong label. All three came from the extracted text layer of a PDF, for a nested
+expression or a table. The rendered page would have avoided them.
 
-**Cost**: one error survived three sessions and a write-up; a convention was recorded
-backwards; a benchmark was labelled with the wrong method.
-**Mechanism**: read equations from the **`.tex` source** where one exists, from the **rendered
-page image** where it does not, and never from the text layer
-(`.claude/skills/literature-audit/reference/corpus.md`); and require a second independent
-source before one paper's stated equation changes a project convention.
+**Cost**: one error survived three sessions and a write-up. Someone recorded a convention
+backwards. Someone labelled a benchmark with the wrong method.
+**Mechanism**: read equations from the **`.tex` source** where one exists. Where none exists,
+read them from the **rendered page image**. Never read them from the text layer
+(`.claude/skills/literature-audit/reference/corpus.md`). Require a second independent source
+before the stated equation of one paper changes a convention of the project.
 
-### 3. Audits spawning audits
+### 3. Audits that start audits
 
-One discrepancy with the source was independently re-derived four times before being
-considered closed. The first two were justified — it contradicted a published paper. The
-third and fourth were ritual.
+One discrepancy with the source was re-derived independently four times before the project
+considered it closed. The first two derivations had a reason, because the discrepancy contradicted a
+published paper. The third and the fourth were ritual.
 
-**Cost**: several sessions spent re-confirming something three independent routes already
-agreed on.
-**Mechanism**: a stopping rule. Once an independent re-derivation confirms a result by a
-genuinely different route — not the same script rerun, not the same route retyped — and either
-the literature agrees or there is a stated reason it cannot be consulted: **stop**.
+**Cost**: several sessions went to the confirmation of something that three independent routes
+already agreed on.
+**Mechanism**: a stopping rule. An independent derivation confirms a result by a different route.
+The same script run again does not count. The same route typed again does not count. Also, the
+literature agrees, or there is a stated reason why nobody can consult it. Then **stop**.
 
 ### 4. Convergence that proved nothing
 
-A recurrence with a deliberately flipped sign converged cleanly and gave confidently wrong
-answers, missing the benchmark by an amount no convergence diagnostic could see.
+A recurrence with a deliberately flipped sign converged cleanly. It gave answers that were
+confidently wrong. It missed the benchmark by an amount that no convergence diagnostic showed.
 
-**Cost**: nothing, because it was tested deliberately — but it established that convergence
-alone cannot detect a wrong formulation, which had been assumed until then.
-**Mechanism**: an independent-method benchmark or an exact known answer is the only check on
-*which problem* was solved. Residuals, resolution refinement and precision refinement all
-test how well the problem was solved (`.claude/skills/solver-workflow/SKILL.md`).
+**Cost**: nothing, because the test was deliberate. It did establish that convergence alone
+cannot detect a wrong formulation. People had assumed the opposite until then.
+**Mechanism**: only an independent-method benchmark or an exact known answer checks *which
+problem* the work solved. Residuals, resolution refinement and precision refinement all test how
+well the work solved the problem (`.claude/skills/solver-workflow/SKILL.md`).
 
-### 5. An orphaned script nobody could account for
+### 5. An orphaned script that nobody could account for
 
-A subagent, dispatched under one scope, kept working after a later prompt had narrowed that
-scope, then hit a rate limit mid-task. It left behind a script in a validation directory that
-had never been requested, never been run, and was not a validation. Nothing recorded where it
-came from.
+A subagent had one scope. A later prompt narrowed that scope. The subagent kept working, and then
+hit a rate limit in the middle of a task. It left a script in a validation directory. Nobody had
+requested the script. Nobody had run it. It was not a validation. Nothing recorded where it came
+from.
 
-**Cost**: weeks of a file sitting in a results directory looking authoritative.
-**Mechanism**: **scope shrinks under interruption, never expands** (CLAUDE.md §8a); and the
-session-close orphaned-artefact check, which accounts for every changed and untracked file by
-name and disposition. The second is the real backstop, because the first depends on the rule
-being followed under exactly the pressure that makes rules get skipped.
+**Cost**: a file stayed for weeks in a results directory and looked authoritative.
+**Mechanism**: **scope gets smaller under interruption. It never gets larger** (CLAUDE.md §8a).
+The second mechanism is the orphaned-artefact check of the session close. It accounts for each
+changed and untracked file by name and disposition. The second mechanism is the real backstop.
+The first mechanism depends on people who follow the rule under the same pressure that makes
+people skip rules.
 
-### 6. A long write stalling silently
+### 6. A long write that stalled silently
 
-A subagent tried to write a whole report in one call, hit the output-token limit, and produced
-nothing for several minutes while appearing to work.
+A subagent tried to write a whole report in one call. It hit the output-token limit. It produced
+nothing for several minutes while it appeared to work.
 
-**Cost**: a restart that discarded real work, on a second occasion when the agent was in fact
-still running.
-**Mechanism**: write in chunks of roughly 250 lines per call. Before declaring an agent stuck,
-check whether the target file's line count and the transcript are still growing.
+**Cost**: a restart that discarded real work. On a second occasion, the agent was still running.
+**Mechanism**: write in chunks of about 250 lines for each call. Before you declare that an agent
+is stuck, check if the line count of the target file and the transcript still grow.
 
 ### 7. Ten parallel authors, one document
 
-A report was split across ten parallel writer subagents. It finished fast, used about 1.5M
-subagent tokens in 17 minutes, and produced ten voices, drifting notation and the same framing
-repeated four times.
+The project split a report across ten parallel writer subagents. The report finished fast. It
+used about 1.5M subagent tokens in 17 minutes. It had ten voices, drifting notation and the same
+framing repeated four times.
 
-**Cost**: the whole document had to be rewritten by one author.
-**Mechanism**: split *reading* and *checking*; never split a narrative a reader must follow in
-order. Fan-out is also where cost spikes, not where hard problems are
+**Cost**: one author had to rewrite the whole document.
+**Mechanism**: split the *reading* and the *checking*. Never split a narrative that a reader must
+follow in order. Fan-out is also where cost spikes. It is not where the hard problems are
 (`.claude/models.md`).
 
-### 8. A brief followed faithfully, producing the wrong thing
+### 8. A brief that an agent followed faithfully and that produced the wrong thing
 
-A report brief demanded a provenance tag on every result and a classification line on every
-section. The writer complied exactly. The result was a ledger nobody could read, and it was
-rejected outright.
+A report brief required a provenance tag on each result and a classification line on each
+section. The writer complied exactly. The result was a ledger that nobody can read. The project
+rejected it completely.
 
-**Cost**: an entire report, rewritten from scratch.
-**Mechanism**: a brief **starts** with who the reader is and what they must be able to do.
-Mechanical requirements go where they serve that reader — an appendix — not everywhere
-(`.claude/skills/report-writing/SKILL.md`).
+**Cost**: a whole report, rewritten from the start.
+**Mechanism**: a brief **starts** with the reader and with what the reader must be able to do.
+Mechanical requirements go where they serve that reader: in an appendix. They do not go
+everywhere (`.claude/skills/report-writing/SKILL.md`).
 
-### 9. A working note outranking the settled record
+### 9. A working note that outranked the settled record
 
 A report writer copied a claim from an exploratory note. The settled decision log and the
-numerics both contradicted it. It shipped.
+numerics both contradicted the claim. The claim shipped.
 
-**Cost**: a wrong statement in a delivered document, found later.
-**Mechanism**: an explicit precedence order — the decision log and the audit's discrepancy
-rows outrank the per-leg notes they were synthesized from — and, where they disagree, **record
-the inconsistency** rather than quietly picking one.
+**Cost**: a wrong statement in a delivered document, which someone found later.
+**Mechanism**: an explicit order of precedence. The decision log and the discrepancy rows of the
+audit outrank the per-leg notes that they came from. If they disagree, **record the
+inconsistency**. Do not pick one quietly.
 
-### 10. The status file drifting
+### 10. The status file that drifted
 
-`STATUS.md` still described a file as uncommitted after it had been committed, and had grown
-to 504 lines of accumulated history, all of it loading into every session.
+`STATUS.md` still described a file as uncommitted after someone committed it. It had grown to
+504 lines of accumulated history. All of it loaded into every session.
 
-**Cost**: context spent every session on history, and a next-session picture that was wrong
-in a way nobody checked because it was the authoritative file.
-**Mechanism**: STATUS holds **current state only**, under ~100 lines; history goes to
-`status_history.md`, which is not auto-loaded. When a session changes a fact STATUS states, it
-updates that line.
+**Cost**: every session spent context on history. The picture for the next session was wrong,
+and nobody checked it, because the file was the authoritative file.
+**Mechanism**: STATUS holds the **current state only**, in about 100 lines or fewer. The history
+goes to `status_history.md`, which does not load automatically. If a session changes a fact that
+STATUS states, the session updates that line.
 
-### 11. Documentation restating documentation
+### 11. Documentation that restated documentation
 
-The same facts were stated in a README, a guide, a structure document, a start-here file and
-several directory READMEs. They drifted apart. A 379-line staleness checker was then written
-to police drift that restatement had created.
+The same facts were in a README, a guide, a structure document, a start-here file and several
+READMEs of directories. They drifted apart. Then someone wrote a staleness checker of 379 lines.
+It policed the drift that the restatements created.
 
-**Cost**: a maintenance burden that existed only because of duplication, plus one document
-that had to be marked "superseded" in place.
-**Mechanism**: **one owner per fact**; every other mention is a link. The checker survives in
-this template (`scripts/check_docs.py`) because it also catches renames — but it is a net, not
-a substitute for not duplicating.
+**Cost**: a burden of maintenance that existed only because of duplication. One document also
+needed the mark "superseded" in place.
+**Mechanism**: **one owner for each fact.** Every other mention is a link. The checker survives
+in this template (`scripts/check_docs.py`), because it also catches renames. It is a net. It does
+not replace the discipline of no duplication.
 
 ### 12. Machine captures buried the real prompts
 
-A prompt-capture hook wrote every long prompt to one directory. Harness traffic — subagent
-hand-backs, task notifications, stop-hook feedback — arrived through the same hook: at least
-54 of 110 captured "prompts" were not prompts, sitting beside the curated records.
+A prompt-capture hook wrote each long prompt to one directory. Harness traffic arrived through
+the same hook: hand-backs of subagents, task notifications and feedback of stop hooks. At least
+54 of 110 captured "prompts" were not prompts. They sat next to the curated records.
 
-**Cost**: the prompt record became unusable for its purpose, and a README had to explain how
-to tell the two apart.
-**Mechanism**: machine captures go to `docs/prompts/auto/` and the raw per-session log; curated
-records live in `docs/prompts/` and are written by hand. Separate directories, so no filtering
-rule has to be trusted.
+**Cost**: the prompt record became unusable for its purpose. A README had to explain how to tell
+the two apart.
+**Mechanism**: machine captures go to `docs/prompts/auto/` and to the raw log of each session.
+Curated records are in `docs/prompts/`, and a person writes them by hand. The directories are
+separate. Then no filtering rule needs trust.
 
 ---
 
-## Part 2 — this project's own
+## Part 2 — the own failures of this project
 
-Add an entry at `/session-close` whenever something went wrong: **what happened**, **what it
-cost**, **what changed as a result**. If nothing changed, the entry is still worth having —
-"we decided to accept this risk" is a finding.
+At `/session-close`, add an entry whenever something went wrong. State **what happened**, **what
+it cost** and **what changed as a result**. If nothing changed, the entry is still worth having.
+"We decided to accept this risk" is a finding.
 
 (none yet)
 
@@ -233,87 +241,88 @@ cost**, **what changed as a result**. If nothing changed, the entry is still wor
 
 ## Part 3 — anticipated, not yet observed
 
-Distinguished from Part 1 on purpose: **these have not happened here.** They are the failure
-modes this project's structure is shaped against, written down so that the reason for a rule
-survives even when the rule looks like bureaucracy. If one of them does happen, move it to
-Part 2 with what it actually cost.
+Part 3 is separate from Part 1 on purpose. **These failures did not happen here.** The structure
+of this project guards against them. The project records them so that the reason for a rule
+survives when the rule looks like bureaucracy. If one of them happens, move it to Part 2 with
+what it cost.
 
-### A. A language chosen by convenience, then two records for one fact
+### A. A language chosen for convenience, then two records for one fact
 
-Three co-equal tools make it easy to derive something in one, re-derive it in another during a
-debugging session, commit both, and have nothing say which is authoritative. **Neither tool's
-own checks can detect this** — each passes.
+Three tools of equal standing make it easy to derive something in one tool. During a debugging
+session, someone derives it again in another tool. Someone commits both. Nothing states which
+one is authoritative. **The checks of neither tool can detect this.** Each one passes.
 
-Guarded by: the PI decides what is implemented where, per topic or by the default profile
-(CLAUDE.md §1, §5), so a language is never picked because it was convenient; the ownership and
-interoperation registries in `docs/toolchain.md`, each row citing its decision;
-`make check-docs` failing when a topic has stage scripts and no registry row; and the rule
-that a second implementation is a labelled `CROSS-CHECK`, never a co-record.
+Guard: the PI decides which language implements which work, per topic or by the default profile (CLAUDE.md
+§1, §5). Then nobody picks a language for convenience. The ownership and interoperation
+registries in `docs/toolchain.md` cite a decision in each row. `make check-docs` fails when a
+topic has stage scripts and no registry row. A second implementation is a labelled `CROSS-CHECK`.
+It is never a second record.
 
-### B. The project quietly becoming a reproduction project
+### B. The project that quietly becomes a reproduction project
 
-Reproduction has clear targets, visible progress and an obvious stopping condition. Extension
-has none of those. The path of least resistance is to keep reproducing, report that as
-progress, and never start the new work — which is the half the project is actually for
-(CLAUDE.md §2).
+Reproduction has clear targets, visible progress and an obvious stopping condition. Extension has
+none of these. The easy path is to keep reproducing, to report that as progress, and never to
+start the new work. The new work is the part that the project is for (CLAUDE.md §2).
 
-Guarded by: separate, equally weighted sections in `docs/STATUS.md` and
-`docs/reproduction_and_extension.md`; the source audit being required to list what the source
-*does not* do, not only what it does; an extension phase in the checklist; and
-`status-reporter` being told never to let reproduction progress stand in for the project's.
+Guard: `docs/STATUS.md` and `docs/reproduction_and_extension.md` have separate sections of equal
+weight. The source audit must list what the source *does not* do, and not only what it does. The
+checklist has an extension phase. The instructions of `status-reporter` say that progress of the
+reproduction never stands in for progress of the project.
 
-### C. An extension validated against the source
+### C. An extension that someone validates against the source
 
-The source does not contain the extension's results, so it cannot validate them — but "this
-agrees with the paper" is such a reassuring sentence that it gets written anyway, usually
-about a limiting case that genuinely does agree, in a way that reads as though the whole
-extension were checked.
+The source does not contain the results of the extension. Therefore it cannot validate them.
+"This agrees with the paper" is a reassuring sentence, and someone writes it anyway. It is
+usually about a limiting case that does agree. It reads as if someone checked the whole
+extension.
 
-Guarded by: `Kind:` / `Judged against:` at the point of use; the `judged_against` field being
-required in every record; and `docs/validation_protocol.md` §8 stating what an extension may
-rest on when no independent benchmark exists.
+Guard: `Kind:` and `Judged against:` where the project uses a result. Each record requires the
+field `judged_against`. `docs/validation_protocol.md` §8 states what an extension can rest on
+when no independent benchmark exists.
 
-### C2. A transcript travelling with a shared repository
+### C2. A transcript that travels with a shared repository
 
-A session transcript is near-verbatim: it holds half-formed reasoning, dead ends, and whatever
-was said about a result before anyone was sure of it. A repository gets shared — with a
-collaborator, a supervisor, a journal, eventually the world — and **sharing permissions
-inherit downward and cannot be subtracted from a subfolder.** A leading dot does not help:
-`.claude/` is hidden in a file browser and an ordinary visible folder in a web UI.
+A session transcript is nearly verbatim. It holds half-formed reasoning, dead ends, and whatever
+someone said about a result before anyone was sure of it. People share a repository: with a
+collaborator, a supervisor, a journal, and eventually with everyone. **Sharing permissions
+inherit downward. You cannot subtract them from a subfolder.** A leading dot does not help.
+`.claude/` is hidden in a file browser and it is an ordinary visible folder in a web interface.
 
-Guarded by: `capture_session.py` writing to `$RESEARCH_RECORDS_DIR` (default
-`~/.claude-research-records`), **never inside the repository**, with the hook self-tests
-asserting that nothing leaked in. The property relied on is *never shared*, not *not in the
-repo*. `handoff.md` is the artifact meant to be read by other people, and it is committed.
+Guard: `capture_session.py` writes to `$RESEARCH_RECORDS_DIR` (default
+`~/.claude-research-records`), **never inside the repository.** The hook self-tests assert that
+nothing leaked in. The design depends on the property *never shared*. It does not depend on the
+property *not in the repo*. `handoff.md` is the artifact that other people read, and the project
+commits it.
 
-Credit: this argument, and the mechanism, are from
-[benning-lab/agentic-starter](https://github.com/benning-lab/agentic-starter). This template
-originally committed its prompt logs into the tree, which was wrong for the same reason.
+Credit: [benning-lab/agentic-starter](https://github.com/benning-lab/agentic-starter) gave this
+argument and the mechanism. This template first committed its prompt logs into the tree. That
+was wrong, for the same reason.
 
-### D. A default silently supplied for a decision that was the PI's
+### D. A default that someone supplied silently for a decision that belonged to the PI
 
-An assistant asked to proceed will proceed. The missing convention, the unstated scope
-boundary, the unassigned language: each has an obvious-looking answer, and supplying it is
-faster than asking. The cost is not the wrong answer — it is that nobody knows a choice was
-made.
+An assistant that receives a request to proceed will proceed. The missing convention, the unstated
+scope boundary and the unassigned language each have an answer that looks obvious. To supply it is
+faster than to ask. The cost is not the wrong answer. The cost is that nobody knows that anyone
+made a choice.
 
-Guarded by: the instruction to **stop and ask** rather than default (CLAUDE.md §1); `OPEN` as
-a first-class status in `docs/conventions.md`; `/init-paper` recording unanswered questions as
-open rather than filling them; and the decision log's `Options:` field, which is impossible to
-fill honestly for a decision nobody made. No hook can enforce this one, which is why it is
-written in the charter's first section rather than its last.
+Guard: the instruction to **stop and ask** and not to supply a default (CLAUDE.md §1). `OPEN` is
+a first-class status in `docs/conventions.md`. `/init-paper` records unanswered questions as open
+and does not fill them. The field `Options:` of the decision log is impossible to fill honestly
+for a decision that nobody made. No hook can enforce this guard. This is why the first section of
+the charter states it, and not the last section.
 
-### E. A catalogue entry taken on trust
+### E. A catalogue entry that someone takes on trust
 
-A reference manager is somebody's years of accumulated, mostly correct, occasionally wrong
-metadata. An entry can carry the right title and the wrong DOI, a PDF that is a different
-version or a different paper, or a saved web page standing in for the article. Importing it
-makes every one of those look authoritative: it now sits in `refs.bib` with a clean key, and
-nothing marks it as less checked than an entry someone verified by hand.
+A reference manager holds the metadata of someone for years. Most of it is correct. Some of it is
+wrong. An entry can have the right title and the wrong DOI. It can have a PDF that is a different
+version or a different paper. It can have a saved web page in place of the article. After an
+import, each of these looks authoritative. The entry sits in `refs.bib` with a clean key. Nothing
+marks it as less checked than an entry that someone verified by hand.
 
-Guarded by: `scripts/library.py import` writes every entry `verified: false`, in the registry
-and as an UNVERIFIED comment in `refs.bib`; `make check-docs` counts the ones still unverified;
-it never guesses an identifier or a `primaryClass` the catalogue did not give; it refuses a
-saved web page and a file catalogued as a PDF that is not one; and verifying means reading
-the copied document's own first page, which is a person's or an agent's job and not a script's
+Guard: `scripts/library.py import` writes each entry with `verified: false`, in the registry, and
+as an UNVERIFIED comment in `refs.bib`. `make check-docs` counts the entries that are still
+unverified. The importer never guesses an identifier or a `primaryClass` that the catalogue did
+not give. It refuses a saved web page and a file that the catalogue calls a PDF and that is not a
+PDF. To verify an entry, someone reads the first page of the copied document. This is the work
+of a person or of an agent. A script does not do it
 (`.claude/skills/literature-audit/reference/local_libraries.md`).
