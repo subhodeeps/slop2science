@@ -84,15 +84,77 @@ def skill_root(rel):
     return None
 
 
+_CLONE_VIEW = None
+
+
+def clone_view():
+    """(files, dirs): what a fresh clone would contain if everything not ignored were committed.
+
+    `git ls-files --cached --others --exclude-standard` is tracked files plus untracked files
+    that are NOT gitignored. That is deliberately not "what exists on disk": a working tree
+    accumulates ignored files (logs/, a fetched source tree, a local settings file) that a
+    clone never has. Asking the filesystem is how a reference can resolve on the author's
+    machine and fail in CI -- which happened (logs/), after the same shape had already been
+    patched twice by hand-adding allow-list entries (data/raw/, papers/source/).
+    """
+    global _CLONE_VIEW
+    if _CLONE_VIEW is None:
+        files = {f for f in git("ls-files", "--cached", "--others",
+                                "--exclude-standard").splitlines() if f}
+        dirs = set()
+        for f in files:
+            parts = f.split("/")
+            for i in range(1, len(parts)):
+                dirs.add("/".join(parts[:i]))
+        _CLONE_VIEW = (files, dirs)
+    return _CLONE_VIEW
+
+
+def declared_runtime_path(path):
+    """True if .gitignore itself says this path is created at runtime, not committed.
+
+    The answer depends only on the ignore patterns, never on whether the path exists, so it is
+    identical on a laptop and in CI.
+
+    Every ancestor is tested as an explicit directory (`papers/`, `papers/source/`, ...). That
+    matters: for a path that does not exist, git cannot tell a directory from a file, and a
+    directory-only pattern such as `papers/source/` or `logs/` matches only when given a
+    trailing slash. Without this, `papers/source/<id>/ms.tex` resolved only on a machine where
+    `papers/source/` had already been created -- the same local/CI split this function exists
+    to remove, one level down.
+    """
+    parts = path.rstrip("/").split("/")
+    candidates = ["/".join(parts[:i]) + "/" for i in range(1, len(parts))]
+    candidates.append(path)
+    # No -q: git rejects --quiet with more than one path (fatal, exit 128), which reads as
+    # "not ignored" and silently turned every nested case into a false negative. Exit 0 means
+    # at least one path is ignored, 1 none, anything else is an error and is not an answer.
+    result = subprocess.run(["git", "-C", str(ROOT), "check-ignore", "--", *candidates],
+                            capture_output=True)
+    return result.returncode == 0
+
+
 def resolves(rel, target):
-    """Try repo-root, citing-file-relative, then skill-root-relative."""
-    if (ROOT / target).exists():
-        return True
-    if (ROOT / os.path.dirname(rel) / target).exists():
-        return True
+    """Does `target`, as cited from `rel`, resolve in a fresh clone?
+
+    Tries repo-root, then citing-file-relative, then skill-root-relative.
+    """
+    files, dirs = clone_view()
+    wants_dir = target.endswith("/")
+    bases = ["", os.path.dirname(rel)]
     sr = skill_root(rel)
-    if sr and (ROOT / sr / target).exists():
-        return True
+    if sr:
+        bases.append(sr)
+    for base in bases:
+        path = os.path.normpath(os.path.join(base, target.rstrip("/"))).replace(os.sep, "/")
+        if path.startswith(".."):
+            continue
+        if path in files and not wants_dir:
+            return True
+        if path in dirs:
+            return True
+        if declared_runtime_path(path + "/" if wants_dir else path):
+            return True
     return False
 
 

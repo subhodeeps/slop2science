@@ -5,6 +5,10 @@
 # user-local path, an illustrative example. A reference that broke because something was
 # renamed is fixed at its source, not allow-listed.
 #
+# A path that .gitignore declares (logs/, data/raw/, papers/source/, .claude/settings.local.json)
+# needs NO entry: it is treated as created at runtime, and resolves the same way on a laptop
+# and in CI.
+#
 # Example:
 # docs/STATUS.md: symbolic/topic2/stage_01_setup.wls   # planned next session, not written yet
 
@@ -13,19 +17,7 @@
 TEMPLATE_GUIDE.md: docs/prompts/A1_source_audit.md
 docs/STATUS.md: docs/prompts/A1_source_audit.md
 
-# Gitignored by design: created at runtime, never committed.
-data/README.md: data/raw/
-data/README.md: data/tmp/
-
-# A personal, gitignored settings file. Referenced as a place the PI may set something.
-docs/toolchain.md: .claude/settings.local.json
-
-# Created by the first `make fetch-source` and gitignored, like data/raw and data/tmp.
-.claude/skills/literature-audit/reference/corpus.md: papers/source/
-
 # Illustrative paths inside the worked example in docs/handoff_guide.md — a fictional
 # project's files, deliberately not real.
-docs/handoff_guide.md: papers/source/2504.01234v2/ms.tex
 docs/handoff_guide.md: symbolic/topic1/stage_04_reduce.wls
 docs/handoff_guide.md: derivation/topic1/04_reduce.md
-.claude/skills/literature-audit/SKILL.md: papers/source/

@@ -15,7 +15,10 @@ place).
 | `verification` | Claude (auto) | Independent audit checklists and the failure taxonomy. Used by the read-only `verification` agent. |
 | `external-code` | Claude (auto) | Every piece of code this project did not write: provenance, licence, attribution, and PI drop-folder intake. |
 | `report-writing` | `paper-writer` (auto) | Writing a report as a paper a researcher can follow by hand; provenance in an appendix, not after every equation. |
-| `session-close` | **you only**: `/session-close` | Account for every changed file, run the checks, update state, propose a commit. |
+| `checkpoint` | **you only**: `/checkpoint` | Mid-session safe save: account for changes, run the checks, refresh the handoff, propose a commit of coherent work. |
+| `session-close` | **you only**: `/session-close` | Account for every changed file, run the checks, update state, write the handoff, propose a commit. |
+| `sync-template` | **you only**: `/sync-template` | Pull harness improvements from the upstream template, touching no scientific content. |
+| `parallel-safety` | Claude (auto) | What parallelises safely and what must not; the partition rules before dispatching concurrent agents. |
 
 ## Conventions
 

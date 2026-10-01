@@ -23,10 +23,27 @@ when_to_use: 'Trigger phrases: benchmark; published values; compare with the lit
 8. Identify disagreements. Cross-check anything important against an independent source
    before it changes a project convention.
 
+## Prefer the source over the PDF
+
+Before reading a PDF at all, check whether the LaTeX source exists:
+
+    make fetch-source ID=<arxiv-id> LABEL=<firstauthor><year>
+
+fetches the arXiv **e-print tarball** as well as the PDF. The source gives the equation as
+the authors wrote it, the figure files behind every plot, and sometimes the `.dat`/`.csv`
+behind a table — which is a benchmark with real provenance rather than digits read off a
+figure. Full hierarchy and the version-pinning rules: `reference/corpus.md`.
+
+The PI may also have the work in a local Zotero or Calibre library — the usual route for
+pre-arXiv papers, books and journal-only works. Those hold thousands of items, so they are
+**searched with a targeted query and never browsed**; procedure, the read-only discipline and
+the three ways a catalogue entry can lie: `reference/local_libraries.md`.
+
 ## Reading equations, tables or values from a PDF
 
-**Read the rendered page as an image.** Do not rely on the extracted text layer for anything
-with a fraction, a stacked sub/superscript, a matrix, or tabulated columns.
+When there is no source, or for a figure: **read the rendered page as an image.** Do not rely
+on the extracted text layer for anything with a fraction, a stacked sub/superscript, a matrix,
+or tabulated columns.
 
 This is the highest-yield rule in this skill. In the project this template came from, the
 three most consequential documentation errors — a dropped term in an asymptotic expression, a

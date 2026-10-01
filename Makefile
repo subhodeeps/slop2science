@@ -9,7 +9,7 @@ PY          ?= scripts/py
 TOPIC       ?= {{DEFAULT_TOPIC}}
 
 .PHONY: help check-env setup test test-julia test-python stages codegen codegen-check \
-        check check-refs check-evidence check-docs check-init test-hooks status fetch-source \
+        check check-refs check-evidence check-docs check-init test-hooks test-checks status fetch-source \
         libraries search-library report new-record clean-logs
 
 help: ## list targets
@@ -17,13 +17,16 @@ help: ## list targets
 
 # --- tool-free tier ----------------------------------------------------------------
 
-check: test-hooks check-refs check-evidence check-docs ## all repository checks (no scientific toolchain needed)
+check: test-hooks test-checks check-refs check-evidence check-docs ## all repository checks (no scientific toolchain needed)
 
 check-init: ## fail if {{PLACEHOLDERS}} remain (expected to fail in the template itself)
 	@$(PY) scripts/check_docs.py init
 
 test-hooks: ## self-test the Claude Code hooks with synthetic payloads
 	@scripts/test_hooks.sh
+
+test-checks: ## self-test the repository checkers (reference resolution answers for a clone)
+	@$(PY) scripts/test_checks.py
 
 check-refs: ## fail if a file path cited in Markdown no longer resolves
 	@$(PY) scripts/check_docs.py refs

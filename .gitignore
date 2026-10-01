@@ -1,7 +1,18 @@
-# --- source PDFs: registry is committed, PDFs are not (TEMPLATE_GUIDE.md §4) -------
+# --- sources: the registry is committed, the material is not (TEMPLATE_GUIDE.md §4) -
+# `make fetch-source` extracts an arXiv tarball into papers/source/<id>/: third-party LaTeX,
+# figures and sometimes data. Whether to commit someone else's PDF or source tree is the PI's
+# call, never the template's, so neither is committed by default. papers/sources.yaml keeps
+# every source identifiable and re-fetchable either way.
 papers/**/*.pdf
 papers/**/*.djvu
+papers/source/
 !papers/sources.yaml
+
+# --- session transcripts live OUTSIDE the repository entirely -----------------------
+# .claude/hooks/capture_session.py writes to $RESEARCH_RECORDS_DIR (default
+# ~/.claude-research-records), never here: a transcript is near-verbatim and holds
+# half-formed reasoning, and a repository's sharing permissions cannot be subtracted from a
+# subfolder. handoff.md is the artifact meant to be read by other people, and it IS committed.
 
 # --- drop folders: transient, README only is tracked -------------------------------
 papers/_drop/*

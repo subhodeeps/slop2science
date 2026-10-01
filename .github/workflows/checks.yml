@@ -23,6 +23,9 @@ jobs:
       - name: Hook self-tests
         run: make test-hooks
 
+      - name: Checker self-tests
+        run: make test-checks
+
       - name: Reference resolution
         run: make check-refs
 
