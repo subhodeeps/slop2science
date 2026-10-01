@@ -104,8 +104,7 @@ export it. Never write it by hand "for now".
   new report in `docs/audits/`, and it cannot change that report afterwards. `readonly_agent.py`
   and `guard_paths.py` enforce this. **The limit:** the subagent has Bash, and no hook stops a
   shell write such as `sed -i`. A guard for shell writes would not be complete. After each audit,
-  the session that dispatched it runs `git status`. Only a new report in `docs/audits/` is
-  expected.
+  the session that dispatched it runs `git status`. Expect only a new report in `docs/audits/`.
 - A change to the guard configuration, `settings.json`, the hooks or the agents needs your
   approval. Ask rules in `.claude/settings.json` enforce this for `Edit` and `Write`. A shell
   command is not covered.
