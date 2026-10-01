@@ -187,7 +187,15 @@ def kerr_curvature():
 
     in Boyer-Lindquist r and theta. The meridional plane uses x = sqrt(r^2 + a^2) sin(theta) and
     z = r cos(theta). K diverges at the ring singularity (r = 0, theta = pi/2), at x = +-a, z = 0,
-    and changes sign across the dashed curves K = 0. The density is log10 |K|.
+    and changes sign across the dashed curves K = 0. The density is log10 |K| normalised to
+    n = (log10 |K| + 1) / 6, clipped to [0, 1]: n = 0 at |K| = 10^-1 and n = 1 at |K| = 10^5. The
+    colour bar has the label log10(M^4 |R_abcd R^abcd|) and the range 0 to 1; the range shows
+    that the scale is normalised. The main map and the inset (a zoom on the right ring point)
+    share this scale, so one colour bar reads both. The thin contour lines are at n = 0.1 to 0.6
+    in the main map and n = 0.5 to 0.8 in the inset, without numbers. The pale red curves are the
+    event horizon (solid) and the inner horizon (dotted). The segment between
+    the two ring points (|x| < a, z = 0) is the disk r = 0, where the spacetime continues to the
+    sheet r < 0; the plot shows the sheet r >= 0 above and below it, so contours end on the disk.
 
     Source: R. C. Henry, "Kretschmann scalar for a Kerr-Newman black hole", ApJ 535, 350 (2000),
     arXiv:astro-ph/9912320, p. 6, with charge Q = 0; the factor (r^2 - c^2)(...) expands to his
@@ -197,41 +205,89 @@ def kerr_curvature():
     """
     spin = 0.9
     ink = amore.palette("slate")["ink"]
+    # The horizons: the lightest amore red. Red is the one hue that parula does not contain.
+    horizon = dict(color=amore.palette("red")["light"])
+
+    def kretschmann_at(x, z):
+        big = x ** 2 + z ** 2 - spin ** 2
+        r2 = 0.5 * (big + np.sqrt(big ** 2 + 4 * spin ** 2 * z ** 2))
+        c2 = np.where(r2 > 0, spin ** 2 * z ** 2 / np.maximum(r2, 1e-30), spin ** 2)  # a^2 cos^2
+        sigma = r2 + c2
+        return 48 * (r2 - c2) * (sigma ** 2 - 16 * r2 * c2) / sigma ** 6
+
+    def normalised(k):                         # log10 |K| from -1 to 5, mapped to 0 to 1
+        return np.clip((np.log10(np.abs(k) + 1e-30) + 1) / 6, 0, 1)
+
     x, z = np.meshgrid(np.linspace(-3.0, 3.0, 1000), np.linspace(-1.96, 1.96, 654))
-    big = x ** 2 + z ** 2 - spin ** 2
-    r2 = 0.5 * (big + np.sqrt(big ** 2 + 4 * spin ** 2 * z ** 2))
-    c2 = np.where(r2 > 0, spin ** 2 * z ** 2 / np.maximum(r2, 1e-30), spin ** 2)   # a^2 cos^2
-    sigma = r2 + c2
-    kretschmann = 48 * (r2 - c2) * (sigma ** 2 - 16 * r2 * c2) / sigma ** 6
-    field = np.log10(np.abs(kretschmann) + 1e-30)
+    kretschmann = kretschmann_at(x, z)
+    field = normalised(kretschmann)
 
     fig, ax = amore.figure(colorbar=True)
     image = ax.imshow(field, extent=(-3.0, 3.0, -1.96, 1.96), origin="lower", aspect="auto",
-                      cmap=amore.fakeparulapastel(), vmin=-1, vmax=3, interpolation="bilinear")
-    lines = ax.contour(x, z, field, levels=[0, 1, 2], colors=amore.OVERLAY, linewidths=0.6,
-                       alpha=amore.OVERLAY_ALPHA, linestyles="solid")
-    ax.clabel(lines, levels=[0, 1], fmt=r"$%d$", fontsize=7, inline=True)
+                      cmap=amore.fakeparulapastel(), vmin=0, vmax=1, interpolation="bilinear")
+    ax.contour(x, z, field, levels=np.arange(0.1, 0.65, 0.1), colors=amore.OVERLAY,
+                       linewidths=0.5, alpha=amore.OVERLAY_ALPHA, linestyles="solid")
     ax.contour(x, z, kretschmann, levels=[0], colors=ink, linewidths=0.9, linestyles="--")
     theta = np.linspace(0, 2 * np.pi, 400)
     for radius, style in ((1 + np.sqrt(1 - spin ** 2), "-"), (1 - np.sqrt(1 - spin ** 2), ":")):
         ax.plot(np.sqrt(radius ** 2 + spin ** 2) * np.sin(theta), radius * np.cos(theta),
-                color="white", ls=style, lw=1.1)
+                ls=style, lw=1.3, **horizon)
+    ax.plot([-spin, spin], [0, 0], color=ink, lw=1.3, solid_capstyle="butt")      # the disk r = 0
     ax.plot([-spin, spin], [0, 0], ls="none", marker="o", ms=4.5, color=ink, mec="white", mew=0.9)
     ax.set_xlim(-3.0, 3.0)
     ax.set_ylim(-1.96, 1.96)
     ax.grid(False)
     note = dict(facecolor="white", alpha=0.78, edgecolor="none", boxstyle="round,pad=0.15")
-    ax.annotate(r"\texttt{ring singularity}", xy=(spin, 0), xytext=(1.85, -0.55), fontsize=8,
-                bbox=note, arrowprops=dict(arrowstyle="-", lw=0.6, color=ink))
-    ax.annotate(r"\texttt{event horizon}", xy=(-1.2, 1.0), xytext=(-2.85, 1.65), fontsize=8,
-                bbox=note, arrowprops=dict(arrowstyle="-", lw=0.6, color=ink))
-    ax.annotate(r"$K = 0$", xy=(0.0, 0.83), xytext=(0.9, 1.55), fontsize=9, bbox=note,
-                arrowprops=dict(arrowstyle="-", lw=0.6, color=ink))
+    pointer = dict(arrowstyle="->", lw=0.7, color=ink, shrinkA=2, shrinkB=0)
+    # Each arrow ends exactly on its feature. On the spin axis (theta = 0, so z = r and c = a),
+    # K = 0 at r = a and r = a (2 +- sqrt 3); the arrow points at z = a.
+    x_h = -1.2
+    z_h = (1 + np.sqrt(1 - spin ** 2)) * np.sqrt(1 - x_h ** 2 / (2 + 2 * np.sqrt(1 - spin ** 2)))
+    ax.annotate(r"\texttt{ring singularity}", xy=(-spin, 0), xytext=(-2.85, -0.95), fontsize=8,
+                bbox=note, arrowprops=pointer)
+    ax.annotate(r"\texttt{event horizon}", xy=(x_h, z_h), xytext=(-2.85, 1.65), fontsize=8,
+                bbox=note, arrowprops=pointer)
+    ax.annotate(r"$K = 0$", xy=(0.0, spin), xytext=(0.9, 1.55), fontsize=9, bbox=note,
+                arrowprops=pointer)
+    r_minus = 1 - np.sqrt(1 - spin ** 2)                       # the inner (Cauchy) horizon
+    x_i = 0.3
+    z_i = -r_minus * np.sqrt(1 - x_i ** 2 / (r_minus ** 2 + spin ** 2))
+    ax.annotate(r"\texttt{inner horizon}", xy=(x_i, z_i), xytext=(0.55, -1.32), fontsize=8,
+                bbox=note, arrowprops=pointer)
     ax.text(-2.85, -1.82, r"$a = 0.9\,M$", fontsize=9, bbox=note)
+
+    # Zoom on the flower at the right ring point: a filled contour plot of n on the same colour
+    # scale as the main map, so the colour bar reads both. Its bands, 0.05 apart, show the
+    # gradients inside the petals.
+    zoom_x, zoom_z = (spin - 0.3, spin + 0.3), (-0.3, 0.3)
+    xi, zi = np.meshgrid(np.linspace(*zoom_x, 650), np.linspace(*zoom_z, 650))
+    k_zoom = kretschmann_at(xi, zi)
+    f_zoom = normalised(k_zoom)
+    # The inset spans x = 1.4 to 2.9 and z = -0.75 to 0.75.
+    ins = amore.inset(ax, [0.7333, 0.3087, 0.25, 0.3827], zoom_x, zoom_z)
+    ins.contourf(xi, zi, f_zoom, levels=np.linspace(0, 1, 21), cmap=amore.fakeparulapastel())
+    ins.contour(xi, zi, f_zoom, levels=[0.5, 0.6, 0.7, 0.8], colors=amore.OVERLAY,
+                linewidths=0.4, alpha=amore.OVERLAY_ALPHA, linestyles="solid")
+    ins.contour(xi, zi, k_zoom, levels=[0], colors=ink, linewidths=0.7, linestyles="--")
+    ins.plot(np.sqrt(r_minus ** 2 + spin ** 2) * np.sin(theta), r_minus * np.cos(theta),
+             ls=":", lw=1.3, **horizon)
+    ins.plot([zoom_x[0], spin], [0, 0], color=ink, lw=1.1, solid_capstyle="butt")
+    ins.plot([spin], [0], ls="none", marker="o", ms=3.5, color=ink, mec="white", mew=0.8)
+    ins.set_xticks([])
+    ins.set_yticks([])
+    ins.grid(False)
+    box = dict(color="white", lw=0.7)
+    link = dict(color="white", lw=0.8, ls=":")
+    ax.plot([zoom_x[0], zoom_x[1], zoom_x[1], zoom_x[0], zoom_x[0]],
+            [zoom_z[0], zoom_z[0], zoom_z[1], zoom_z[1], zoom_z[0]], **box)
+    for sign in (1, -1):                       # box corners to the inset corners at x = 1.4
+        ax.plot([zoom_x[1], 1.4], [sign * zoom_z[1], sign * 0.75], **link)
     ax.set_xlabel(r"$x/M$")
     ax.set_ylabel(r"$z/M$")
-    amore.colorbar(ax, image, r"$\log_{10}\bigl(M^4\,|R_{abcd}R^{abcd}|\bigr)$",
-                   ticks=[-1, 0, 1, 2, 3])
+    ticks = [0, 0.25, 0.5, 0.75, 1]
+    bar = amore.colorbar(ax, image, r"$\log_{10}\bigl(M^4\,|R_{abcd}R^{abcd}|\bigr)$",
+                         ticks=ticks)
+    bar.set_ticklabels([f"{t:g}" for t in ticks])
     amore.tag(ax, TAG, loc="lower right")
     amore.save(fig, OUT / "amore_parula", dpi=README_DPI, formats=("png",), exact_size=True)
     plt.close(fig)
