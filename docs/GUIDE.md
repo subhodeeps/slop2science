@@ -127,6 +127,8 @@ checks:
 - reference resolution
 - evidence-tag resolution
 - the staleness guard
+- the plot style: a Python file that imports matplotlib must call `amore.use()` and take its
+  colours from the `amore` palettes (`scripts/check_plots.py`)
 - the language rule (see below)
 
 The same tier runs in CI on each push.

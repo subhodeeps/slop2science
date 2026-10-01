@@ -6,6 +6,7 @@ model: sonnet
 skills:
   - solver-workflow
   - toolchain
+  - plotting
 memory: project
 color: blue
 hooks:

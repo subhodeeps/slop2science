@@ -18,6 +18,7 @@ into the repository. Never edit a template in place.
 | `checkpoint` | **you only**: `/checkpoint` | Safe save during a session: account for the changes, run the checks, refresh the handoff and propose a commit of coherent work. |
 | `session-close` | **you only**: `/session-close` | Account for each changed file, run the checks, update the state, write the handoff and propose a commit. |
 | `sync-template` | **you only**: `/sync-template` | Pull harness improvements from the upstream template. Do not touch scientific content. |
+| `plotting` | Claude (auto), and preloaded by `implementation` | Make each matplotlib figure in `amore`, the plot style: LaTeX labels, muted palettes, shaded bands, insets, contour maps. Look at the rendered figure before you call it done. `make check-plots` enforces the style in code. |
 | `parallel-safety` | Claude (auto) | What is safe to run in parallel and what is not. The partition rules to apply before you dispatch concurrent agents. |
 
 ## Conventions
