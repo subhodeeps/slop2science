@@ -117,11 +117,24 @@ checks:
 - reference resolution
 - evidence-tag resolution
 - the staleness guard
-- the language rule: `make lint-ste-md` fails if a Markdown file breaks a measurable ASD-STE100
-  rule, and `make test-checks` fails if the charter, the rule, an agent or the session hook loses
-  the requirement
+- the language rule (see below)
 
 The same tier runs in CI on each push.
+
+**The language rule (ASD-STE100)** reaches every session, agent and skill, and the system
+enforces it in these ways:
+
+| Method | What it does |
+|---|---|
+| `CLAUDE.md` §11 and `.claude/rules/communication.md` | Both load in each session. The rule has no `paths:` limit. |
+| Agent instructions | Each file in `.claude/agents/` names the rule. Skills run inside a session or an agent and inherit it. |
+| `SessionStart` hook | It prints the requirement at startup, resume, clear and compact. |
+| `make test-checks` | It fails if the charter, the rule, an agent or the hook loses the requirement. |
+| `make lint-ste-md` | It fails if a tracked Markdown file breaks a measurable rule. It runs in `make check` and in CI. |
+| `make lint-ste-code` | It reports the same rules for code comments and docstrings. It only reports. |
+
+The lint tools check measurable rules only. They do not check the STE Dictionary and cannot
+certify compliance. A person must review the result.
 
 **These items depend on the prompt and on the model that follows it:**
 

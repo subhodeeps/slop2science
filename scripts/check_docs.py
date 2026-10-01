@@ -278,6 +278,35 @@ def check_evidence():
 
 # --- check: stale ------------------------------------------------------------------
 
+STARTUP_BUDGET = 400
+
+
+def startup_load():
+    """Files that load into every session, with their line counts.
+
+    The charter, each `@path` import in it, and each rule file without a `paths:` limit in its
+    frontmatter. Skills, agents and path-scoped rules load on demand and are not counted.
+    """
+    files = {}
+
+    def count(rel):
+        path = ROOT / rel
+        if path.exists():
+            files[rel] = len(path.read_text(encoding="utf-8", errors="replace").splitlines())
+
+    count("CLAUDE.md")
+    charter = ROOT / "CLAUDE.md"
+    if charter.exists():
+        for m in re.finditer(r"^@(\S+)\s*$", charter.read_text(encoding="utf-8", errors="replace"), re.M):
+            count(m.group(1))
+    for rule in sorted((ROOT / ".claude" / "rules").glob("*.md")):
+        text = rule.read_text(encoding="utf-8", errors="replace")
+        front = text.split("---", 2)[1] if text.startswith("---") else ""
+        if "paths:" not in front:
+            count(rule.relative_to(ROOT).as_posix())
+    return {"files": files, "total": sum(files.values())}
+
+
 def check_stale():
     errors, warnings = [], []
 
@@ -337,7 +366,8 @@ def check_stale():
     #    An ERROR, not a warning: a budget that only warns is a budget that is ignored until
     #    the file is 500 lines of history (docs/failure_modes.md entry 10). Going over means
     #    move detail into a skill, a rule or a referenced doc -- not trim wording.
-    BUDGETS = {"CLAUDE.md": 220, "docs/STATUS.md": 100, "docs/conventions.md": 60}
+    BUDGETS = {"CLAUDE.md": 199, "docs/STATUS.md": 100, "docs/conventions.md": 60,
+               ".claude/rules/communication.md": 70}
     for rel, budget in BUDGETS.items():
         path = ROOT / rel
         if not path.exists():
@@ -348,6 +378,17 @@ def check_stale():
                 f"{rel}: {lines} lines, over its {budget}-line context budget. This file "
                 f"loads into every session. Move detail into a skill, a rule, or a "
                 f"referenced doc; do not compress the wording.")
+
+    # 4b. What loads at startup, in total: the charter, the files that it imports with @, and
+    #     each rule that has no paths: limit. An import moves text out of the charter into the
+    #     same context, so the budget counts the sum and not only the charter.
+    startup = startup_load()
+    if startup["total"] > STARTUP_BUDGET:
+        detail = ", ".join(f"{k}: {v}" for k, v in startup["files"].items())
+        errors.append(
+            f"startup load is {startup['total']} lines, over the {STARTUP_BUDGET}-line budget "
+            f"({detail}). Move detail into an on-demand skill or a path-scoped rule. Do not "
+            f"move it into an @ import.")
 
     # 5. Sources imported from a catalogue are written `verified: false`. Catalogue metadata
     #    can be wrong (a mislabelled entry, a snapshot standing in for the paper), and the

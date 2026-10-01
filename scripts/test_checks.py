@@ -242,5 +242,14 @@ expect("the SessionStart hook repeats the requirement",
 expect("the skills README states that every skill inherits the rule",
        "inherits the language rule" in (R / ".claude/skills/README.md").read_text(encoding="utf-8"), True)
 
+print("instruction loading — what loads at startup is small and listed")
+
+load = cd.startup_load()
+expect("the startup load is the charter, its two imports and the one rule without a paths: limit",
+       sorted(load["files"]), sorted(["CLAUDE.md", "docs/STATUS.md", "docs/conventions.md",
+                                      ".claude/rules/communication.md"]))
+expect("the charter is under 200 lines", load["files"]["CLAUDE.md"] < 200, True)
+expect("the startup total is within its budget", load["total"] <= cd.STARTUP_BUDGET, True)
+
 print(f"\nchecks: {passed} passed, {failed} failed")
 sys.exit(1 if failed else 0)
