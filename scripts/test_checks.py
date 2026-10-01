@@ -351,6 +351,30 @@ expect("every readonly_exempt path falls under a readonly glob (an exemption of 
        [x for x in (guard_cfg or {}).get("readonly_exempt", [])
         if not any(r.match(x) for r in readonly_res)], [])
 
+print("verifier claim — no file says that the verifier cannot change project files without the limit")
+
+UNQUALIFIED = re.compile(
+    r"cannot\s+(?:edit|change|write|modify)\s+(?:any\s+|the\s+)?project\s+files", re.I)
+
+
+def unqualified_verifier_claims(files):
+    """Files that claim the verifier cannot change project files. The hook covers Edit and Write
+    only, so the true claim names those tools."""
+    return sorted(n for n, t in files.items() if UNQUALIFIED.search(" ".join(t.split())))
+
+
+expect("the claim without the tool names is flagged",
+       unqualified_verifier_claims({"x.md": "The verifier cannot edit project files."}), ["x.md"])
+expect("the claim that names Edit and Write is fine",
+       unqualified_verifier_claims({"x.md": "It cannot use `Edit` or `Write` on project files."}), [])
+old_text = {"README.md": "The verifier sees only the artifact. It cannot change project files. It"}
+expect("the old README text is flagged",
+       unqualified_verifier_claims(old_text), ["README.md"])
+expect("no real file makes the unqualified claim",
+       unqualified_verifier_claims({str(p.relative_to(R)): p.read_text(encoding="utf-8")
+                                    for p in R.rglob("*.md") if ".git" not in p.parts
+                                    and "docs/failure_modes" not in str(p)}), [])
+
 print("guard files — a change to the guards needs approval")
 
 settings = json.loads((R / ".claude/settings.json").read_text(encoding="utf-8"))

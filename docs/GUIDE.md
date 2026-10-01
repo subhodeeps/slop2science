@@ -61,7 +61,7 @@ checks.
 | `derivation` | symbolic derivation, source reconstruction, asymptotics, limits | It writes `symbolic/**` and `derivation/**`. It has project memory for confirmed conventions and pitfalls. It has no memory of results. |
 | `implementation` | solvers, discretization, convergence, precision | It takes physics only from `symbolic/generated/`. It never invents an equation. |
 | `literature` | sources, benchmarks, reconciliation of conventions | It is the only agent with web access. It is the only agent that writes under `papers/`. |
-| `verification` | independent audit after each derivation, export, solver change or result | **It cannot edit project files, even if it wants to.** A hook blocks it. It reports findings. It does not fix them. It records its report as a new file in `docs/audits/`. |
+| `verification` | independent audit after each derivation, export, solver change or result | **It cannot use `Edit` or `Write` on project files, even if it wants to.** A hook blocks it. It reports findings. It does not fix them. It records its report as a new file in `docs/audits/`. |
 | `paper-writer` | the report or paper of a topic | It uses only script-verified equations as results and only recorded numbers. It writes in chunks. One author writes the document. |
 | `status-reporter` | factual status and progress reports | It never derives or verifies. Each claim traces to a named file. |
 | `explore` | fast read-only lookup before substantive work | It returns file:line and an excerpt. It does not synthesize. The caller does that. |
@@ -100,14 +100,20 @@ export it. Never write it by hand "for now".
   with the configuration in `.claude/guard_paths.json`.
 - `Write` cannot overwrite an existing derivation stage or export script. The same hook
   enforces this.
-- The `verification` subagent cannot write project files. It can create one new report in
-  `docs/audits/`, and it cannot change that report afterwards. `readonly_agent.py` and
-  `guard_paths.py` enforce this.
-- **No subagent can push, commit, rebase, reset, branch or stage everything.**
-  `subagent_git_guard.py` enforces this. The frontmatter of each subagent that can use Bash
-  registers it. A subagent can read git. It cannot change the history or the remote. A
-  subagent has a fresh context and cannot see what else is in progress. Therefore the main
-  session proposes the commit.
+- The `verification` subagent cannot use `Edit` or `Write` on project files. It can create one
+  new report in `docs/audits/`, and it cannot change that report afterwards. `readonly_agent.py`
+  and `guard_paths.py` enforce this. **The limit:** the subagent has Bash, and no hook stops a
+  shell write such as `sed -i`. A guard for shell writes would not be complete. After each audit,
+  the session that dispatched it runs `git status`. Only a new report in `docs/audits/` is
+  expected.
+- A change to the guard configuration, `settings.json`, the hooks or the agents needs your
+  approval. Ask rules in `.claude/settings.json` enforce this for `Edit` and `Write`. A shell
+  command is not covered.
+- **No subagent can run a git command that changes anything, except staging an explicit path.**
+  `subagent_git_guard.py` enforces this with an allowlist of read-only commands. The frontmatter
+  of each subagent that can use Bash registers it. A subagent can read git. It cannot change the
+  history or the remote. A subagent has a fresh context and cannot see what else is in progress.
+  Therefore the main session proposes the commit.
 - `log_prompt.py` captures each prompt.
 - `precompact_checkpoint.sh` writes a state snapshot before each compaction.
 - `capture_session.py` keeps a condensed transcript **outside the repository**.
