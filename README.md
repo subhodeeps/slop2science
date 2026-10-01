@@ -139,7 +139,7 @@ that paper. Then I used Claude to add ideas from the slop cannon paper:
 - the prover/verifier split
 - Lamport-structured derivations
 - the ladder of rigour
-- the model failure modes at the start of `docs/failure_modes.md`
+- the model failure modes in `docs/failure_modes/model.md`
 
 Other repositories contributed parts:
 

@@ -1,7 +1,7 @@
 # docs — what lives where
 
 Each fact has one owner. If two files would state the same fact, one of them links to the
-other (`docs/failure_modes.md` entry 11 explains why).
+other (`docs/failure_modes/inherited.md` entry 11 explains why).
 
 ## Loaded into every session
 
@@ -17,7 +17,7 @@ other (`docs/failure_modes.md` entry 11 explains why).
 |---|---|
 | `GUIDE.md` | the mechanism: what each piece of configuration is, and when it acts |
 | `WORKFLOW.md` | the practice: how to do a piece of work, and what "verified" means |
-| `failure_modes.md` | what went wrong, what it cost, and what changed |
+| `failure_modes.md` | the index of failure modes: what went wrong, what it cost, and what changed. The files are in `failure_modes/`. |
 | `toolchain.md` | the ownership registry, the notes on execution for each tool, the hand-off conventions |
 | `validation_protocol.md` | the acceptance gates and the schema of the result record |
 | `reproduction_and_extension.md` | both parts, claim by claim: what of the source the project reproduced, what new work it established, and what the paper needs |
