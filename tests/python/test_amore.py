@@ -19,7 +19,7 @@ HEX = re.compile(r"^#[0-9a-f]{6}$")
 
 
 def test_each_palette_has_four_hex_tones():
-    for name in ("blue", "green", "red"):
+    for name in ("blue", "green", "red", "teal", "amber", "plum"):
         tones = ps.palette(name)
         assert sorted(tones) == ["ink", "light", "main", "shade"]
         assert all(HEX.match(v) for v in tones.values()), name
@@ -33,6 +33,18 @@ def test_each_palette_gives_a_colour_map():
 def test_the_diverging_map_is_near_white_at_zero():
     r, g, b, _ = ps.diverging("red", "green")(0.5)
     assert min(r, g, b) > 0.9
+
+
+@pytest.mark.skipif(not (shutil.which("latex") and shutil.which("dvipng")),
+                    reason="LaTeX (latex, dvipng) is not installed: make check-env")
+def test_exact_size_gives_the_figure_size(tmp_path):
+    from PIL import Image
+    with plt.style.context(ps.STYLE):
+        fig, ax = plt.subplots(figsize=(3, 2), layout="constrained")
+        ax.set_xlabel(r"$x$")
+        ps.save(fig, tmp_path / "f", dpi=100, formats=("png",), exact_size=True)
+        plt.close(fig)
+    assert Image.open(tmp_path / "f.png").size == (300, 200)
 
 
 def test_style_file_sets_latex_and_the_frame():
