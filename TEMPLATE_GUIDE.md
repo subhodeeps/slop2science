@@ -7,7 +7,7 @@ rewrite for your paper and which parts must stay unchanged. It also gives the re
 
 | Layer | Files | Change it? |
 |---|---|---|
-| **Charter and discipline** | `CLAUDE.md` §1, §3–§4, §6, §8–§11; `.claude/rules/`; `docs/WORKFLOW.md`; `docs/failure_modes.md`; the hooks | **No.** These files encode failure modes. They do not encode preferences. §1 matters most: the authority of the PI, and asking in place of choosing a default. The rest depends on it. Change these files only after your project meets a failure that they do not cover. Then log the change in `docs/decision_log.md`. |
+| **Charter and discipline** | `CLAUDE.md` §1, §3–§4, §6–§11; `.claude/rules/`; `docs/WORKFLOW.md`; `docs/failure_modes.md`; the hooks | **No.** These files encode failure modes. They do not encode preferences. §1 matters most: the authority of the PI, and asking in place of choosing a default. The rest depends on it. Change these files only after your project meets a failure that they do not cover. Then log the change in `docs/decision_log.md`. |
 | **Project parameters** | the `{{PLACEHOLDERS}}` in `CLAUDE.md`; `docs/conventions.md`; the ownership registry in `docs/toolchain.md`; `papers/sources.yaml`; the trigger phrases of agents and skills | **Yes, one time**, through `/init-paper`. Then change them as the project evolves. |
 | **Scientific content** | `derivation/`, `symbolic/`, `src/`, `tests/`, `validation/`, `reports/`, `docs/reproduction_and_extension.md`, `docs/STATUS.md` | **Yes, continuously.** This is the work. It ships empty. |
 

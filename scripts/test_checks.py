@@ -251,5 +251,11 @@ expect("the startup load is the charter, its two imports and the one rule withou
 expect("the charter is under 200 lines", load["files"]["CLAUDE.md"] < 200, True)
 expect("the startup total is within its budget", load["total"] <= cd.STARTUP_BUDGET, True)
 
+print("charter — the numbered sections have no gap")
+
+nums = [int(m.group(1)) for m in re.finditer(r"^## (\d+)[a-z]?\.", charter, re.M)]
+expect("CLAUDE.md section numbers run 1, 2, 3 ... with no gap",
+       sorted(set(nums)), list(range(1, max(nums) + 1)))
+
 print(f"\nchecks: {passed} passed, {failed} failed")
 sys.exit(1 if failed else 0)

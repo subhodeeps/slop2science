@@ -22,7 +22,7 @@ changes in **without touching one line of science.**
 | `Makefile`, `.github/workflows/` | the registries in `docs/toolchain.md` |
 | `docs/GUIDE.md`, `docs/WORKFLOW.md`, `docs/validation_protocol.md`, `docs/source_audit_template.md` | `derivation/`, `symbolic/`, `src/`, `tests/`, `validation/`, `reports/`, `papers/`, `notes/`, `code/` |
 | `docs/failure_modes.md` (index), `docs/failure_modes/model.md`, `docs/failure_modes/inherited.md` | `docs/failure_modes/project.md` and `docs/failure_modes/anticipated.md` (the own parts of the project) |
-| `CLAUDE.md` §§1, 3, 4, 6, 8–11 (the discipline) | `CLAUDE.md` §2, §5 and each value that comes from a `{{PLACEHOLDER}}` |
+| `CLAUDE.md` §§1, 3, 4, 6–11 (the discipline) | `CLAUDE.md` §2, §5 and each value that comes from a `{{PLACEHOLDER}}` |
 
 The split works because the reusable layer never imports project content. One file is split
 down the middle: `CLAUDE.md`. For this file, **show the PI the diff and let the PI decide

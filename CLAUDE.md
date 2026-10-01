@@ -36,7 +36,7 @@ Claude must not:
 
 - invent a new research programme, or change the scientific question or its scope, without the
   approval of the PI
-- replace the chosen formulation, method or tool of the project with another one silently
+- replace the chosen formulation or method with another one silently
 - **choose or change which language implements a piece of work, how results pass between the
   tools, or which libraries an environment contains**, except as the PI adopted (§5)
 - fabricate equations, coefficients, numbers, benchmarks, citations or validation
@@ -70,11 +70,10 @@ extension, because the source does not contain its results and cannot validate t
 (`docs/WORKFLOW.md` §5).
 
 Published tables, and each method that the PI designates a *benchmark*, are validation only.
-Neither is ever the production method. Do not guess results. Do not hard-code known answers.
-
-The derivations are a primary deliverable, not a byproduct of the numerics. Each directory
-`derivation/<topic>/` must grow into a complete, re-runnable derivation that is publishable as
-an appendix or a methods paper (`.claude/rules/derivation.md`, `derivation/README.md`).
+Never use them as the production method. Do not guess results or hard-code known answers. The
+derivations are a primary deliverable, not a byproduct of the numerics. Each `derivation/<topic>/`
+must grow into a complete, re-runnable derivation that is publishable as an appendix or a methods
+paper (`.claude/rules/derivation.md`, `derivation/README.md`).
 
 ## 3. Primary source and source-first discipline
 
@@ -101,9 +100,8 @@ This file states the one canonical form. No other file restates it. Every other 
 here. Use the form exactly as written.
 
 **Do not let a suspicion become a finding.** A model prefers to assert what the user wants to
-be true (`docs/failure_modes/model.md` 0c). A discrepancy that the PI already suspects is therefore
-the easiest one to "confirm". Establish items 2 and 3 independently of item 1. Where it
-matters, use a session that did not receive the expected answer.
+be true (`docs/failure_modes/model.md` 0c). Establish items 2 and 3 independently of item 1. Where
+it matters, use a session that did not receive the expected answer.
 
 ## 4. Method and formalism labels
 
@@ -128,19 +126,25 @@ hand-off.
 
 These rules apply to every tool. `docs/toolchain.md` has the details:
 
-- Each topic and each solver has exactly one tool as its *record*. A second implementation is a
-  **cross-check**. It never becomes the record.
-- The registry designs the interoperation. A session does not improvise it.
+- Each topic and solver has one *record* tool. A version in another tool is a **cross-check**.
 - **Never transcribe an expression by hand between tools.** Regenerate it with codegen into
-  `symbolic/generated/<lang>/` (a hook blocks edits there). `make codegen-check` gates it.
-- Run every file with `scripts/run <file>`. Write symbolic work as plain-text scripts, because
-  Claude cannot run notebooks. Adding or removing a tool is a PI decision. Log it.
+  `symbolic/generated/<lang>/`. `make codegen-check` gates it.
+- Run every file with `scripts/run <file>`. Write symbolic work as plain-text scripts. Adding or
+  removing a tool is a PI decision. Log it.
 
 ## 6. Numerical evidence
 
 A solver output is a **candidate**. To accept it, pass the applicable checks in
 `docs/validation_protocol.md` and write a machine-readable record (§10). An extension result has
 no source table to use as a fallback. State explicitly what it rests on.
+
+## 7. Subagents and parallel work
+
+Use a subagent for a large or noisy task, or for an independent check (`docs/GUIDE.md` §4,
+`.claude/models.md`). A subagent never commits, pushes or changes history. The main session
+proposes the commit. Name the files of each parallel writer before dispatch. Never run parallel
+writers on one file or one document (`.claude/skills/parallel-safety/SKILL.md`). Give a verifier
+the artifact, not your hypothesis (§3).
 
 ## 8. Session protocol
 
@@ -156,13 +160,9 @@ no source table to use as a fallback. State explicitly what it rests on.
 If a usage limit is near, or if something interrupts a session, complete the current atomic
 step. Then run `/session-close`. Do not start a new derivation stage, subagent task or
 investigation. A stage that you start and do not finish is worse than a stage that you do not
-start.
-
-`/session-close` records what the session completed, what it left incomplete, and each file that
-an interrupted step left behind (`docs/failure_modes/inherited.md` entry 5). A resuming session reads the
-previous close first. **During an interruption, the scope gets smaller. It never gets larger.**
-An agent that cannot complete its instructions reports what it did not do. It does not do other
-work.
+start. `/session-close` records what the session completed, what it left incomplete, and each
+file that an interrupted step left behind (`docs/failure_modes/inherited.md` entry 5). **During
+an interruption, the scope gets smaller. It never gets larger.**
 
 ## 9. Change control
 
@@ -180,9 +180,7 @@ prompt before the work starts (`.claude/rules/research-sessions.md`).
 ## 11. Communication
 
 Use precise language. If something is uncertain, state what is unknown and which calculation
-resolves it.
-
-**Write all natural-language text in ASD-STE100 Simplified Technical English.** This is a
+resolves it. **Write all natural-language text in ASD-STE100 Simplified Technical English.** This is a
 permanent requirement. It covers CLI messages, reports, Markdown files, handoffs, code comments,
 docstrings and commit messages. It excludes executable code, notation, quoted text and data that
 a tool reads. Details: `.claude/rules/communication.md`.

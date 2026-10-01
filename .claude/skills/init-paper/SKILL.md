@@ -81,7 +81,7 @@ subtly wrong.
 
 1. `CLAUDE.md`. Replace `{{PROJECT_NAME}}`, `{{OBJECTIVE}}`, `{{PIPELINE}}`,
    `{{PRIMARY_SOURCE}}` and `{{TOOL_A}}`, `{{TOOL_B}}`, `{{TOOL_C}}`. Change nothing else. §1, §3,
-   §4, §6 and §8–§11 are the discipline. They are not project parameters (`TEMPLATE_GUIDE.md`
+   §4, §6 and §7–§11 are the discipline. They are not project parameters (`TEMPLATE_GUIDE.md`
    §1).
 2. `docs/toolchain.md`. Fill the ownership registry between the `REGISTRY-START/END` markers. Use
    one row for each topic and each solver. Name the owning tool. Take it from the answers of the
