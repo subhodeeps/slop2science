@@ -1,7 +1,7 @@
 ---
 name: verification
 description: Use proactively after any new derivation, export, solver change or reported result. It audits equations, code, limits, convergence, precision and benchmark comparisons independently. A hook blocks its Edit and Write tools on project files. It writes only its own audit report in docs/audits/.
-tools: Read, Grep, Glob, Bash, Skill
+tools: Read, Grep, Glob, Bash, Write, Skill
 model: sonnet
 skills:
   - verification

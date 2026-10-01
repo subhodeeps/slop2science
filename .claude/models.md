@@ -33,6 +33,27 @@ is the trade, and the project makes it deliberately.
 To raise the model of one session, use `/model` when a task needs it. This does not change the
 table.
 
+## Tools and hooks of each agent
+
+The frontmatter of each agent owns these values. This table is a summary for people.
+`scripts/test_checks.py` fails if the table and the frontmatter differ. The hooks in
+`.claude/settings.json` (for example `guard_paths.py`) apply to every agent and to the main
+session, so this table does not list them.
+
+| Agent | Tools | Hooks on its own tool calls |
+|---|---|---|
+| `derivation` | Read, Grep, Glob, Bash, Edit, Write, Skill | `subagent_git_guard.py` |
+| `implementation` | Read, Grep, Glob, Bash, Edit, Write, Skill | `subagent_git_guard.py` |
+| `literature` | Read, Grep, Glob, Bash, Write, WebSearch, WebFetch, Skill | `subagent_git_guard.py` |
+| `verification` | Read, Grep, Glob, Bash, Write, Skill | `readonly_agent.py`, `subagent_git_guard.py` |
+| `paper-writer` | Read, Grep, Glob, Edit, Write | none |
+| `status-reporter` | Read, Grep, Glob, Edit, Write | none |
+| `explore` | Read, Grep, Glob | none |
+
+An agent with no Bash cannot run git, so it needs no git guard. The `verification` agent has
+Write and no Edit. It needs Write for its audit report. `readonly_agent.py` limits Write to a
+new report in `docs/audits/` and to its agent memory.
+
 ## Cost shape
 
 The agent that does the derivations dominates the spend. The largest spike in the project that

@@ -319,6 +319,35 @@ expect("every agent and the session-close skill has the model that the table giv
 expect("the table covers every agent (the check above is not vacuous)",
        sorted(set(declared) - set(table)), [])
 
+print("tools — the tools and hooks table in .claude/models.md matches the frontmatter")
+
+
+def table_tools():
+    """{agent: (tools, hooks)} from the tools table in .claude/models.md."""
+    text = (R / ".claude/models.md").read_text(encoding="utf-8")
+    section = text.split("## Tools and hooks of each agent", 1)[-1]
+    out = {}
+    for m in re.finditer(r"^\|\s*`([\w-]+)`\s*\|([^|]*)\|([^|]*)\|", section, re.M):
+        tools = frozenset(t.strip() for t in m.group(2).split(",") if t.strip())
+        hooks = frozenset(re.findall(r"[\w]+\.py", m.group(3)))
+        out[m.group(1)] = (tools, hooks)
+    return out
+
+
+def frontmatter_tools(path):
+    front = path.read_text(encoding="utf-8").split("---", 2)[1]
+    m = re.search(r"^tools:\s*(.+)$", front, re.M)
+    tools = frozenset(t.strip() for t in m.group(1).split(",")) if m else frozenset()
+    return tools, frozenset(re.findall(r"hooks/([\w]+\.py)", front))
+
+
+ttable = table_tools()
+expect("the tools table has one row for each agent", sorted(ttable), sorted(a.stem for a in agents))
+expect("the tools and hooks of each agent match its frontmatter",
+       sorted(a.stem for a in agents if ttable.get(a.stem) != frontmatter_tools(a)), [])
+expect("the verification agent has Write (it must write its audit report)",
+       "Write" in frontmatter_tools(R / ".claude/agents/verification.md")[0], True)
+
 print("charter — the numbered sections have no gap")
 
 nums = [int(m.group(1)) for m in re.finditer(r"^## (\d+)[a-z]?\.", charter, re.M)]

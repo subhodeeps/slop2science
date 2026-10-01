@@ -66,7 +66,8 @@ checks.
 | `status-reporter` | factual status and progress reports | It never derives or verifies. Each claim traces to a named file. |
 | `explore` | fast read-only lookup before substantive work | It returns file:line and an excerpt. It does not synthesize. The caller does that. |
 
-`.claude/models.md` has the model routing and the reasoning behind it.
+`.claude/models.md` has the model routing, the reasoning behind it, and the tools and hooks of
+each agent.
 
 ## 5. How the tools connect
 

@@ -25,7 +25,8 @@ never a repository report or an activity report.
 
 Before you write, the dispatching session gives you a brief. The brief has the verified
 derivation chain, the page budget and the sources. First read the task statement and the whole
-brief.
+brief. Then read each audit report in `docs/audits/` that covers the topic. A finding that an
+audit left open is an open issue in the document (constraint 4).
 
 **Hard constraints**
 
