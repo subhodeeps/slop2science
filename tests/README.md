@@ -1,19 +1,19 @@
 # tests
 
-    julia/runtests.jl      entry point for Julia tests
+    julia/runtests.jl      entry point for the Julia tests
     python/                pytest tests
 
-    make test              runs every language present; skips an absent one, loudly
+    make test              runs each language that is present; skips an absent language, loudly
 
 ## The test that matters most
 
-At least one test per topic is a **known-answer test of the full chain**: a problem with an
-exact closed-form solution, run through the same assembly → solve → refinement → acceptance
-path the real solver uses, in every precision tier the project uses.
+Each topic needs at least one **known-answer test of the full chain**. Use a problem with an
+exact closed-form solution. Run it through the same path that the real solver uses: assembly,
+solve, refinement, acceptance. Do this in each precision tier that the project uses.
 
-Unit tests of each piece are necessary and not sufficient: a chain can be correct piece by
-piece and wrong end to end, and only this test catches that. In the project this template came
-from, exactly this gap existed for months — the root-finding chain had been checked once, by
-hand, outside the repository — and closing it permanently was a deliberate piece of work.
+Unit tests of each piece are necessary. They are not sufficient. A chain can be correct piece
+by piece and wrong from end to end. Only this test finds that fault. In the project that this
+template came from, this gap existed for months. Someone checked the root-finding chain once,
+by hand, outside the repository. Closing the gap permanently was a deliberate piece of work.
 
-A skip is printed loudly and never counts as a pass.
+The test run prints a skip loudly. A skip never counts as a pass.

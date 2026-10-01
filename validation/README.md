@@ -1,34 +1,44 @@
 # validation — runs, records and benchmarks
 
     <topic>/              validation drivers for one topic
-    <topic>/records/      one JSON record per candidate or accepted result (hook-protected)
-    <topic>/accepted/     tables generated from records by a script (hook-protected)
+    <topic>/records/      one JSON record for each candidate or accepted result (hook-protected)
+    <topic>/accepted/     tables that a script generates from records (hook-protected)
     benchmarks/           published data, as CSV with a provenance header
 
 ## A result is not a number
 
-A solver output is a **candidate** until it passes `docs/validation_protocol.md`. Acceptance
-means: residual in the original problem, resolution and precision stability, solution-shape
-convergence, boundary regularity, continuation where a parameter exists, and an
-independent-method benchmark with its conversion written out.
+A solver output is a **candidate** until it passes `docs/validation_protocol.md`. To accept it,
+you need these items:
 
-Each run writes its own record, so the number and its provenance come from the same run.
-Records are hook-protected against hand editing: **a changed number is a new run.** Scaffold
-the first one with `make new-record`.
+- the residual in the original problem
+- stability in resolution and precision
+- convergence of the solution shape
+- boundary regularity
+- continuation, where a parameter exists
+- a benchmark from an independent method, with its conversion written out
+
+Each run writes its own record. Therefore the number and its provenance come from the same
+run. A hook protects records against hand edits: **a changed number is a new run.** Use
+`make new-record` to create the first record.
 
 ## Reproduction and extension live together, marked
 
-Both kinds of work share drivers here — often one driver tests the source's own case and the
-project's adopted case side by side. They are distinguished by the `kind` and
-`judged_against` fields of every record and by the header of every script, not by directory
+Both kinds of work share drivers here. Often one driver tests the case of the source and the
+adopted case of the project side by side. The fields `kind` and `judged_against` of each record
+mark the difference. The header of each script marks it too. Directories do not mark it
 (`docs/WORKFLOW.md` §5).
 
 ## Benchmarks
 
-`benchmarks/<source><year>_<what>.csv`, each with a provenance header naming the source, the
-table it came from, **the method that actually produced the numbers**, the units and
-conventions as printed, and the conversion needed to compare.
+Name each file `benchmarks/<source><year>_<what>.csv`. Each file has a provenance header with
+these items:
 
-Same-method agreement is a consistency check; only independent-method agreement validates a
-method. Label which one each benchmark provides.
-Details: `.claude/skills/literature-audit/reference/benchmark_provenance.md`.
+- the source
+- the table that the numbers came from
+- **the method that produced the numbers**
+- the units and conventions as printed
+- the conversion that is necessary to compare
+
+Agreement with the same method is a consistency check. Only agreement with an independent
+method validates a method. Label which one each benchmark provides. For details, see
+`.claude/skills/literature-audit/reference/benchmark_provenance.md`.
