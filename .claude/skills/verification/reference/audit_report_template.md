@@ -5,7 +5,7 @@ session that dispatched the audit.
 
     # Audit — <what you audited> — <date>
 
-    Auditor:   verification subagent (read-only; a hook enforces this)
+    Auditor:   verification subagent (no Edit or Write on project files; a hook enforces this)
     Scope:     <the exact files, stages, records or claims in scope>
     Out of scope: <what you deliberately did not examine>
     Commands run:

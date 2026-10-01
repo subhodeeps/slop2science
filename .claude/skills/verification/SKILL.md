@@ -84,7 +84,7 @@ must read the script. This is the most valuable output of the audit.
 
     ID | class | evidence (the command run and its actual output) | severity | suggested check
 
-The verifier cannot edit project files. It records its report as a new file
+A hook blocks the Edit and Write tools of the verifier on project files. It records its report as a new file
 `docs/audits/<YYYYMMDD>_<topic>.md` (see `docs/audits/README.md`) and returns the same text.
 
 Rules:
