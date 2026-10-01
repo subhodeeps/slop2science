@@ -27,5 +27,4 @@ put in `_drop/`.
 
 **If the paper is on arXiv, read the `.tex` file (`papers/source/<id>/`). If it is not, read
 the rendered page. Never read the extracted text layer.** The text layer caused the three most
-expensive documentation errors in the ancestor of this project (`docs/failure_modes.md` entry
-2). `.claude/skills/literature-audit/reference/corpus.md` states the order one time.
+expensive documentation errors in the ancestor of this project (`docs/failure_modes/inherited.md` entry 2). `.claude/skills/literature-audit/reference/corpus.md` states the order one time.

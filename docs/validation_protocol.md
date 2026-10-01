@@ -82,7 +82,7 @@ lower it (CLAUDE.md §2). The project accepts an extension result on these groun
 
 If none of these is available, say so explicitly in the record and in the report. An extension
 that rests only on its own convergence is a *candidate*, however clean the convergence looks
-(`docs/failure_modes.md` entry 4).
+(`docs/failure_modes/inherited.md` entry 4).
 
 ## 9. Required limits
 

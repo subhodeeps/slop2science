@@ -10,4 +10,4 @@ findings here. The sources stay read-only in `papers/`.
 Each number or equation that you record here carries its source, the section or table that it
 came from, and the version that you consulted. **These are working notes.** If a note
 disagrees with `docs/decision_log.md` or with a discrepancy row of a source audit, the settled
-record wins. Record the inconsistency (`docs/failure_modes.md` entry 9).
+record wins. Record the inconsistency (`docs/failure_modes/inherited.md` entry 9).
