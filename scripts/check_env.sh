@@ -56,7 +56,7 @@ echo "--- helper tools ---"
 for t in git make timeout flock jq pandoc xelatex latexmk; do
   command -v "$t" >/dev/null 2>&1 && say "$t" "ok" || say "$t" "missing"
 done
-echo "  (pandoc + xelatex are needed only for: make report)"
+echo "  (pandoc, and xelatex or lualatex, are needed only for: make report)"
 for t in latex dvipng; do
   command -v "$t" >/dev/null 2>&1 && say "$t" "ok" || say "$t" "missing"
 done

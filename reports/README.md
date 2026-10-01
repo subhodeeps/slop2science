@@ -7,6 +7,15 @@
 **Never fix a report by editing its PDF or its intermediate LaTeX.** Fix the Markdown and render
 it again.
 
+## Any Markdown file
+
+    make report FILE=README.md               writes reports/README.tex and reports/README.pdf
+
+`FILE` takes any Markdown file, not only a report. Pandoc converts it to LaTeX, and xelatex (or
+lualatex) makes the PDF. The `md-to-pdf` skill describes the settings, the filters in
+`scripts/pandoc/` and how to check the result. `make test-report` converts `README.md` and a
+small fixture to test the pipeline.
+
 ## What a report is
 
 A report is a paper that a researcher in the field can read from start to end. The reader can

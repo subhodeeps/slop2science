@@ -82,6 +82,11 @@ reports/*.fls
 reports/*.fdb_latexmk
 reports/*.xdv
 reports/*.synctex.gz
+reports/*.meta.json
+reports/*.meta.err
+# Vector copies of the example figures. Their bytes change on each run (TeX font subsets get
+# random names), so they are generated. The PNGs are tracked, because GitHub shows only those.
+docs/figures/*.pdf
 
 # --- editors / OS ------------------------------------------------------------------
 .vscode/

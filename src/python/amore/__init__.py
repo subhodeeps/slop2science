@@ -204,7 +204,9 @@ def save(fig, path, dpi=None, formats=("pdf", "png"), exact_size=False):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with plt.rc_context({"savefig.bbox": "standard"} if exact_size else {}):
-        if "pdf" in formats:
-            fig.savefig(path.with_suffix(".pdf"), metadata={"CreationDate": None})
+        # The PNG goes first. A figure with constrained layout solves its layout at the first
+        # save, and a PDF save at 72 dpi gives a different layout than the PNG at 200 dpi.
         if "png" in formats:
             fig.savefig(path.with_suffix(".png"), **({"dpi": dpi} if dpi else {}))
+        if "pdf" in formats:
+            fig.savefig(path.with_suffix(".pdf"), metadata={"CreationDate": None})

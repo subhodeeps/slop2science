@@ -15,6 +15,7 @@ into the repository. Never edit a template in place.
 | `verification` | Claude (auto) | Checklists for independent audit, and the failure taxonomy. The read-only `verification` agent uses it. |
 | `external-code` | Claude (auto) | All code that this project did not write: provenance, licence, attribution and intake from the drop folder of the PI. |
 | `report-writing` | `paper-writer` (auto) | Write a report as a paper that a researcher can follow by hand. Put provenance in an appendix, not after each equation. |
+| `md-to-pdf` | Claude (auto) | Convert a Markdown document to LaTeX and PDF with pandoc, in `reports/`. A model fills a missing title, author or abstract. PDF images replace PNG ones in the PDF. Look at the pages before you call the result good. |
 | `checkpoint` | **you only**: `/checkpoint` | Safe save during a session: account for the changes, run the checks, refresh the handoff and propose a commit of coherent work. |
 | `session-close` | **you only**: `/session-close` | Account for each changed file, run the checks, update the state, write the handoff and propose a commit. |
 | `sync-template` | **you only**: `/sync-template` | Pull harness improvements from the upstream template. Do not touch scientific content. |

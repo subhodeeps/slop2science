@@ -42,7 +42,7 @@ def wave_packet():
     ax.set_ylabel(r"$f(t)$")
     ax.legend(loc="lower right", bbox_to_anchor=(0.98, 0.08))
     amore.tag(ax, TAG)
-    amore.save(fig, OUT / "amore_blue", dpi=README_DPI, formats=("png",), exact_size=True)
+    amore.save(fig, OUT / "amore_blue", dpi=README_DPI, formats=("pdf", "png"), exact_size=True)
     plt.close(fig)
 
 
@@ -161,7 +161,7 @@ def potential_with_bump():
     ax.set_ylabel(r"$V^{\mathrm{RW}} + \epsilon\, V_{\mathrm{bump}}$")
     ax.legend(loc="upper left")
     amore.tag(ax, TAG, loc="lower right")
-    amore.save(fig, OUT / "amore_teal", dpi=README_DPI, formats=("png",), exact_size=True)
+    amore.save(fig, OUT / "amore_teal", dpi=README_DPI, formats=("pdf", "png"), exact_size=True)
     plt.close(fig)
 
 
@@ -205,7 +205,7 @@ def signed_field():
     ax.set_xlabel(r"$x$")
     ax.set_ylabel(r"$y$")
     amore.tag(ax, TAG)
-    amore.save(fig, OUT / "amore_green", dpi=README_DPI, formats=("png",), exact_size=True)
+    amore.save(fig, OUT / "amore_green", dpi=README_DPI, formats=("pdf", "png"), exact_size=True)
     plt.close(fig)
 
 
@@ -319,7 +319,7 @@ def kerr_curvature():
                          ticks=ticks)
     bar.set_ticklabels([f"{t:g}" for t in ticks])
     amore.tag(ax, TAG, loc="lower right")
-    amore.save(fig, OUT / "amore_parula", dpi=README_DPI, formats=("png",), exact_size=True)
+    amore.save(fig, OUT / "amore_parula", dpi=README_DPI, formats=("pdf", "png"), exact_size=True)
     plt.close(fig)
 
 
@@ -371,7 +371,7 @@ def palette_chart():
             % (amore.OVERLAY.lstrip("#"), 100 * amore.OVERLAY_ALPHA), va="center", fontsize=8)
     ax.text(7.15, -1.96, r"\textbf{%d colours}" % (len(order) * len(amore.TONES)), ha="right",
             va="center", fontsize=9)
-    amore.save(fig, OUT / "amore_palettes", dpi=README_DPI, formats=("png",), exact_size=True)
+    amore.save(fig, OUT / "amore_palettes", dpi=README_DPI, formats=("pdf", "png"), exact_size=True)
     plt.close(fig)
 
 

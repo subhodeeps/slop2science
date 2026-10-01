@@ -9,7 +9,7 @@ PY          ?= scripts/py
 TOPIC       ?= {{DEFAULT_TOPIC}}
 
 .PHONY: help check-env setup test test-julia test-python stages codegen codegen-check plot-examples \
-        check check-refs check-evidence check-docs check-plots check-init test-hooks test-checks test-library test-env lint-ste lint-ste-md lint-ste-code status fetch-source \
+        check check-refs check-evidence check-docs check-plots check-init test-hooks test-checks test-library test-env test-report lint-ste lint-ste-md lint-ste-code status fetch-source \
         libraries search-library report new-record clean-logs
 
 help: ## list targets
@@ -102,5 +102,8 @@ codegen-check: codegen ## regenerate hand-off code and fail on any diff from git
 plot-examples: ## regenerate the amore example figures and palette chart in docs/figures/ (needs LaTeX)
 	@scripts/py src/python/amore/examples.py
 
-report: ## render reports/$(TOPIC)_report.md -> .pdf (pandoc + xelatex)
-	@scripts/report_pdf.sh $(TOPIC)
+report: ## render reports/$(TOPIC)_report.md, or any Markdown file (FILE=path), to LaTeX and PDF in reports/
+	@scripts/report_pdf.sh $(if $(FILE),$(FILE),$(TOPIC))
+
+test-report: ## test the Markdown-to-PDF pipeline on README.md and a fixture (needs pandoc and LaTeX; SKIP without)
+	@scripts/test_report.sh
