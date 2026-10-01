@@ -1,5 +1,8 @@
 # Audit report template
 
+Save the report as a new file `docs/audits/<YYYYMMDD>_<topic>.md`. Return the same text to the
+session that dispatched the audit.
+
     # Audit — <what you audited> — <date>
 
     Auditor:   verification subagent (read-only; a hook enforces this)

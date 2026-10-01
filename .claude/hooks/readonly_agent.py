@@ -5,11 +5,16 @@ The audit layer must not be able to fix what it is auditing, and an instruction 
 not enough: an agent that finds a one-line bug is strongly tempted to fix it, and a fixed bug
 is an unrecorded finding. This hook makes the independence structural.
 
-Writes are allowed only under .claude/agent-memory/ (where the agent records recurring
-pitfalls, not results). Everything else is blocked with exit code 2.
+Two kinds of write are allowed. First, anything under .claude/agent-memory/ (recurring
+pitfalls, not results). Second, a NEW audit report: `Write` of a file docs/audits/<date>*.md that
+does not exist yet. The findings of an audit must be recorded somewhere, and the verifier is the
+only party that must not be able to change or hide them afterwards: it cannot overwrite or edit
+an audit, and guard_paths.json blocks a `Write` over an existing audit for every other agent.
+Everything else is blocked with exit code 2.
 """
 import json
 import os
+import re
 import sys
 
 ALLOWED_PREFIX = ".claude/agent-memory/"
@@ -31,9 +36,19 @@ if path:
 if rel.startswith(ALLOWED_PREFIX):
     sys.exit(0)
 
+tool = data.get("tool_name") or ""
+is_new_audit = (
+    tool == "Write"
+    and re.fullmatch(r"docs/audits/20\d{6}[^/]*\.md", rel) is not None
+    and not os.path.exists(os.path.abspath(path))
+)
+if is_new_audit:
+    sys.exit(0)
+
 print(
     f"The verification agent is read-only; blocked write to {rel or path}. "
-    "Report the finding with its class, evidence and suggested check instead of fixing it "
+    "Report the finding with its class, evidence and suggested check instead of fixing it. "
+    "Write the report to a new file docs/audits/<YYYYMMDD>_<topic>.md "
     "(.claude/skills/verification/SKILL.md).",
     file=sys.stderr,
 )

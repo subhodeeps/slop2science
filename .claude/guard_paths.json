@@ -41,6 +41,10 @@
       "reason": "Derivation stage scripts are the permanent record and are cited by name from the write-ups (CLAUDE.md \u00a72, .claude/rules/derivation.md). Add a new numbered stage rather than replacing this one."
     },
     {
+      "glob": "docs/audits/20*.md",
+      "reason": "An audit report is a permanent record. Do not overwrite it. Add a new audit, or use Edit to append a correction that names the finding."
+    },
+    {
       "glob": "symbolic/*/export_*",
       "reason": "Export scripts are the permanent record of a tool hand-off. Add a new numbered export rather than replacing this one."
     }
