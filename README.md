@@ -52,9 +52,16 @@ make check-env   # what is installed here
 
 ## Tools and libraries
 
-I use Mathematica, Python and Julia, so the template comes configured for all three: an
-environment for each, one runner (`scripts/run`) for any of them, and separate test and
-codegen paths. Any of them can own any topic. If you don't choose, the default profile applies:
+I use Mathematica, Python and Julia, so the template comes configured for all three, with one
+runner (`scripts/run`) for any of them and separate test and codegen paths. Julia and Python
+each get their own environment if you use them: Julia through `Project.toml` and
+`Manifest.toml`, Python through a virtual environment that [uv](https://docs.astral.sh/uv/)
+sets up from `pyproject.toml` and `uv.lock`. A language you don't use has no environment.
+`/init-paper` asks which libraries you expect to need, starting from a short default list
+(numpy, scipy, mpmath, sympy, matplotlib for Python; the linear algebra, extended-precision and
+JSON packages for Julia), and nothing is installed that you did not choose.
+
+Any of them can own any topic. If you don't choose, the default profile applies:
 Mathematica for algebra, as plain `.wls` scripts; Julia for numerics; Python for plotting and
 ML. `/init-paper` lets you change it.
 

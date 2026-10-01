@@ -38,7 +38,7 @@ code/_drop/*
 *.jl.mem
 
 # --- Python ------------------------------------------------------------------------
-# The lock file IS committed, for the same reason.
+# uv.lock IS committed, for the same reason as Julia's Manifest.toml; src/python/.venv is not.
 __pycache__/
 *.py[cod]
 .venv/

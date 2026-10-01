@@ -52,6 +52,16 @@ an unanswered placeholder silently becomes a permanent wrong default.
    not choose)", and write the rows into `docs/toolchain.md`'s two registries citing it. The
    init report must say, in its first lines, that the default profile was applied and by which
    route, so a default is never one nobody knew had been chosen.
+6a. **Libraries.** For each language the project uses (Python, Julia), show the default list
+   in `src/<lang>/packages.txt`, with each package's one-line reason, and ask what the PI
+   wants added or removed: "which libraries do you expect to need?" Name what is typically
+   wanted for the stated pipeline (an eigensolver package, a sparse-matrix package, a
+   plotting library), as a suggestion for the PI to accept or refuse, never as an addition.
+   Write the PI's final list into `packages.txt`, and decision `D-003` in
+   `docs/decision_log.md`: "default stack (chosen)", "default stack, amended (chosen)" or
+   "(applied: the PI did not choose)". A library nobody asked for is not added. Say in the init
+   report that `make setup` installs the list, and which languages have no environment because
+   the PI is not using them.
 7. **Conventions to pin now** — units, notation, sign/orientation conventions, how results
    are labelled. Anything the PI does not yet know goes in as `OPEN`, not as a guess.
 8. **Reproduction targets** — which equations, tables and figures of the source the project
@@ -85,7 +95,9 @@ subtly-wrong one:
 8. `docs/prompts/A1_source_audit.md` — the first curated prompt record, written out and
    ready for the PI to run, with an empty Outcome.
 9. `src/julia/Project.toml` and/or `src/python/pyproject.toml` — the package name. Delete the
-   directory for any language this project will not use.
+   directory for any language this project will not use, and write the PI's library list
+   (6a) into that language's `packages.txt`. Python's environment is built later
+   by `make setup` with uv (`uv.lock` is committed, `.venv` is not).
 10. `Makefile` — `{{DEFAULT_TOPIC}}` = the first topic.
 10a. `handoff.md` — the first real handoff, replacing the "not initialized" placeholder: where
     the project stands (initialized, nothing derived), what the PI still has to supply (the

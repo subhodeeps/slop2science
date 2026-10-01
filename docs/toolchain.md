@@ -144,14 +144,41 @@ Adding a fourth tool to the pipeline is a PI decision, logged in `docs/decision_
 
 ## Python
 
-- Environment: `src/python` (`pyproject.toml` and a committed lock file, same reason).
-  `make setup` installs it with dev extras.
+- Environment: `src/python`, managed with [uv](https://docs.astral.sh/uv/): `pyproject.toml`
+  and `uv.lock` are committed, the venv at `src/python/.venv/` is not. `make setup` runs
+  `uv sync`. Add a dependency with `uv add --project src/python <pkg>`, which updates both
+  files; record why in `docs/decision_log.md`.
+- `scripts/run <script>.py` runs inside that environment (`uv run --project src/python`), so a
+  result does not depend on which interpreter is first on `PATH`. `PYTHON=...` overrides it
+  explicitly. Without uv a project script fails loudly instead of running in the wrong place.
+- Like Julia's, the environment exists only if Python is used: delete `src/python` if not.
+- Libraries: see **Libraries** below.
 - Extended precision via `mpmath`/`gmpy2`. **Be explicit about where a chain silently drops to
   machine precision** — a NumPy call in the middle of an `mpmath` computation is the usual
   culprit, and nothing in the output reveals it.
 - Python also carries this repository's own checkers and hooks
   (`scripts/check_docs.py`, `.claude/hooks/*.py`); those are infrastructure, outside the
   ownership registry.
+
+## Libraries
+
+The libraries each environment carries are the PI's decision, listed in `src/python/packages.txt`
+and `src/julia/packages.txt`, one name per line with a reason. `/init-paper` shows the default,
+asks what to add or remove, and records the answer as decision `D-003`; if the PI does not
+answer, the default applies and the record says so.
+
+- **Default (the minimum).** Python: numpy, scipy, mpmath, sympy, matplotlib. Julia:
+  LinearAlgebra, SparseArrays, Printf, JSON, DoubleFloats, GenericLinearAlgebra, GenericSchur.
+  The reason for each is in the file. Plotting is left out of the Julia list because figures
+  are Python's by default.
+- **Applied by `make setup`**: `uv add` for Python, `Pkg.add` for Julia. Afterwards `pyproject.toml`
+  and `uv.lock`, and `Project.toml` and `Manifest.toml`, are the record of what is installed, and
+  are committed.
+- **Adding one later** is a PI decision: a new line in `packages.txt` with its reason, an entry in
+  `docs/decision_log.md`, then `make setup`. Claude proposes a library when the work needs one
+  and says why; it does not install one on its own. **Removing one** is `uv remove` or
+  `Pkg.rm` plus deleting the line.
+- Mathematica has no package list here; shared code lives in `symbolic/common/`.
 
 ## When a tool is missing
 

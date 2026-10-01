@@ -79,3 +79,18 @@ Consequences: `docs/toolchain.md`'s ownership and interoperation registries are 
 Evidence:     None — this is a scope and process decision, not a scientific one. The evidence
               that it was needed is `docs/failure_modes.md` and the fact that two records for
               one fact cannot be detected by either tool's own checks.
+
+## D-003 — <example: library stack for the Python and Julia environments; replace or delete> — YYYY-MM-DD
+
+Context:      Each language the project uses gets its own environment (`src/python` with uv,
+              `src/julia` with `Project.toml`). What goes into them decides what a result can
+              depend on, and a library nobody chose is a dependency nobody checked.
+Options:      (a) install whatever turns out to be needed, as it is needed; (b) the default
+              minimum stack in `src/<lang>/packages.txt`, plus what the PI names.
+Decision:     (b), chosen. Python: numpy, scipy, mpmath, sympy, matplotlib, plus {{PI_PYTHON}}.
+              Julia: the default seven, plus {{PI_JULIA}}. (If the PI had not answered, this
+              entry would say "applied: the PI did not choose".)
+Consequences: `make setup` installs the lists and writes `uv.lock` and `Manifest.toml`, which
+              are committed. A later addition is a PI decision, a new line in `packages.txt`
+              and an entry here.
+Evidence:     None — a scope decision, not a scientific one.

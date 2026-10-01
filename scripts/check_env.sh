@@ -33,11 +33,22 @@ else
 fi
 
 if scripts/py -c '' >/dev/null 2>&1; then
-  say "python" "$(scripts/py -c 'import sys; print(sys.executable)')"
-  say "python version" "$(scripts/py -c 'import sys; print(sys.version.split()[0])')"
-  scripts/py -c 'import pytest' >/dev/null 2>&1 && say "pytest" "ok" || say "pytest" "not installed -> make setup"
+  say "python (system)" "$(scripts/py -c 'import sys; print(sys.executable)')"
+  say "python (system) version" "$(scripts/py -c 'import sys; print(sys.version.split()[0])')"
 else
   say "python" "not found"; missing=$((missing+1))
+fi
+
+if [ -f src/python/pyproject.toml ]; then
+  if command -v uv >/dev/null 2>&1; then
+    say "uv" "$(uv --version)"
+    [ -d src/python/.venv ] && say "python env" "src/python/.venv present" \
+      || say "python env" "not built -> make setup"
+    [ -f src/python/uv.lock ] && say "python uv.lock" "present" \
+      || say "python uv.lock" "missing -> run: make setup, then commit it"
+  else
+    say "uv" "not found: the Python project environment is built with uv (docs.astral.sh/uv)"
+  fi
 fi
 
 echo

@@ -1,0 +1,14 @@
+# Julia packages this project installs: the PI's list, one name per line, `#` for comments.
+# /init-paper shows this default and asks what to add or remove; `make setup` applies it with
+# `Pkg.add`, after which Project.toml and Manifest.toml are the record. Anything added later is
+# a PI decision, logged in docs/decision_log.md.
+#
+# The default is the minimum a numerical-physics project needs, and nothing more. Julia's
+# plotting is left out on purpose: figures are Python's by default (docs/toolchain.md).
+LinearAlgebra         # standard library: dense linear algebra
+SparseArrays          # standard library: sparse matrices
+Printf                # standard library: formatted output
+JSON                  # result records the other languages read
+DoubleFloats          # double-double precision, the middle tier of a precision study
+GenericLinearAlgebra  # eigenvalues and factorizations in BigFloat and Double64
+GenericSchur          # Schur and eigen routines for those same types

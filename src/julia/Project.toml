@@ -11,10 +11,9 @@ LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
-# Add what the project actually needs, and record why in docs/decision_log.md. Typical
-# additions for extended precision and eigen/root work — left out here so the template
-# instantiates fast and nothing unused is pinned:
-#   DoubleFloats, GenericLinearAlgebra, GenericSchur, ArnoldiMethod, KrylovKit, SparseArrays
+# The packages are the PI's list in packages.txt (shown and edited at /init-paper); `make
+# setup` adds them with Pkg.add, which fills in [deps] and the UUIDs above. Add one later with
+# Pkg.add, and record why in docs/decision_log.md.
 
 [compat]
 julia = "1.10"

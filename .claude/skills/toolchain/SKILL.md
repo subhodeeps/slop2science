@@ -52,8 +52,8 @@ the manifest pins the exact environment behind every result). `make setup` insta
 Write numerics generic in `T<:AbstractFloat` so the same code runs in working, double-double
 and arbitrary precision. Each call pays start-up and compilation: batch into one script.
 
-**Python.** Environment is `src/python` (`pyproject.toml` + a committed lock file, same
-reason). Generic precision via `mpmath`/`gmpy2` where extended precision is needed; be
+**Python.** Environment is `src/python`, built with uv (`pyproject.toml` + `uv.lock`
+committed, `.venv` not). `make setup` runs `uv sync`; `scripts/run x.py` runs inside it. Generic precision via `mpmath`/`gmpy2` where extended precision is needed; be
 explicit about where a computation silently drops to machine precision — a NumPy call in the
 middle of an `mpmath` chain is the usual culprit, and it is invisible in the output.
 

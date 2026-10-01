@@ -1,9 +1,10 @@
 # src — production code
 
     julia/      Julia package  (Project.toml + Manifest.toml, both committed)
-    python/     Python package (pyproject.toml + a committed lock file)
+    python/     Python package (pyproject.toml + uv.lock, committed; the venv is built by uv)
 
-Delete the directory for any language this project does not use; `/init-paper` does this.
+Delete the directory for any language this project does not use; `/init-paper` does this. The
+libraries each environment carries are the PI's list in `packages.txt` in that directory.
 
 ## The rules that matter here
 

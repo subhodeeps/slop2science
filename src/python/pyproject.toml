@@ -1,18 +1,17 @@
-# Python environment for this project. This file AND a lock file are committed: the lock
-# pins the exact environment behind every result (CLAUDE.md §10). `make setup` installs it.
-# Renamed by /init-paper.
+# Python environment for this project, managed with uv (https://docs.astral.sh/uv/).
+# This file AND uv.lock are committed: the lock pins the exact environment behind every
+# result (CLAUDE.md §10). `make setup` runs `uv sync`, which creates src/python/.venv (not
+# committed). Add a dependency with `uv add --project src/python <pkg>`. Renamed by /init-paper.
 [project]
 name = "{{PROJECT_PACKAGE}}"
 version = "0.1.0"
 description = "Production code for {{PROJECT_NAME}}"
 requires-python = ">=3.10"
-dependencies = [
-    # Add what the project actually needs, and record why in docs/decision_log.md.
-    # Typical, left out here so the template installs fast:
-    #   "numpy", "scipy", "sympy", "mpmath", "matplotlib"
-]
+# Filled in by `make setup` from the PI's list in packages.txt (shown and edited at
+# /init-paper). Add one later with `uv add`, and record why in docs/decision_log.md.
+dependencies = []
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = ["pytest>=7", "ruff>=0.5"]
 
 [build-system]

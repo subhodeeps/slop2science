@@ -18,10 +18,14 @@ case "$lang" in
     [ -f tests/julia/runtests.jl ] || { echo "[test] SKIP julia: no tests/julia/runtests.jl"; exit 0; }
     "${JULIA:-julia}" --project=src/julia --threads=auto tests/julia/runtests.jl ;;
   python)
-    if ! scripts/py -c '' >/dev/null 2>&1; then
-      echo "[test] SKIP python: no interpreter (docs/toolchain.md)"; exit 0; fi
-    if ! scripts/py -c 'import pytest' >/dev/null 2>&1; then
-      echo "[test] SKIP python: pytest not installed (make setup)"; exit 0; fi
-    scripts/py -m pytest -q tests/python ;;
+    if [ -f src/python/pyproject.toml ] && [ -z "${PYTHON:-}" ]; then
+      command -v uv >/dev/null 2>&1 || { echo "[test] SKIP python: uv not installed (make setup)"; exit 0; }
+      [ -d src/python/.venv ] || { echo "[test] SKIP python: no environment yet (make setup)"; exit 0; }
+      uv run --project src/python pytest -q tests/python
+    else
+      scripts/py -c '' >/dev/null 2>&1 || { echo "[test] SKIP python: no interpreter (docs/toolchain.md)"; exit 0; }
+      scripts/py -c 'import pytest' >/dev/null 2>&1 || { echo "[test] SKIP python: pytest not installed"; exit 0; }
+      scripts/py -m pytest -q tests/python
+    fi ;;
   *) echo "unknown language: $lang" >&2; exit 64 ;;
 esac

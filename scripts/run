@@ -14,6 +14,7 @@
 #   - applies a timeout (SYMBOLIC_TIMEOUT, default 1800s) and reports it distinctly;
 #   - tees all output to logs/<script>_<timestamp>.log.
 #
+# Python scripts run in src/python's uv environment unless PYTHON is set.
 # Env: WOLFRAMSCRIPT, JULIA, PYTHON to override interpreters; RUN_LOCK for the lock file;
 #      RUN_SERIAL=0 to disable serialisation.
 set -uo pipefail
@@ -32,14 +33,21 @@ case "$script" in
   *.jl)
       tool="${JULIA:-julia}"; cmd=("$tool" --project=src/julia --threads=auto "$script") ;;
   *.py)
-      tool="$("$ROOT/scripts/py" -c 'import sys; print(sys.executable)' 2>/dev/null || echo python3)"
-      cmd=("$ROOT/scripts/py" "$script") ;;
+      # A project script runs in the project environment (src/python, built by uv), so its
+      # result does not depend on whatever interpreter is first on PATH. PYTHON=... is an
+      # explicit override. A project with no src/python uses the plain shim.
+      if [ -n "${PYTHON:-}" ] || [ ! -f src/python/pyproject.toml ]; then
+        tool="$("$ROOT/scripts/py" -c 'import sys; print(sys.executable)' 2>/dev/null || echo python3)"
+        cmd=("$ROOT/scripts/py" "$script")
+      else
+        tool=uv; cmd=(uv run --project src/python python "$script")
+      fi ;;
   *)  echo "[run] unknown extension: $script (expected .wls/.wl/.jl/.py)" >&2; exit 64 ;;
 esac
 
 if ! command -v "${tool%% *}" >/dev/null 2>&1 && [ ! -x "${tool%% *}" ]; then
   echo "[run] interpreter not found for $script: ${tool}" >&2
-  echo "[run] see docs/toolchain.md, or set WOLFRAMSCRIPT/JULIA/PYTHON" >&2
+  echo "[run] see docs/toolchain.md, or set WOLFRAMSCRIPT/JULIA/PYTHON (Python needs uv: make setup)" >&2
   exit 127
 fi
 

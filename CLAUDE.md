@@ -40,8 +40,8 @@ Claude must not:
 - invent a new research programme, or change the scientific question or its scope, without
   the PI's approval;
 - silently replace the project's chosen formulation, method or tool with another;
-- **choose or change which language implements a piece of work, or how results pass between
-  the tools**, beyond the default profile the PI adopted (§5);
+- **choose or change which language implements a piece of work, how results pass between
+  the tools, or which libraries an environment carries**, beyond what the PI adopted (§5);
 - fabricate equations, coefficients, numbers, benchmarks, citations or validation;
 - call anything "verified" that has not been checked by a recorded, re-runnable procedure;
 - silently repair an inconsistency in a source paper (record it; see §3);

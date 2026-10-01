@@ -27,7 +27,8 @@ It interviews you, then writes:
 - `docs/STATUS.md` — phase 0, the first immediate task (the source audit), no blockers.
 - `docs/prompts/A1_source_audit.md` — the first curated prompt record, ready to run.
 - Agent and skill `description` / `when_to_use` lines, so triggering matches your vocabulary.
-- `src/julia/Project.toml` and `src/python/pyproject.toml` package names.
+- `src/julia/Project.toml` and `src/python/pyproject.toml` package names, and the library
+  lists `src/python/packages.txt` and `src/julia/packages.txt` (the PI's choice, decision D-003).
 
 It then deletes its own placeholder scaffolding and prints a checklist of what only you can
 do (fetch the paper, decide open conventions, install tools).

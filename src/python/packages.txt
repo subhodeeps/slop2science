@@ -1,0 +1,11 @@
+# Python libraries this project installs: the PI's list, one name per line, `#` for comments.
+# /init-paper shows this default and asks what to add or remove; `make setup` applies it with
+# `uv add`, after which pyproject.toml and uv.lock are the record. Anything added later is a
+# PI decision, logged in docs/decision_log.md. Dev tools (pytest, ruff) are in pyproject.toml.
+#
+# The default is the minimum a numerical-physics project needs, and nothing more.
+numpy        # arrays and linear algebra; what most of the ecosystem is built on
+scipy        # solvers, special functions, sparse and dense eigenproblems
+mpmath       # arbitrary-precision arithmetic, for precision studies and cross-checks
+sympy        # a labelled cross-check on an algebra result, never the record (docs/toolchain.md)
+matplotlib   # figures, regenerated from records by code
