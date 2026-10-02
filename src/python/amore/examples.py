@@ -9,6 +9,7 @@ from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import FancyArrowPatch
 from matplotlib.colors import LinearSegmentedColormap
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -165,45 +166,195 @@ def potential_with_bump():
     plt.close(fig)
 
 
-def signed_field():
-    """Red and green palettes: a signed field with many extrema, a diverging map, labelled
-    contours, a dashed zero line, flow lines of the gradient, and marked extrema."""
-    c = amore.palette("green")
-    x, y = np.meshgrid(np.linspace(-4, 4, 800), np.linspace(-3, 3, 600))
-    bumps = ((1.2, -1.6, 1.0, 1.1), (-1.0, 1.4, 1.2, 1.0), (0.9, 2.3, 0.9, 0.7),
-             (-0.8, -2.4, -1.1, 0.8), (-1.1, 0.6, -1.0, 0.9), (0.7, -0.3, 2.6, 0.6))
-    f = 0.35 * np.sin(1.3 * x) * np.cos(1.1 * y) * np.exp(-(x ** 2 + y ** 2) / 18)
-    for amp, x0, y0, w in bumps:
-        f += amp * np.exp(-((x - x0) ** 2 + (y - y0) ** 2) / (2 * w ** 2))
-    vmax = np.ceil(np.abs(f).max() * 10) / 10                    # round, so levels are round
+def mp_test_field(holes, charges):
+    """Field of test charges in a Majumdar-Papapetrou background of extremal black holes (D = 4).
+
+    holes: rows (x, y, z, M). charges: rows (x', y', z', e'). Returns field(x, y, z), which gives
+    Phi (per unit e', so Phi = -A_0 of a charge e' = 1 for each charge, summed with the signs),
+    its gradient (three arrays) and U. The formula is Eqs. (4.9) and (4.17) of Frolov and Zelnikov,
+    Phys. Rev. D 85, 064032 (2012), with the coefficients C_k of the pole terms taken from the
+    condition that no horizon changes its charge (see black_hole_charges() for the reason).
+    """
+    holes = np.asarray(holes, float)
+    pos, mass = holes[:, :3], holes[:, 3]
+    n = len(holes)
+    d = np.array([[np.linalg.norm(pos[i] - pos[j]) if i != j else np.inf for j in range(n)]
+                  for i in range(n)])
+    u = 1 + np.array([sum(mass[j] / d[i, j] for j in range(n) if j != i) for i in range(n)])
+    system = np.diag(u) - np.array([[mass[i] / d[i, j] if i != j else 0 for j in range(n)]
+                                    for i in range(n)])
+    terms = []                                       # (position, e', C_k, U(x')) of each charge
+    for cx, cy, cz, e in np.asarray(charges, float):
+        rp = np.linalg.norm(pos - np.array([cx, cy, cz]), axis=1)
+        terms.append((np.array([cx, cy, cz]), e, np.linalg.solve(system, mass / rp),
+                      1 + np.sum(mass / rp)))
+
+    def field(x, y, z):
+        pt = [x, y, z]
+        rho = [np.sqrt(sum((pt[a] - pos[k, a]) ** 2 for a in range(3))) for k in range(n)]
+        big_u = 1 + sum(mass[k] / rho[k] for k in range(n))
+        du = [-sum(mass[k] * (pt[a] - pos[k, a]) / rho[k] ** 3 for k in range(n)) for a in range(3)]
+        phi, grad = 0 * big_u, [0 * big_u for _ in range(3)]
+        for c_pos, e, c, up in terms:
+            r = np.sqrt(sum((pt[a] - c_pos[a]) ** 2 for a in range(3)))
+            s = 1 / r + sum(c[k] / rho[k] for k in range(n))
+            ds = [-(pt[a] - c_pos[a]) / r ** 3
+                  - sum(c[k] * (pt[a] - pos[k, a]) / rho[k] ** 3 for k in range(n))
+                  for a in range(3)]
+            phi = phi + e * s / (big_u * up)
+            for a in range(3):
+                grad[a] = grad[a] + e / up * (ds[a] / big_u - s * du[a] / big_u ** 2)
+        return phi, grad, big_u
+    return field
+
+
+def black_hole_charges():
+    """Red and green palettes: test charges near two extremal black holes, from closed forms.
+
+    V. P. Frolov and A. Zelnikov, "Scalar and electromagnetic fields of static sources in higher
+    dimensional Majumdar-Papapetrou spacetimes", Phys. Rev. D 85, 064032 (2012). Units G = c = 1,
+    D = 4 (n = 1). Extremal charged black holes (charge = mass) rest in equilibrium, with
+    ds^2 = -U^-2 dt^2 + U^2 dx^2 and U = 1 + sum_k M_k / rho_k, where rho_k = |x - x_k| (Eqs. 2.2,
+    2.7). Here there are two holes with M_k = M = 1. Each horizon is a point x_k in these
+    isotropic coordinates, so the black dots are not to scale. A test charge e' at x' (e' much
+    smaller than M, so there is no back-reaction) has the potential A_0 = -e' [1/R + sum_k C_k /
+    rho_k] / (U(x) U(x')) with R = |x - x'| (Eqs. 4.9, 4.17). This figure draws Phi = -A_0 per
+    unit test charge, for two charges + e' and two charges - e'. It leaves out the potential of
+    the holes, 1 - 1/U, which is positive everywhere and would hide the sign. A static observer
+    measures E_i = d_i A_0 (the metric factors cancel), so the lines drawn here are the lines of
+    force of the test charges. Each line starts on a + charge and ends on a - charge or leaves
+    the plot. The dashed line is Phi = 0, the cross is a point where E = 0 (a saddle of Phi), and
+    the contours are labelled in units of e' / M.
+
+    A correction to the paper. Eq. (4.14) gives C_k = M_k / rho'_k (rho'_k = |x' - x_k|, b = 0) and
+    states that then the charges of the holes do not change. That holds for one hole, or when all
+    the rho'_k are equal. For several holes the printed C_k give hole k the extra charge
+        dQ_k = - (M_k / U(x')) sum_{j != k} (M_j / d_jk) (1 / rho'_j - 1 / rho'_k)  (units of e'),
+    with d_jk = |x_j - x_k|, and these dQ_k sum to zero. For three holes with M = 1, 0.7 and 0.5
+    and a charge at the point (0.2, -1/3, 0.5), the flux of U^2 grad A_0 through a small sphere
+    gives
+    +0.036, -0.008 and -0.028 (both from the flux and from this formula, and the same at every
+    radius). This code takes the C_k that make every dQ_k zero. They solve the linear system
+        u_i C_i - M_i sum_{j != i} C_j / d_ij = M_i / rho'_i,   u_i = 1 + sum_{j != i} M_j / d_ij.
+    That is the condition that Eq. (4.12) of the paper expresses. For one hole it gives the paper's
+    C_k. The C_k then sum to U(x') - 1, which gives exactly the charge e' at infinity.
+
+    Checked independently, with sympy and not with the code below: the metric and A_0 = 1/U
+    solve the Einstein-Maxwell equations (residual 6e-32 at 6 points); the potential above solves
+    d_a (U^2 d_a A_0) = 0 (residual 6e-32 at 8 points); the flux of U^2 grad A_0 is 4 pi e'
+    through a small sphere around the charge and at infinity, and zero through each hole.
+    tests/python/test_examples_physics.py repeats the Maxwell and flux checks, in three
+    dimensions, on the function that this figure uses.
+    """
+    ink = amore.palette("slate")["ink"]
+    holes = np.array([(-2.1, -1.1, 0.0, 1.0), (2.1, -1.1, 0.0, 1.0)])         # x, y, z, M
+    charges = [(-1.0, 0.0, 0.0, 1.0), (1.2, 0.4, 0.0, -1.0), (0.2, -1.8, 0.0, 1.0),
+               (-3.2, 1.5, 0.0, -1.0)]                                        # x', y', z', e'
+    hx = holes[:, :2]
+    field = mp_test_field(holes, charges)
+
+    def potential(x, y):
+        """Phi and its in-plane gradient in the plane z = 0 (the holes and charges lie in it)."""
+        phi, grad, _ = field(x, y, 0 * x)
+        return phi, grad[:2]
+
+    half_x, half_y = 4.5, 2.95                                     # the plot area has aspect 1.527
+    x, y = np.meshgrid(np.linspace(-half_x, half_x, 900), np.linspace(-half_y, half_y, 590))
+    phi, grad = potential(x, y)
+    vmax = 0.5                                                     # the range is clipped, see below
 
     fig, ax = amore.figure(colorbar=True)
-    levels = np.linspace(-vmax, vmax, int(round(20 * vmax)) + 1)   # steps of 0.1
-    filled = ax.contourf(x, y, f, levels=levels, cmap=amore.diverging("red", "green"))
-    steps = np.round(np.arange(-1.0, 1.01, 0.2), 1)
-    lines = ax.contour(x, y, f, levels=steps[steps != 0], colors="black", linewidths=0.4,
-                       alpha=0.6)                                 # the zero line is drawn apart
-    ax.clabel(lines, levels=[v for v in lines.levels if abs(abs(v) - 0.4) < 1e-9
-                             or abs(abs(v) - 0.8) < 1e-9], fmt=r"$%.1f$", fontsize=7, inline=True)
-    ax.contour(x, y, f, levels=[0], colors="black", linewidths=1.0, linestyles="--")
-    gy, gx = np.gradient(f)
-    flow = ax.streamplot(x, y, gx, gy, color=amore.OVERLAY, linewidth=0.5, density=0.5,
-                         arrowsize=0.6)
-    flow.lines.set_alpha(amore.OVERLAY_ALPHA)
-    flow.arrows.set_alpha(amore.OVERLAY_ALPHA)
-    ax.set_xlim(-4, 4)
-    ax.set_ylim(-3, 3)
+    filled = ax.contourf(x, y, np.clip(phi, -0.999 * vmax, 0.999 * vmax),
+                         levels=np.linspace(-vmax, vmax, 41), cmap=amore.diverging("red", "green"))
+    steps = [-1.0, -0.8, -0.6, -0.5, -0.4, -0.35, -0.3, -0.25, -0.2, -0.15, -0.1, -0.05,
+             0.1, 0.2, 0.3, 0.4]
+    lines = ax.contour(x, y, phi, levels=steps, colors="black", alpha=0.6,   # dotted below zero
+                       linewidths=[0.6 if v < 0 else 0.4 for v in steps],
+                       linestyles=[":" if v < 0 else "solid" for v in steps])
+    ax.clabel(lines, levels=[-0.2, 0.2], fmt=r"$%.1f$", fontsize=7, inline=True)
+    zero = ax.contour(x, y, phi, levels=[0], colors="black", linewidths=1.0, linestyles="--")
+
+    # Lines of force: E = -grad Phi, from the + charges to the - charges (fourth-order steps).
+    def direction(p):
+        gx, gy = potential(p[0], p[1])[1]
+        return -np.array([gx, gy]) / max(np.hypot(gx, gy), 1e-300)
+
+    sinks = [(c[0], c[1]) for c in charges if c[3] < 0]
+    for cx, cy, _, e in charges:
+        if e < 0:
+            continue
+        for angle in np.linspace(0, 2 * np.pi, 16, endpoint=False) + 0.3:
+            p = np.array([cx + 0.06 * np.cos(angle), cy + 0.06 * np.sin(angle)])
+            path = [p]
+            for _ in range(6000):
+                k1 = direction(p)
+                k2 = direction(p + 0.01 * k1)
+                k3 = direction(p + 0.01 * k2)
+                k4 = direction(p + 0.02 * k3)
+                p = p + 0.02 / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
+                path.append(p)
+                if abs(p[0]) > half_x or abs(p[1]) > half_y:
+                    break
+                if any(np.hypot(*(p - s)) < 0.06 for s in sinks):
+                    break
+            path = np.array(path)
+            ax.plot(path[:, 0], path[:, 1], color=amore.OVERLAY, lw=0.6, alpha=amore.OVERLAY_ALPHA)
+            arc = np.r_[0, np.cumsum(np.hypot(*np.diff(path, axis=0).T))]
+            for s0 in np.arange(0.8, arc[-1] - 0.3, 1.4):          # several arrowheads on each line
+                k = np.searchsorted(arc, s0)
+                if abs(path[k, 0]) < half_x - 0.2 and abs(path[k, 1]) < half_y - 0.2:
+                    ax.add_patch(FancyArrowPatch(
+                        path[k], path[min(k + 8, len(path) - 1)], arrowstyle="-|>",
+                        mutation_scale=6, lw=0, color=amore.OVERLAY, alpha=0.85, shrinkA=0,
+                        shrinkB=0))
+    ax.set_xlim(-half_x, half_x)
+    ax.set_ylim(-half_y, half_y)
     ax.grid(False)
-    for amp, x0, y0, w in bumps[:2] + bumps[3:5]:
-        near = (x - x0) ** 2 + (y - y0) ** 2 < w ** 2          # the extremum near each bump
-        k = np.unravel_index(np.where(near, f * np.sign(amp), -np.inf).argmax(), f.shape)
-        name = "max" if amp > 0 else "min"
-        ax.plot(x[k], y[k], marker="o", ms=4, color="white", mec="black", mew=0.8)
-        ax.text(x[k] + 0.15, y[k] + 0.15, r"\texttt{%s}" % name, fontsize=9,
-                bbox=dict(facecolor="white", alpha=0.7, edgecolor="none", boxstyle="round,pad=0.15"))
-    amore.colorbar(ax, filled, r"$\phi(x, y)$", ticks=[-1, -0.5, 0, 0.5, 1])
-    ax.set_xlabel(r"$x$")
-    ax.set_ylabel(r"$y$")
+    note = dict(facecolor="white", alpha=0.78, edgecolor="none", boxstyle="round,pad=0.15")
+    pointer = dict(arrowstyle="->", lw=0.7, color=ink, shrinkA=2, shrinkB=0)
+
+    # The points where E = 0: the minima of |grad Phi| on the grid, refined by Newton steps.
+    gmag = np.hypot(*grad)
+    rows, cols = gmag.shape
+    window = np.stack([gmag[2 + i:rows - 2 + i, 2 + j:cols - 2 + j]
+                       for i in range(-2, 3) for j in range(-2, 3)])
+    found = (gmag[2:-2, 2:-2] <= window.min(axis=0)) & (gmag[2:-2, 2:-2] < 0.05)
+    saddles = []
+    for px, py in zip(x[2:-2, 2:-2][found], y[2:-2, 2:-2][found]):
+        p = np.array([px, py])
+        for _ in range(12):
+            g0 = np.array(potential(*p)[1])
+            jac = np.array([(np.array(potential(p[0] + 1e-5 * (a == 0),
+                                                p[1] + 1e-5 * (a == 1))[1]) - g0) / 1e-5
+                            for a in range(2)]).T
+            p = p - np.linalg.solve(jac, g0)
+        near_source = min(np.hypot(*(p - np.array(q))) for q in [c[:2] for c in charges] + list(hx))
+        if (np.hypot(*potential(*p)[1]) < 1e-8 and np.linalg.det(jac) < 0 and near_source > 0.4
+                and abs(p[0]) < half_x - 0.1 and abs(p[1]) < half_y - 0.1
+                and all(np.hypot(*(p - q)) > 1e-3 for q in saddles)):
+            saddles.append(p)
+    saddles = np.array(saddles)
+    ax.plot(saddles[:, 0], saddles[:, 1], ls="none", marker="x", ms=6, mew=1.4, color=ink, zorder=7)
+    ax.plot(hx[:, 0], hx[:, 1], ls="none", marker="o", ms=8, color=ink, mec="white", mew=0.9,
+            zorder=6)
+    for cx, cy, _, e in charges:
+        ax.plot(cx, cy, ls="none", marker="o", ms=6, color="white", mec=ink, mew=0.9, zorder=6)
+        ax.text(cx, cy - 0.01, r"$+$" if e > 0 else r"$-$", fontsize=6, ha="center", va="center",
+                color=ink, zorder=7)
+    ax.annotate(r"\texttt{extremal black hole}", xy=(hx[0, 0], hx[0, 1]), xytext=(-4.4, -2.55),
+                fontsize=8, bbox=note, arrowprops=pointer, zorder=8)
+    ax.annotate(r"\texttt{test charge}", xy=(charges[1][0], charges[1][1]), xytext=(2.0, 1.9),
+                fontsize=8, bbox=note, arrowprops=pointer, zorder=8)
+    on_zero = max(zero.allsegs[0], key=len)                # a point of the dashed line, x near -3.4
+    on_zero = on_zero[np.argmin(np.abs(on_zero[:, 0] + 3.4))]
+    ax.annotate(r"$\Phi = 0$", xy=on_zero, xytext=(-4.35, 0.15), fontsize=8, bbox=note,
+                arrowprops=pointer, zorder=8)
+    ax.annotate(r"$\mathbf{E} = 0$", xy=saddles[0], xytext=(-1.9, -2.45), fontsize=8, bbox=note,
+                arrowprops=pointer, zorder=8)
+    amore.colorbar(ax, filled, r"$\Phi M / e'$ (clipped at $\pm 0.5$)",
+                   ticks=[-0.5, -0.25, 0, 0.25, 0.5])
+    ax.set_xlabel(r"$x/M$")
+    ax.set_ylabel(r"$y/M$")
     amore.tag(ax, TAG)
     amore.save(fig, OUT / "amore_green", dpi=README_DPI, formats=("pdf", "png"), exact_size=True)
     plt.close(fig)
@@ -379,7 +530,7 @@ if __name__ == "__main__":
     amore.use()
     wave_packet()
     potential_with_bump()
-    signed_field()
+    black_hole_charges()
     kerr_curvature()
     palette_chart()
     print(f"wrote {OUT}/amore_blue.png, amore_teal.png, amore_green.png, amore_parula.png and amore_palettes.png")

@@ -43,7 +43,7 @@ say no, the decision is final. The charter states this rule.
   <img src="docs/figures/amore_teal.png" width="49%" alt="Example figure in the teal, amber and plum palettes">
 </p>
 <p align="center">
-  <img src="docs/figures/amore_green.png" width="49%" alt="Example contour figure with the diverging red and green map">
+  <img src="docs/figures/amore_green.png" width="49%" alt="Example contour figure with the diverging red and green map: the potential of test charges near two extremal black holes, with lines of force, the zero equipotential and a saddle point">
   <img src="docs/figures/amore_parula.png" width="49%" alt="Example density plot with contours in the fakeparulapastel map: the curvature invariant of a Kerr black hole near its ring singularity">
 </p>
 
