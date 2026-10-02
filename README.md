@@ -48,7 +48,8 @@ say no, the decision is final. The charter states this rule.
 </p>
 
 <p align="center">
-  <img src="docs/figures/amore_corner.png" width="60%" alt="Example corner plot in the plum, olive, teal and amber palettes: four parameters, filled 1, 2 and 3 sigma regions of all samples, dashed contours of the second mode, and the true and empirical means">
+  <img src="docs/figures/amore_corner.png" width="70%" alt="Example corner plot in the plum, olive, teal and amber palettes: four parameters, filled 1, 2 and 3 sigma regions of all samples, dashed contours of the second mode, and the true and empirical means">
+  <img src="docs/figures/amore_chirikov.png" width="27.5%" alt="Example phase-space plot of the Chirikov standard map at K = 0.971635, a tall strip around the big island, in all 32 colours of the eight palettes: bands of invariant curves, and the speckled chaotic sea">
 </p>
 
 `docs/failure_modes.md` lists the failure that each feature prevents and the cost of each fix.

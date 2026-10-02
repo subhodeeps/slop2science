@@ -548,6 +548,28 @@ def kerr_curvature():
     plt.close(fig)
 
 
+def standard_map_orbits(k, n_orbits, n_steps, phi0=0.0):
+    """Orbits of the Chirikov standard map, p' = p + k sin(phi), phi' = phi + p', both mod 2 pi,
+    on the square [-pi, pi)^2.
+
+    Orbit i starts at phi = phi0 and p = -pi + (i + 1/2) 2 pi / n_orbits, so the result repeats.
+    Returns two arrays of shape (n_orbits, n_steps): phi and p after each of the steps.
+    The golden-mean invariant curve, the last one to break, dissolves at k = 0.971635
+    (J. M. Greene, J. Math. Phys. 20, 1183 (1979)). Below this k a curve still divides the phase
+    space, above it orbits can drift in p without bound.
+    """
+    p = -np.pi + (np.arange(n_orbits) + 0.5) * 2 * np.pi / n_orbits
+    phi = np.full(n_orbits, float(phi0))
+    out_phi, out_p = np.empty((n_orbits, n_steps)), np.empty((n_orbits, n_steps))
+    for step in range(n_steps):
+        p = p + k * np.sin(phi)
+        phi = phi + p
+        phi = (phi + np.pi) % (2 * np.pi) - np.pi
+        p = (p + np.pi) % (2 * np.pi) - np.pi
+        out_phi[:, step], out_p[:, step] = phi, p
+    return out_phi, out_p
+
+
 def corner_plot():
     """Corner plot of four parameters with the amore colours: the samples in plum, the second
     mode in olive, the true mean of that mode in teal and the sample mean in amber.
@@ -640,6 +662,166 @@ def corner_plot():
     plt.close(fig)
 
 
+#: Palettes in the order of their hue (red 352 deg, amber 38, olive 66, green 148, teal 181,
+#: blue 204, slate 210, plum 288), for the colour order of the standard-map picture.
+HUE_ORDER = ("red", "amber", "olive", "green", "teal", "blue", "slate", "plum")
+
+
+def standard_map_image(k, phi_range=(-np.pi, np.pi), p_range=(-np.pi, np.pi), shape=(1200, 1200),
+                       grid=(260, 260), steps=1000, seed=0):
+    """Colour image of the standard map: each initial point on a grid gets a colour from its orbit.
+
+    k: the K of the map (see standard_map_orbits()). phi_range, p_range: the window
+    (phi_min, phi_max) x (p_min, p_max) of the phase space that the image shows, inside
+    [-pi, pi]^2 (phi is the horizontal direction of the image and p the vertical one). shape: the
+    image size in pixels, (rows, columns); the pixels are square only if
+    rows / columns = (p_max - p_min) / (phi_max - phi_min). grid: the (columns, rows) of the grid
+    of initial points, at the centres of equal cells of the window. Each orbit is run for `steps` steps and
+    every point of it that falls in the strip is painted, so every curve of the picture is
+    filled in. Returns an array of shape (rows, columns, 3), with row 0 at p = p_min. Pixels that
+    no orbit visits stay white.
+
+    Which orbit gets which colour, in three steps:
+    1. A tangent vector evolves with the map and gives the finite-time Lyapunov exponent of the
+       orbit. An orbit with an exponent above 0.04 is chaotic, one below it is regular. For
+       k = 0.97, steps = 1000 and a 160 x 160 grid over the full square, about 60 % of the
+       orbits have an exponent below 0.01 (the regular ones), and the rest spread from 0.02 to
+       0.29. The two groups are not separate, so the threshold is a choice: a weakly chaotic
+       orbit that sticks near an island can fall below it, and then it is painted as a band.
+       That gives the speckled edge of some bands. About a third of the orbits (0.336) are above
+       the threshold.
+    2. A regular orbit stays on one invariant curve, so a number that is the same on the whole
+       curve gives it one colour. The number is key = m + 6 (1 - R), where m and R are the angle
+       and the length of the mean of exp(i p) over the orbit (a circular mean, since p is an angle).
+       On a curve that goes round the cylinder m changes from curve to curve. On the closed curves
+       around an island m is the same for all, and R falls with the size of the curve. The colour
+       is number floor(24 key) mod 24 of the 24 colours ink, main and light of each palette in
+       the order HUE_ORDER, so neighbouring curves have neighbouring colours and the colours
+       repeat after 24 bands.
+    3. The chaotic orbits fill one connected sea. Each of its pixels gets a random one of the
+       16 colours light and shade of the eight palettes. A pixel that a regular orbit visits
+       keeps the colour of the regular orbit.
+    The 24 colours of step 2 and the 8 shade tones of step 3 are the 32 colours of amore.
+    """
+    phi_min, phi_max = phi_range
+    p_min, p_max = p_range
+    centre_phi = 0.5 * (phi_min + phi_max)
+    wrap_p = lambda x: (x + np.pi) % (2 * np.pi) - np.pi
+    wrap_phi = lambda x: (x - centre_phi + np.pi) % (2 * np.pi) - np.pi + centre_phi
+    rows, cols = shape
+    n_phi, n_p = grid
+    phi0, p0 = [a.ravel() for a in np.meshgrid(
+        phi_min + (np.arange(n_phi) + 0.5) * (phi_max - phi_min) / n_phi,
+        p_min + (np.arange(n_p) + 0.5) * (p_max - p_min) / n_p)]
+
+    def rgb(hex_colour):
+        return [int(hex_colour[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+
+    bands = np.array([rgb(amore.palette(n)[t]) for n in HUE_ORDER for t in ("ink", "main", "light")])
+    sea_colours = np.array([rgb(amore.palette(n)[t]) for n in HUE_ORDER for t in ("light", "shade")])
+
+    def run(paint=None):
+        phi, p = phi0.copy(), p0.copy()
+        d_phi, d_p = np.ones_like(phi), np.zeros_like(phi)
+        log_growth, cos_sum, sin_sum = (np.zeros_like(phi) for _ in range(3))
+        for _ in range(steps):
+            d_p = d_p + k * np.cos(phi) * d_phi
+            d_phi = d_phi + d_p
+            norm = np.hypot(d_phi, d_p)
+            log_growth += np.log(norm)
+            d_phi, d_p = d_phi / norm, d_p / norm
+            p = wrap_p(p + k * np.sin(phi))
+            phi = wrap_phi(phi + p)
+            cos_sum += np.cos(p)
+            sin_sum += np.sin(p)
+            if paint is not None:
+                paint(phi, p)
+        return log_growth / steps, np.arctan2(sin_sum, cos_sum), np.hypot(cos_sum, sin_sum) / steps
+
+    exponent, mean_angle, resultant = run()
+    chaotic = exponent > 0.04
+    band = np.floor(24 * (mean_angle + 6.0 * (1 - resultant))).astype(int) % 24
+    image = np.ones((rows, cols, 3))
+    regular_seen = np.zeros((rows, cols), bool)
+    sea_seen = np.zeros((rows, cols), bool)
+
+    def paint(phi, p):
+        col = np.floor((phi - phi_min) / (phi_max - phi_min) * cols).astype(int)
+        row = np.floor((p - p_min) / (p_max - p_min) * rows).astype(int)
+        inside = (col >= 0) & (col < cols) & (row >= 0) & (row < rows)
+        sea, reg = inside & chaotic, inside & ~chaotic
+        sea_seen[row[sea], col[sea]] = True
+        image[row[reg], col[reg]] = bands[band[reg]]
+        regular_seen[row[reg], col[reg]] = True
+
+    run(paint)
+    sea = sea_seen & ~regular_seen
+    image[sea] = sea_colours[np.random.RandomState(seed).randint(0, len(sea_colours), sea.sum())]
+    return image
+
+
+def chirikov_map():
+    """The Chirikov standard map at K = 0.971635 as a tall picture in all 32 colours of amore.
+
+    The map is p' = p + K sin(phi), phi' = phi + p' (both mod 2 pi). K = 0.971635 is Greene's
+    value, rounded, for the break-up of the golden-mean invariant curve, the last one to survive
+    (J. M. Greene, J. Math. Phys. 20, 1183 (1979)): the last stable orbits are about to dissolve.
+    standard_map_image() makes the picture: the strip |phi - pi| < pi / 3 for all -pi <= p < pi,
+    centred on the big island at phi = pi, with 90 x 300 initial points and 1000 steps each. The
+    strip is 1/3 as wide as it is tall, with the same scale on both axes, so nothing is
+    stretched. The bands of colour are the invariant curves and the closed curves around the
+    island, each in one colour. The speckled region between them is the chaotic sea. The picture
+    repeats exactly, because all the starting points and the random choice of the sea colours
+    are fixed. The figure is as tall as the corner plot (7 in), so that the two stand side by
+    side in the README. The only title is the value of K. The tick labels are inside the strip
+    (3 pi / 4, pi, 5 pi / 4), so that none of them touches the edge of the figure. Tests:
+    tests/python/test_examples_physics.py.
+
+    The colours are a showcase of the palettes, so this plot is the one exception to the four-hue
+    limit of the plotting skill: a colour has no meaning, except to tell the curves apart. The
+    ink, main and light tones of all eight palettes (24 colours) colour the bands. The light and
+    shade tones colour the sea, so the 8 shade tones, which are almost white, appear only here.
+
+    Sources. The map is from B. V. Chirikov, Phys. Rep. 52, 263 (1979). The idea of a picture
+    that fills the phase space of the map with orbits in many colours follows the Chirikov-map
+    figure (Fig. 3) of "The golden path to chaos: adiabatic twists", Galileo Unbound (blog),
+    7 April 2026,
+    https://galileo-unbound.blog/2026/04/07/the-golden-path-to-chaos-adiabatic-twists/ and
+    the Wikimedia Commons picture "Orbits of the standard map for K = 0.971635" by Linas
+    (CC BY-SA 3.0, file Std-map-0.971635.png). I could not open the blog page when I wrote this
+    code (the network policy blocked it), so its title and date come from the address and from
+    the PI. None of the code, the data or the pixels of those sources is used: this picture is
+    computed here.
+    """
+    k_map, height_in, axes_height = 0.971635, 7.0, 5.95
+    half = np.pi / 3                                 # half the width of the strip in phi
+    axes_width = axes_height / 3                     # the strip is 1/3 as wide as it is tall
+    left, bottom, right = 0.65, 0.70, 0.12
+    width_in = left + axes_width + right
+    dpi = README_DPI
+    shape = (round(axes_height * dpi), round(axes_width * dpi))          # rows are p, columns are phi
+    image = standard_map_image(k_map, phi_range=(np.pi - half, np.pi + half), shape=shape,
+                               grid=(90, 300))
+    fig = plt.figure(figsize=(width_in, height_in))
+    ax = fig.add_axes([left / width_in, bottom / height_in, axes_width / width_in,
+                       axes_height / height_in])
+    ax.imshow(image, origin="lower", extent=(np.pi - half, np.pi + half, -np.pi, np.pi),
+              interpolation="nearest", aspect="equal")
+    ax.set_xticks([3 * np.pi / 4, np.pi, 5 * np.pi / 4], [r"$3\pi/4$", r"$\pi$", r"$5\pi/4$"])
+    ax.set_yticks([-np.pi, -np.pi / 2, 0, np.pi / 2, np.pi],
+                  [r"$-\pi$", r"$-\pi/2$", r"$0$", r"$\pi/2$", r"$\pi$"])
+    ax.grid(False)
+    ax.set_xlabel(r"$\varphi$")
+    ax.set_ylabel(r"$p$")
+    ax.set_title(r"$K = %.6f$" % k_map, fontsize=11)
+    # The tag of amore.tag(), moved inside: the strip is narrow and its default place is at the edge.
+    ax.text(0.92, 0.035, "\\textbf{Example} of the\namore plot style", transform=ax.transAxes,
+            fontsize=8, va="bottom", ha="right",
+            bbox=dict(facecolor="white", alpha=0.7, edgecolor="none", boxstyle="round,pad=0.2"))
+    amore.save(fig, OUT / "amore_chirikov", dpi=dpi, formats=("pdf", "png"), exact_size=True)
+    plt.close(fig)
+
+
 def palette_chart():
     """Every colour of amore: one row for each palette, one swatch for each tone with its hex
     code and its lightness L*, and the colour map of the palette. Shown in README.md."""
@@ -699,5 +881,6 @@ if __name__ == "__main__":
     black_hole_charges()
     kerr_curvature()
     corner_plot()
+    chirikov_map()
     palette_chart()
     print(f"wrote the example figures and the palette chart in {OUT}")

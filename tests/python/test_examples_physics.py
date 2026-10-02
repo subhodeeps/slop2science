@@ -125,3 +125,68 @@ def test_the_coefficients_printed_in_the_paper_change_the_horizon_charges():
         predicted = -(mass[k] / up) * sum(mass[j] / np.linalg.norm(pos[j] - pos[k]) * (1 / rp[j] - 1 / rp[k])
                                           for j in range(3) if j != k)
         assert -induced[k] == pytest.approx(predicted, abs=2e-4)                     # flux = -(charge change)
+
+
+def one_step(k, phi, p):
+    """One step of the standard map, without the mod 2 pi."""
+    p_new = p + k * np.sin(phi)
+    return phi + p_new, p_new
+
+
+def test_standard_map_orbits_match_the_map_and_repeat():
+    """standard_map_orbits() takes the steps of p' = p + k sin(phi), phi' = phi + p' (mod 2 pi)."""
+    phi, p = examples.standard_map_orbits(0.97, 6, 40)
+    again = examples.standard_map_orbits(0.97, 6, 40)
+    assert np.array_equal(phi, again[0]) and np.array_equal(p, again[1])
+    assert np.all(np.abs(phi) <= np.pi) and np.all(np.abs(p) <= np.pi)
+    start_p = -np.pi + (np.arange(6) + 0.5) * 2 * np.pi / 6
+    new_phi, new_p = one_step(0.97, np.zeros(6), start_p)
+    wrap = lambda x: (x + np.pi) % (2 * np.pi) - np.pi
+    assert np.allclose(phi[:, 0], wrap(new_phi)) and np.allclose(p[:, 0], wrap(new_p))
+
+
+def test_standard_map_conserves_area_and_k_zero_keeps_p():
+    """The map has Jacobian determinant 1 (finite differences), and p stays fixed for k = 0."""
+    h = 1e-6
+    for phi0, p0 in [(0.3, -1.2), (2.0, 0.7), (-2.5, 2.9)]:
+        f = lambda a, b: np.array(one_step(0.97, a, b))
+        jac = np.column_stack([(f(phi0 + h, p0) - f(phi0 - h, p0)) / (2 * h),
+                               (f(phi0, p0 + h) - f(phi0, p0 - h)) / (2 * h)])
+        assert abs(np.linalg.det(jac) - 1) < 1e-8
+    _, p = examples.standard_map_orbits(0.0, 5, 30)
+    start_p = -np.pi + (np.arange(5) + 0.5) * 2 * np.pi / 5
+    assert np.allclose(p, np.repeat(start_p[:, None], 30, axis=1))
+
+
+def test_standard_map_image_colours_and_repeat():
+    """The image repeats, has the right shape, and has only amore colours and white."""
+    import amore
+    a = examples.standard_map_image(0.97, shape=(120, 120), grid=(40, 40), steps=200)
+    b = examples.standard_map_image(0.97, shape=(120, 120), grid=(40, 40), steps=200)
+    assert a.shape == (120, 120, 3) and np.array_equal(a, b)
+    allowed = {tuple(int(c[i:i + 2], 16) for i in (1, 3, 5)) for tones in amore.PALETTES.values()
+               for c in tones.values()} | {(255, 255, 255)}
+    seen = {tuple(np.round(px * 255).astype(int)) for px in a.reshape(-1, 3)}
+    assert seen <= allowed
+    assert len({px for px in seen if px != (255, 255, 255)}) > 10     # many colours, not one
+
+
+def test_standard_map_image_k_zero_is_all_regular():
+    """For k = 0 every orbit is a horizontal line: no chaotic sea, so only band colours (not shade)."""
+    import amore
+    img = examples.standard_map_image(0.0, shape=(90, 90), grid=(30, 30), steps=100)
+    shade = {tuple(int(amore.palette(n)["shade"][i:i + 2], 16) for i in (1, 3, 5))
+             for n in amore.PALETTES}
+    seen = {tuple(np.round(px * 255).astype(int)) for px in img.reshape(-1, 3)}
+    assert not (seen & shade)
+
+
+def test_standard_map_image_window_rows_are_p():
+    """For k = 0 the orbit of a row is a horizontal line: with one initial point per pixel row, each
+    row of a window image has one colour besides white, and the shape is the shape asked for."""
+    img = examples.standard_map_image(0.0, phi_range=(-1.0, 1.0), p_range=(-1.7, 0.1), shape=(30, 60),
+                                      grid=(60, 30), steps=300)
+    assert img.shape == (30, 60, 3)
+    for row in img:
+        colours = {tuple(np.round(px * 255).astype(int)) for px in row} - {(255, 255, 255)}
+        assert len(colours) == 1
