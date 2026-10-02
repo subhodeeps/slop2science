@@ -15,7 +15,7 @@ The plot style `amore` is in `src/python/amore/`:
 - `amore.mplstyle` sets the fonts, the colour cycle, the frame, the ticks and the grid.
 - `__init__.py` adds the named palettes and the helpers `use`, `figure`, `palette`, `cmap`,
   `fakeparulapastel`, `diverging`, `colorbar`, `shade`, `inset`, `tag` and `save`.
-- `examples.py` makes the four example figures and the palette chart in `README.md`
+- `examples.py` makes the five example figures and the palette chart in `README.md`
   (`make plot-examples`). Read it before you make your first figure.
 
 ## Rules
@@ -57,6 +57,53 @@ The plot style `amore` is in `src/python/amore/`:
    by side. For figures that sit side by side, use `layout="constrained"` and
    `exact_size=True`, so that each file has the same size.
 10. A script makes each figure from the records (CLAUDE.md §10). Never edit a figure by hand.
+
+## Colour theory guidelines
+
+These are defaults. The PI can override any of them. Follow the override, and write the reason in
+a comment next to the colours. Rules 2 to 6 above say which colours exist and which pairs work.
+The guidelines here say how to choose among them.
+
+The HSV hue and the CIELAB lightness L* of each main tone (`amore.lab()` gives L*):
+
+| palette | red | amber | olive | green | teal | blue | plum | slate |
+|---|---|---|---|---|---|---|---|---|
+| hue (deg) | 352 | 38 | 66 | 148 | 181 | 204 | 288 | 210 |
+| L* | 59 | 68 | 64 | 65 | 60 | 62 | 52 | 55 |
+
+1. **One colour, one meaning.** A colour stands for one quantity in every figure of the
+   document (rule 6). Do not use a colour only to make a plot pretty.
+2. **Keep the hue count low.** Use at most four hues in one plot. Above that, separate the
+   curves with line style, markers or labels, because the reader cannot match five colours to a
+   legend.
+3. **Give the data a full palette and give the reference a different hue.** The data gets one
+   palette in all its tones (`light` for points, `main` for fills, `ink` for outlines). Means,
+   truth values and guides get other hues, or `slate`.
+4. **Choose the pair by the relation of the quantities.**
+   - Two sets that you compare directly: complementary hues, about 180 degrees apart (red and
+     green; plum and olive are 138 degrees apart, the nearest pair in the palettes).
+   - Three sets: a triad, about 120 degrees apart (plum, teal and amber).
+   - One quantity that changes in steps, for example an overtone number n: neighbouring hues
+     (analogous), or the tones of one palette. Do not use unrelated hues for an ordered series.
+5. **Hue alone is not enough.** The main tones have nearly the same lightness (L* 52 to 68), so
+   two curves in different hues can look alike in a grey print and for a reader with a colour
+   vision deficiency. Add a second cue: a dashed line, a marker, or a different tone (`ink` on
+   `light`). Red and green need this most. Check with `amore.lab()` that two colours that must
+   be told apart differ in L*, or use a second cue.
+6. **Warm for the focus, cool for the context.** Warm hues (red, amber) come forward. Cool hues
+   (teal, blue, plum) and neutrals recede. Draw the result of the figure in a warm hue or in
+   the `ink` tone. Draw the comparison data in a cool hue or in `slate`.
+7. **Match the map to the data.**
+   - Ordered values: a sequential map (`amore.cmap(name)`).
+   - Values with a wide range: `amore.fakeparulapastel()`. Never use a rainbow map such as jet,
+     because its lightness is not monotonic and it makes false edges.
+   - Values with a meaningful zero: a diverging map with a neutral centre
+     (`amore.diverging()`), and `vmin = -vmax`.
+8. **Fills are light and lines are dark.** A fill uses `light` or `shade`, with a line in `main`
+   or `ink` on top. Text on a fill needs contrast, and `amore.contrast_on_white()` gives the
+   ratio. A marker on a dark fill gets an edge in its own `ink` tone.
+9. **Do not use a colour that is not in a palette**, and do not use pure grey for a quantity.
+   Grey is for the frame, the grid and `amore.OVERLAY` only.
 
 ## Look at the figure before you call it done
 
