@@ -17,7 +17,10 @@ import amore  # noqa: E402
 
 OUT = Path(__file__).resolve().parents[3] / "docs" / "figures"
 README_DPI = 200          # small PNGs for the README; amore.save() without dpi gives 600
-TAG = r"\textbf{Example} of the amore plot style"
+def example_tag(feature):
+    """The text of the tag on an example figure: "Example:" and a short note on what the figure
+    shows of the amore style, for instance a palette or a feature."""
+    return r"\textbf{Example}: " + feature
 
 
 def wave_packet():
@@ -42,7 +45,7 @@ def wave_packet():
     ax.set_xlabel(r"$t$")
     ax.set_ylabel(r"$f(t)$")
     ax.legend(loc="lower right", bbox_to_anchor=(0.98, 0.08))
-    amore.tag(ax, TAG)
+    amore.tag(ax, example_tag("blue palette, shaded band, inset"))
     amore.save(fig, OUT / "amore_blue", dpi=README_DPI, formats=("pdf", "png"), exact_size=True)
     plt.close(fig)
 
@@ -161,7 +164,7 @@ def potential_with_bump():
     ax.set_xlabel(r"$r_*$")
     ax.set_ylabel(r"$V^{\mathrm{RW}} + \epsilon\, V_{\mathrm{bump}}$")
     ax.legend(loc="upper left")
-    amore.tag(ax, TAG, loc="lower right")
+    amore.tag(ax, example_tag("teal, amber, plum triad"), loc="lower right")
     amore.save(fig, OUT / "amore_teal", dpi=README_DPI, formats=("pdf", "png"), exact_size=True)
     plt.close(fig)
 
@@ -429,7 +432,7 @@ def black_hole_charges():
                    ticks=[-0.5, -0.25, 0, 0.25, 0.5])
     ax.set_xlabel(r"$x/M$")
     ax.set_ylabel(r"$y/M$")
-    amore.tag(ax, TAG)
+    amore.tag(ax, example_tag("red-green diverging map"))
     amore.save(fig, OUT / "amore_green", dpi=README_DPI, formats=("pdf", "png"), exact_size=True)
     plt.close(fig)
 
@@ -543,7 +546,7 @@ def kerr_curvature():
     bar = amore.colorbar(ax, image, r"$\log_{10}\bigl(M^4\,|R_{abcd}R^{abcd}|\bigr)$",
                          ticks=ticks)
     bar.set_ticklabels([f"{t:g}" for t in ticks])
-    amore.tag(ax, TAG, loc="lower right")
+    amore.tag(ax, example_tag("fakeparulapastel, inset"), loc="lower right")
     amore.save(fig, OUT / "amore_parula", dpi=README_DPI, formats=("pdf", "png"), exact_size=True)
     plt.close(fig)
 
@@ -660,7 +663,8 @@ def corner_plot():
                Line2D([], [], color=amber["main"], marker="s", mec=amber["ink"], mew=0.6, ms=5,
                       label=r"mean of all samples")]
     fig.legend(handles=handles, loc="upper right", bbox_to_anchor=(0.97, 0.93), fontsize=10)
-    fig.text(0.97, 0.66, TAG, ha="right", va="bottom", fontsize=8)
+    fig.text(0.97, 0.66, example_tag("plum, olive, teal and amber"), ha="right", va="bottom",
+             fontsize=8)
     amore.save(fig, OUT / "amore_corner", dpi=README_DPI, formats=("pdf", "png"), exact_size=True)
     plt.close(fig)
 
@@ -817,9 +821,9 @@ def chirikov_map():
     ax.set_xlabel(r"$\varphi$")
     ax.set_ylabel(r"$p$")
     ax.set_title(r"$K = %.6f$" % k_map, fontsize=11)
-    # The tag of amore.tag(), moved inside: the strip is narrow and its default place is at the edge.
-    ax.text(0.92, 0.035, "\\textbf{Example} of the\namore plot style", transform=ax.transAxes,
-            fontsize=8, va="bottom", ha="right",
+    # The tag is inside the plot: the strip is narrow, and the default place is at its edge.
+    ax.text(0.92, 0.035, example_tag("all 32 colours").replace(": ", ":\n"),
+            transform=ax.transAxes, fontsize=8, va="bottom", ha="right",
             bbox=dict(facecolor="white", alpha=0.7, edgecolor="none", boxstyle="round,pad=0.2"))
     amore.save(fig, OUT / "amore_chirikov", dpi=dpi, formats=("pdf", "png"), exact_size=True)
     plt.close(fig)
@@ -923,7 +927,8 @@ def pendulum_portrait():
     ax.set_xlabel(r"$x$")
     ax.set_ylabel(r"$y = x'$")
     # The tag goes in the margin under the plot, so that it covers no orbit.
-    fig.text(1 - right / width_in, 0.05 / height_in, TAG, ha="right", va="bottom", fontsize=8)
+    fig.text(1 - right / width_in, 0.05 / height_in,
+             example_tag("teal and red, a complementary pair"), ha="right", va="bottom", fontsize=8)
     amore.save(fig, OUT / "amore_pendulum", dpi=README_DPI, formats=("pdf", "png"), exact_size=True)
     plt.close(fig)
 
