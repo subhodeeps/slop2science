@@ -149,6 +149,7 @@ I use Mathematica, Python and Julia. The template has a configuration for all th
     code/              other people's code; _drop/, pi/    scripts/      wrappers and checks
     Makefile           every command: make help            logs/         tool output; files not committed
     TEMPLATE_GUIDE.md  why the template is built this way  .github/      CI: the repository checks on each push
+    LICENSE-*.txt      MIT, and a CC BY 4.0 option         README.md     this file
 
 `docs/GUIDE.md` explains how the parts fit together. `docs/WORKFLOW.md` explains how to do a
 piece of work.
@@ -212,8 +213,8 @@ Other repositories contributed parts:
   ([barbagroup/agentic-reproducibility](https://github.com/barbagroup/agentic-reproducibility))
   — reproducible-research practice as context engineering. The template follows her
   caveat: the researcher stays responsible for the judgements that these artifacts contain.
-- The dual licence (see Copying): the wording of the notice comes from a project by Egor Tensin. A [Software Engineering Stack Exchange answer](https://softwareengineering.stackexchange.com/questions/318777/mit-license-vs-creative-commons-for-images-and-other-assets)
-  quotes it.
+- A [question and answers on the Software Engineering Stack Exchange site](https://softwareengineering.stackexchange.com/questions/318777/mit-license-vs-creative-commons-for-images-and-other-assets)
+  inspired the dual licence (see Copying).
 
 ## Bugs and improvements
 
@@ -264,4 +265,5 @@ This dual licence keeps one licence for the whole project. Users who want a lice
 images can choose this one.
 
 Material from other people keeps the terms of its owners. This includes the quotations in this
-file and the CC0 colour values from BIDS/colormap.
+file and the CC0 colour values from BIDS/colormap. It also includes the code and sources that
+other people wrote, in `code/` and `papers/`. The folders record their terms.

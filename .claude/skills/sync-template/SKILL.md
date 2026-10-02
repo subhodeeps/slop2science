@@ -24,6 +24,11 @@ changes in **without touching one line of science.**
 | `docs/failure_modes.md` (index), `docs/failure_modes/model.md`, `docs/failure_modes/inherited.md` | `docs/failure_modes/project.md` and `docs/failure_modes/anticipated.md` (the own parts of the project) |
 | `CLAUDE.md` §§1, 3, 4, 6–11 (the discipline) | `CLAUDE.md` §2, §5 and each value that comes from a `{{PLACEHOLDER}}` |
 
+Never sync `LICENSE-*.txt`, the section Copying of `README.md`, or `docs/author.txt`. They state
+the licence and the author of this project. The files that do sync are work of the template,
+under its MIT licence. `LICENSE-MIT.txt` of this project must keep the copyright line of the
+template for them.
+
 The split works because the reusable layer never imports project content. One file is split
 down the middle: `CLAUDE.md`. For this file, **show the PI the diff and let the PI decide
 section by section.** Never merge it automatically.

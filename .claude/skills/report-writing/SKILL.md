@@ -68,6 +68,10 @@ mechanical requirements where they serve that reader: in an appendix.
 - **Keep the running text for the reader.** Do not put these items in it: session codes,
   decision numbers, process history, provenance blocks after each equation, or narration about
   the repository. Put provenance in the verification appendix.
+- **Respect the terms of other people's material.** The project offers reports under CC BY 4.0
+  (`README.md`, section Copying). A table, figure, dataset or long quotation from the source or
+  from a benchmark keeps the terms of the people who made it. Before a report goes out, check each
+  such item. Cite it. Prefer a table or figure that this project recomputed with its own code.
 - **Soften nothing.** Open issues stay open. State the discrepancies. Do not smooth them. Never
   attribute the extensions of the project to the source. Never attribute the results of the
   source to this project. In a manuscript this is a misattribution. It is not a bookkeeping slip.
