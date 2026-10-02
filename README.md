@@ -66,10 +66,13 @@ In both cases Claude registers the paper. You do not edit `papers/sources.yaml`.
 then asks you for these items:
 
 - the project name
-- what you want to establish
-- what counts as the new work
-- which tool owns which topic
+- your name for the documents, and the licence
+- what you want to establish, including the new work beyond the paper
+- the topics, and which tool owns which topic
 - which libraries you need
+- which equations, tables and figures of the paper you want to reproduce
+
+The full list of questions is in section 1 of `.claude/skills/init-paper/SKILL.md`.
 
 It then fills in the placeholders, writes the ownership registry and creates the first prompt
 record. It tells you what remains. It refuses to run a second time. Then run `/source-audit`.
