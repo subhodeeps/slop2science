@@ -608,7 +608,10 @@ def corner_plot():
        they cross. Amber is the one colour that is near olive (28 deg and L* 68 against 64), so
        the olive lines are dashed and the amber lines are solid with square markers.
     4. Each marker has the ink tone of its own colour as its edge, so the squares show on the
-       plum fills. No colour outside the palettes is used, and no grey.
+       plum fills. Every colour of the data is from the palettes. The neutrals of the style are
+       not: black (frame, ticks, text), white (background, legend box) and light grey (the
+       legend frame). The plum fills are the main tone at four opacities, which blend it with
+       white, so they are tints of plum and not exact palette colours.
     The hue numbers come from the main tones in amore.PALETTES; run colorsys.rgb_to_hsv on them
     to check.
     """
