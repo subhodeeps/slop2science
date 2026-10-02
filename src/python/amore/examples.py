@@ -4,6 +4,15 @@ The line plots and the colour maps have one plot area (amore.figure), saved with
 The corner plot, the standard map and the pendulum strip have their own sizes.
 
 Run: make plot-examples
+
+Copyright (c) 2026 Subhodeep Sarkar. Licence: MIT (LICENSE-MIT.txt in the repository root).
+
+    Name:         Subhodeep Sarkar
+    Affiliation:  IIT Gandhinagar
+    Contact:      subhodeep.sarkar1@gmail.com
+    Date:         August 2026
+    GitHub:       https://github.com/subhodeeps/amore.mplstyle
+    Website:      https://subhodeeps.github.io/
 """
 import sys
 from pathlib import Path
@@ -27,7 +36,10 @@ def example_tag(feature):
 
 
 def wave_packet():
-    """Blue palette: a signal and a reference, a shaded transient, an inset and an arrow."""
+    """Blue palette: a mock black-hole ringdown signal and a mock echo signal from an exotic
+    compact object (ECO), a shaded prompt-ringdown region, an inset and an arrow. Loosely based
+    on Fig. 9 of Living Rev. Relativ. 22 (2019) 4. This is a schematic plot, not the output of an
+    actual simulation."""
     c = amore.palette("blue")
     t = np.linspace(0, 60, 6000)
     first = np.exp(-((t - 8) / 3) ** 2) * np.sin(2.2 * t)
@@ -35,11 +47,11 @@ def wave_packet():
                 for k in range(1, 4))
 
     fig, ax = amore.figure()
-    ax.plot(t, first, color=c["ink"], ls="--", label="reference", zorder=3)
-    ax.plot(t, first + later, color=c["main"], label="signal", zorder=2)
+    ax.plot(t, first, color=c["ink"], ls="--", label="mock BH ringdown", zorder=3)
+    ax.plot(t, first + later, color=c["main"], label="mock ECO ringdown", zorder=2)
     ax.set_xlim(0, 60)
     ax.set_ylim(-1.2, 1.8)
-    amore.shade(ax, 0, 15, "transient", y=1.3, palette="blue")
+    amore.shade(ax, 0, 15, "mock prompt ringdown", y=0.9, palette="blue")
     ax.annotate("", xy=(22, -0.75), xytext=(36, -0.75),
                 arrowprops=dict(arrowstyle="<->", lw=0.8, color="black", shrinkA=0, shrinkB=0))
     ax.text(29, -0.82, r"$\Delta t$", ha="center", va="top", fontsize=10)
@@ -64,7 +76,6 @@ def tortoise_to_r(rstar):
 def potential_with_bump():
     """Teal, amber and plum (close to a triad): the Regge-Wheeler potential, and the same
     potential with a small Poschl-Teller or Gaussian bump at a distance a from the peak.
-
     The barrier has a vertical gradient fill. The dashed curve is the effective potential of
     null geodesics, V_null = (1 - 2M/r) L^2 / r^2, from the radial equation
     (dr/dlambda)^2 + V_null = E^2. A null ray depends only on b = L/E, so the scale of V_null is
@@ -73,8 +84,9 @@ def potential_with_bump():
     r_* = 1.5 + log 0.5), marked with a dot. The Regge-Wheeler peak is at r = 1.64 for l = 2;
     for large l the potential tends to V_null with L^2 = l (l + 1). The labels at the two ends
     show that r_* -> -inf at the horizon r = 2M and r_* -> +inf at spatial infinity."""
+    from matplotlib.ticker import FuncFormatter, MultipleLocator
     teal, amber, plum = (amore.palette(n) for n in ("teal", "amber", "plum"))
-    rstar = np.linspace(-10, 50, 6000)
+    rstar = np.linspace(-15, 50, 6000)
     r = tortoise_to_r(rstar)
     v_rw = (1 - 1 / r) * (6 / r ** 2 - 3 / r ** 3)           # l = 2, spin 2, units 2M = 1
     r_photon = 1.5                                            # r = 3M, units 2M = 1
@@ -87,13 +99,13 @@ def potential_with_bump():
     at = lambda xs, v: np.interp(xs, rstar, v)                # noqa: E731
 
     fig, ax = amore.figure()
-    ax.set_xlim(-10, 50)
+    ax.set_xlim(-15, 50)
     ax.set_ylim(-0.17, 0.82)
     # The gradient fill: a vertical ramp from the shade tone at V = 0 to the light tone at the
     # peak, clipped to the area under the potential.
     under = ax.fill_between(rstar, v_rw, color="none", lw=0)
     ramp = LinearSegmentedColormap.from_list("ramp", [teal["shade"], teal["light"], teal["main"]])
-    fill = ax.imshow(np.linspace(0, 1, 256)[:, None], extent=(-10, 50, 0, v_rw.max()),
+    fill = ax.imshow(np.linspace(0, 1, 256)[:, None], extent=(-15, 50, 0, v_rw.max()),
                      origin="lower", aspect="auto", cmap=ramp, vmin=0, vmax=1.35, zorder=1)
     fill.set_clip_path(under.get_paths()[0], transform=ax.transData)
     ax.plot(rstar, v_null, color=teal["ink"], lw=1.0, ls="--", zorder=4,
@@ -101,11 +113,11 @@ def potential_with_bump():
     x_ps, y_ps = r_photon + np.log(r_photon - 1), v_rw.max()
     ax.plot([x_ps], [y_ps], ls="none", marker="o", ms=4.5, color=teal["ink"], mec="white",
             mew=0.9, zorder=5)
-    ax.text(3.6, 0.555, r"$r = 3M$", color=teal["ink"], fontsize=9)
-    ax.annotate(r"\texttt{photon sphere}", xy=(x_ps, y_ps), xytext=(3.6, 0.615),
+    ax.text(-13.4, 0.565, r"$r = 3M$", color=teal["ink"], fontsize=9)
+    ax.annotate(r"\texttt{photon sphere}", xy=(x_ps, y_ps), xytext=(-13.4, 0.615),
                 fontsize=8, color=teal["ink"],
                 arrowprops=dict(arrowstyle="->", lw=0.7, color=teal["ink"], shrinkA=2, shrinkB=3))
-    ax.text(-8.9, -0.025, r"$r \to 2M$", color=teal["ink"], fontsize=9, va="top")
+    ax.text(-13.9, -0.025, r"$r \to 2M$", color=teal["ink"], fontsize=9, va="top")
     ax.text(48.9, -0.025, r"$r \to \infty$", color=teal["ink"], fontsize=9, va="top", ha="right")
     ax.plot(rstar, v_rw, color=teal["main"], lw=1.4, zorder=4, label=r"Regge--Wheeler, $\ell = 2$")
     ax.annotate("", xy=(0, -0.05), xytext=(b, -0.05),
@@ -115,12 +127,32 @@ def potential_with_bump():
 
     window = (rstar >= 36) & (rstar <= 44)
     lo, hi = v_rw[window].min(), v_g[window].max()
-    pad = 0.12 * (hi - lo)
-    ins = amore.inset(ax, [0.43, 0.30, 0.54, 0.57], xlim=(36, 44), ylim=(lo - pad, hi + pad))
-    ins.set_yticklabels([])
-    ins.tick_params(axis="x", labeltop=True, labelbottom=False)   # keep the zoom lines clear
+    # The y range of the inset runs from one whole tick to another (every 0.001), with a quarter
+    # of a step of free space below the lowest tick and above the highest, so that the ticks are
+    # evenly spaced and the frame does not touch the end ticks.
+    step = 0.001
+    t_lo = np.floor((lo - 0.1 * (hi - lo)) / step) * step     # lowest tick, 0.003
+    t_hi = np.ceil((hi + 0.1 * (hi - lo)) / step) * step      # highest tick, 0.009
+    y_lo, y_hi = t_lo - 0.25 * step, t_hi + 0.25 * step
+    # The inset starts at 0.47, to the right of where the curve of the main plot passes the
+    # y labels of the inset.
+    ins = amore.inset(ax, [0.47, 0.30, 0.50, 0.57], xlim=(36, 44), ylim=(y_lo, y_hi))
+    ins.set_zorder(10)
+    ins.patch.set_facecolor("white")
+    ins.patch.set_alpha(1)
+    for spine in ins.spines.values():
+        spine.set_zorder(10)
     ins.grid(False)
-    ins.fill_between(rstar, lo - pad, v_rw, color=teal["shade"], lw=0)       # under the bare V
+    ins.set_axisbelow(False)          # the style draws ticks below the data, under the fills
+    ins.xaxis.set_major_locator(MultipleLocator(1))
+    ins.yaxis.set_major_locator(MultipleLocator(step))
+    ins.yaxis.set_major_formatter(                           # 3 x 10^-3 instead of 0.003
+        FuncFormatter(lambda v, _: r"$%d\!\times\!10^{-3}$" % round(v / 1e-3)))
+    ins.tick_params(axis="both", which="both", direction="in", top=True, bottom=True, left=True,
+                    right=True, zorder=10)
+    ins.tick_params(axis="y", which="major", labelleft=True, labelright=False, labelsize=8)
+    ins.tick_params(axis="x", which="major", labeltop=True, labelbottom=False, labelsize=8)
+    ins.fill_between(rstar, y_lo, v_rw, color=teal["shade"], lw=0)           # under the bare V
     ins.fill_between(rstar, v_rw, v_g, color=plum["light"], alpha=0.55, lw=0)  # Gaussian area
     ins.fill_between(rstar, v_rw, v_pt, color=amber["light"], alpha=0.9, lw=0)  # P-T area
     ins.plot(rstar, v_rw, color=teal["ink"], ls=":", lw=1.1)
@@ -142,6 +174,7 @@ def potential_with_bump():
     ins.annotate("", xy=(left, ys), xytext=(right, ys), arrowprops=dict(arrow, color=plum["ink"]))
     ins.text((left + b) / 2, ys + 0.03 * (hi - lo), r"$\sigma$", color=plum["ink"], ha="center",
              fontsize=11)
+
 
     def along(xs, v, dy):
         """Position and angle of a label that follows curve v at xs, offset dy in data units."""
@@ -686,10 +719,10 @@ def standard_map_image(k, phi_range=(-np.pi, np.pi), p_range=(-np.pi, np.pi), sh
     [-pi, pi]^2 (phi is the horizontal direction of the image and p the vertical one). shape: the
     image size in pixels, (rows, columns); the pixels are square only if
     rows / columns = (p_max - p_min) / (phi_max - phi_min). grid: the (columns, rows) of the grid
-    of initial points, at the centres of equal cells of the window. Each orbit is run for `steps` steps and
-    every point of it that falls in the strip is painted, so every curve of the picture is
-    filled in. Returns an array of shape (rows, columns, 3), with row 0 at p = p_min. Pixels that
-    no orbit visits stay white.
+    of initial points, at the centres of equal cells of the window. Each orbit is run for `steps`
+    steps and every point of it that falls in the window is painted, so every curve of the
+    picture is filled in. Returns an array of shape (rows, columns, 3), with row 0 at p = p_min.
+    Pixels that no orbit visits stay white.
 
     Which orbit gets which colour, in three steps:
     1. A tangent vector evolves with the map and gives the finite-time Lyapunov exponent of the
@@ -871,12 +904,12 @@ def pendulum_portrait():
     is the field used here. Its code block draws the streamlines with `streamplot` on a 30 x 30
     grid with `density = 2`, and the orbits with `odeint` for t from 0 to 45: 4 rotations from
     x = 5 pi with y = -2 ... -1, 4 from x = -5 pi with y = 1 ... 2, and 10 librations from x = 0
-    with y = -1.95 ... 1.95 This function takes the same
-    numbers, except that every orbit has 4001 points (the post uses 300 and 1000, which makes
-    the curves rough). The solver is `solve_ivp` with DOP853 and not the post's `odeint`, and
-    the arrowheads are drawn here and not by the helper `plotarrows` of the post. The post uses a dark background and the colours #52adc8 and #ee5f5b, and ends
-    with `plt.axis('off')`. This figure uses the amore palettes and keeps the amore frame and
-    the tick labels. The size is 10 x 2.5 in (4 : 1 like the 40 x 10 of the post), the same
+    with y = -1.95 ... 1.95. This function takes the same numbers, except that every orbit has
+    4001 points (the post uses 300 and 1000, which makes the curves rough). The solver is
+    `solve_ivp` with DOP853 and not the post's `odeint`, and the arrowheads are drawn here and
+    not by the helper `plotarrows` of the post. The post uses a dark background and the colours
+    #52adc8 and #ee5f5b, and ends with `plt.axis('off')`. This figure uses the amore palettes
+    and keeps the amore frame and the tick labels. The size is 10 x 2.5 in (4 : 1 like the 40 x 10 of the post), the same
     scale of inches as the other examples, so the picture fills the README width. The numbers
     fit the physics: the rotations start at x = +-5 pi, where E = y^2 / 2 + 1 > 1 for y between
     1 and 2, and the librations start at x = 0 with E = y^2 / 2 - 1 < 1 for |y| < 2. The
