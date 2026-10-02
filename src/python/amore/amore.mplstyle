@@ -2,6 +2,15 @@
 # Inspired by the Physical Review style of hosilva/physrev_mplstyle (Computer Modern
 # through LaTeX, ticks inside on all four sides, minor ticks), with muted pastel colours,
 # a heavy frame and a light dotted grid. amore/__init__.py has the named palettes.
+#
+# Copyright (c) 2026 Subhodeep Sarkar. Licence: MIT (LICENSE-MIT.txt in the repository root).
+#
+#     Name:         Subhodeep Sarkar
+#     Affiliation:  IIT Gandhinagar
+#     Contact:      subhodeep.sarkar1@gmail.com
+#     Date:         August 2026
+#     GitHub:       https://github.com/subhodeeps/amore
+#     Website:      https://subhodeeps.github.io/
 
 ### Default colour cycle: one deep ink, then muted pastels (blue, red, green, ...)
 axes.prop_cycle : cycler('color', ['2e1a6e', '5c9dc7', 'd2737f', '6fa98a', 'e0a458', '8678b2', '7aa6a6', 'c9b458'])

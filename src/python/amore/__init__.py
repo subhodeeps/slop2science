@@ -14,6 +14,15 @@ The functions below add what a style file cannot set: named palettes, a colour m
 palette (and a diverging map for a signed field), a shaded band with a monospace label, an inset, a provenance tag, and saving to PDF
 and PNG together.
 The style needs LaTeX (latex and dvipng) for the text. `make check-env` reports them.
+
+Copyright (c) 2026 Subhodeep Sarkar. Licence: MIT (LICENSE-MIT.txt in the repository root).
+
+    Name:         Subhodeep Sarkar
+    Affiliation:  IIT Gandhinagar
+    Contact:      subhodeep.sarkar1@gmail.com
+    Date:         August 2026
+    GitHub:       https://github.com/subhodeeps/amore
+    Website:      https://subhodeeps.github.io/
 """
 from pathlib import Path
 
