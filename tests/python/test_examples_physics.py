@@ -190,3 +190,13 @@ def test_standard_map_image_window_rows_are_p():
     for row in img:
         colours = {tuple(np.round(px * 255).astype(int)) for px in row} - {(255, 255, 255)}
         assert len(colours) == 1
+
+
+def test_pendulum_orbits_conserve_energy_and_have_the_right_kinds():
+    """pendulum_orbits() keeps E = y^2 / 2 - cos(x); librations stay in |x| < pi, rotations run on."""
+    x, y = examples.pendulum_orbits([0.0, 0.0, 5 * np.pi, -5 * np.pi], [1.95, -0.5, -1.0, 2.0], 45.0, 1000)
+    energy = y ** 2 / 2 - np.cos(x)
+    assert np.max(np.abs(energy - energy[:, :1])) < 1e-9
+    assert np.all(np.abs(x[:2]) < np.pi)                    # librations: inside the separatrix
+    assert np.all(np.diff(x[2]) < 0) and np.all(np.diff(x[3]) > 0)   # rotations: one direction
+    assert np.max(np.abs(energy[:, 0] - np.array([1.95 ** 2 / 2 - 1, 0.125 - 1, 1.5, 3.0]))) < 1e-12

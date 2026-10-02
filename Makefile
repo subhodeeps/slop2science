@@ -99,7 +99,7 @@ codegen: ## run the export stages for $(TOPIC) -> symbolic/generated/<lang>/
 codegen-check: codegen ## regenerate hand-off code and fail on any diff from git
 	@git diff --exit-code -- symbolic/generated/ && echo "generated code reproducible"
 
-plot-examples: ## regenerate the amore example figures and palette chart in docs/figures/ (needs LaTeX and corner)
+plot-examples: ## regenerate the amore example figures and palette chart in docs/figures/ (needs LaTeX, scipy and corner)
 	@scripts/py src/python/amore/examples.py
 
 report: ## render reports/$(TOPIC)_report.md, or any Markdown file (FILE=path), to LaTeX and PDF in reports/

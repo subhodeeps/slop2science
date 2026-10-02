@@ -825,6 +825,109 @@ def chirikov_map():
     plt.close(fig)
 
 
+def pendulum_orbits(x0, y0, t_end, steps):
+    """Orbits of the undamped pendulum, x' = y and y' = -sin(x), with scipy's solve_ivp.
+
+    x0, y0: arrays of starting points. Returns the arrays x and y of shape (len(x0), steps + 1)
+    at equal times from 0 to t_end. The method is DOP853, the Dormand-Prince method of order 8,
+    with rtol = atol = 1e-12, and the solution is read at `steps + 1` equal times. The energy
+    y^2 / 2 - cos(x) is constant along an orbit; tests/python/test_examples_physics.py checks
+    that the solver keeps it to better than 1e-9 for t_end = 45.
+    """
+    from scipy.integrate import solve_ivp
+    times = np.linspace(0.0, t_end, steps + 1)
+    xs, ys = [], []
+    for start_x, start_y in zip(np.atleast_1d(x0), np.atleast_1d(y0)):
+        sol = solve_ivp(lambda t, state: [state[1], -np.sin(state[0])], (0.0, t_end),
+                        [start_x, start_y], method="DOP853", t_eval=times, rtol=1e-12, atol=1e-12)
+        xs.append(sol.y[0])
+        ys.append(sol.y[1])
+    return np.array(xs), np.array(ys)
+
+
+def pendulum_portrait():
+    """Phase portrait of the pendulum in a long strip: streamlines in teal, orbits in red.
+
+    The pendulum is x' = y, y' = -sin(x) (x is the angle and y the angular velocity, in units
+    where g / L = 1), drawn for -4 pi < x < 4 pi and -3 < y < 3. The streamlines (teal) show the
+    flow on a 30 x 30 grid. The red curves are orbits with arrowheads: 10 librations (closed
+    curves around the stable points, started at x = 0 with y = -1.95 ... 1.95, inside the
+    separatrix, which has |y| = 2 at x = 0) and 8 rotations (the curves that run from one side
+    to the other, started at x = 5 pi and -5 pi, y = -2 ... -1 and 1 ... 2; 4 of each). The
+    separatrix, with the energy E = 1, is the curve between the two kinds. The orbits are run
+    to t = 45 by pendulum_orbits() (scipy's DOP853), and drawn through 4001 points each.
+
+    Source. The field, the layout and the choice of orbits are from the last code block of
+    "Solving ODEs using ODEINT" by Subhodeep Sarkar, 6 July 2026, a post on the author's blog
+    (licence CC BY 4.0; I was not given its address). The post writes the pendulum as
+    x'' + sin x = 0 (its Eq. 1) and as the system x' = y, y' = -sin x (its Eqs. 3 and 4), which
+    is the field used here. Its code block draws the streamlines with `streamplot` on a 30 x 30
+    grid with `density = 2`, and the orbits with `odeint` for t from 0 to 45: 4 rotations from
+    x = 5 pi with y = -2 ... -1, 4 from x = -5 pi with y = 1 ... 2, and 10 librations from x = 0
+    with y = -1.95 ... 1.95 This function takes the same
+    numbers, except that every orbit has 4001 points (the post uses 300 and 1000, which makes
+    the curves rough). The solver is `solve_ivp` with DOP853 and not the post's `odeint`, and
+    the arrowheads are drawn here and not by the helper `plotarrows` of the post. The post uses a dark background and the colours #52adc8 and #ee5f5b, and ends
+    with `plt.axis('off')`. This figure uses the amore palettes and keeps the amore frame and
+    the tick labels. The size is 10 x 2.5 in (4 : 1 like the 40 x 10 of the post), the same
+    scale of inches as the other examples, so the picture fills the README width. The numbers
+    fit the physics: the rotations start at x = +-5 pi, where E = y^2 / 2 + 1 > 1 for y between
+    1 and 2, and the librations start at x = 0 with E = y^2 / 2 - 1 < 1 for |y| < 2. The
+    separatrix has E = 1.
+
+    Colours. Teal (181 deg) and red (352 deg) are 171 deg apart, nearly complementary. The
+    streamlines are the context, so they are teal (cool, receding) and thin. The orbits are the
+    subject, so they are red (warm, in front) and thicker, in the main tone, with arrowheads in
+    the ink tone. Teal and red have the same lightness (L* 60 and 59), so the width of the lines
+    and the arrowheads carry the difference as well as the hue (guideline 5 of the plotting
+    skill).
+    """
+    teal, red = amore.palette("teal"), amore.palette("red")
+    xmin, xmax, ymin, ymax = -4 * np.pi, 4 * np.pi, -3.0, 3.0
+    width_in, height_in, left, bottom, right, top = 10.0, 2.5, 0.65, 0.5, 0.15, 0.12
+    fig = plt.figure(figsize=(width_in, height_in))
+    ax = fig.add_axes([left / width_in, bottom / height_in, (width_in - left - right) / width_in,
+                       (height_in - bottom - top) / height_in])
+    xx, yy = np.meshgrid(np.linspace(xmin, xmax, 30), np.linspace(ymin, ymax, 30))
+    ax.streamplot(xx, yy, yy, -np.sin(xx), density=2, color=teal["main"], linewidth=0.5,
+                  arrowsize=0.6)
+    steps = 4000                                  # points along each orbit, so that the curves are smooth
+    seeds = ([(5 * np.pi, y0, steps) for y0 in np.linspace(-2.0, -1.0, 4)]
+             + [(-5 * np.pi, y0, steps) for y0 in np.linspace(1.0, 2.0, 4)]
+             + [(0.0, y0, steps) for y0 in np.linspace(-1.95, 1.95, 10)])
+    inch = (width_in - left - right) / (xmax - xmin), (height_in - bottom - top) / (ymax - ymin)
+    for x0, y0, steps in seeds:
+        xs, ys = (a[0] for a in pendulum_orbits([x0], [y0], 45.0, steps))
+        ax.plot(xs, ys, color=red["main"], lw=1.3, zorder=3)
+        # Arrowheads at equal distances along the curve, measured in inches on the page. The
+        # orbit of a libration with y0 < 0 is the curve of the one with -y0, so it gets none, and
+        # a libration gets them for its first lap only (the second crossing of x = 0).
+        length = np.concatenate([[0], np.cumsum(np.hypot(np.diff(xs) * inch[0], np.diff(ys) * inch[1]))])
+        if x0 == 0.0:
+            last = np.sign(xs[1:]) != np.sign(xs[:-1])
+            last = np.flatnonzero(last[1:])[1] + 2 if y0 > 0 else 0
+            length_end = length[last]
+        else:
+            length_end = length[-1]
+        for at in np.arange(0.9, length_end, 1.8):
+            i = np.searchsorted(length, at)
+            if i + 1 < len(xs) and xmin < xs[i] < xmax and ymin < ys[i] < ymax:
+                ax.add_patch(FancyArrowPatch((xs[i], ys[i]), (xs[i + 1], ys[i + 1]),
+                                             arrowstyle="-|>", mutation_scale=7, lw=0,
+                                             color=red["ink"], zorder=4))
+    ax.set_xlim(xmin, xmax)
+    ax.set_ylim(ymin, ymax)
+    ax.set_xticks(np.pi * np.arange(-4, 5, 2), [r"$-4\pi$", r"$-2\pi$", r"$0$", r"$2\pi$", r"$4\pi$"])
+    ax.set_yticks([-2, 0, 2])
+    ax.grid(False)
+    ax.set_xlabel(r"$x$")
+    ax.set_ylabel(r"$y = x'$")
+    # The tag goes in the margin under the plot, so that it covers no orbit.
+    fig.text(1 - right / width_in, 0.05 / height_in, TAG, ha="right", va="bottom", fontsize=8)
+    amore.save(fig, OUT / "amore_pendulum", dpi=README_DPI, formats=("pdf", "png"), exact_size=True)
+    plt.close(fig)
+
+
 def palette_chart():
     """Every colour of amore: one row for each palette, one swatch for each tone with its hex
     code and its lightness L*, and the colour map of the palette. Shown in README.md."""
@@ -885,5 +988,6 @@ if __name__ == "__main__":
     kerr_curvature()
     corner_plot()
     chirikov_map()
+    pendulum_portrait()
     palette_chart()
     print(f"wrote the example figures and the palette chart in {OUT}")

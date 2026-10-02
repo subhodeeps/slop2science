@@ -52,6 +52,10 @@ say no, the decision is final. The charter states this rule.
   <img src="docs/figures/amore_chirikov.png" width="27.5%" alt="Example phase-space plot of the Chirikov standard map at K = 0.971635, a tall strip around the big island, in all 32 colours of the eight palettes: bands of invariant curves, and the speckled chaotic sea">
 </p>
 
+<p align="center">
+  <img src="docs/figures/amore_pendulum.png" width="98%" alt="Example phase portrait of the pendulum in a long strip: teal streamlines of the flow, and red orbits with arrowheads, closed curves inside the separatrix and rotations outside it">
+</p>
+
 `docs/failure_modes.md` lists the failure that each feature prevents and the cost of each fix.
 
 ## Quick start
