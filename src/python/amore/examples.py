@@ -173,7 +173,79 @@ def mp_test_field(holes, charges):
     Phi (per unit e', so Phi = -A_0 of a charge e' = 1 for each charge, summed with the signs),
     its gradient (three arrays) and U. The formula is Eqs. (4.9) and (4.17) of Frolov and Zelnikov,
     Phys. Rev. D 85, 064032 (2012), with the coefficients C_k of the pole terms taken from the
-    condition that no horizon changes its charge (see black_hole_charges() for the reason).
+    condition that no horizon changes its charge. That condition differs from Eq. (4.14) of the
+    paper. This result contradicts Eq. (4.14) of the paper. Someone must check it again.
+
+    Derivation of the correction. Use e' = 1, D = 4, G = c = 1. Let rho_k = |x - x_k|,
+    rho'_k = |x' - x_k|, d_jk = |x_j - x_k|, R = |x - x'|.
+
+    1. Background: U = 1 + sum_k M_k / rho_k, and A_0 = 1/U. Static Maxwell equation in the
+       background, away from the sources: d_a (U^2 d_a A_0) = 0 (a = 1, 2, 3, flat derivatives).
+    2. Ansatz of the paper (Eqs. 4.9, 4.17): A_0 = -psi / (U(x) U(x')), with
+       psi = 1/R + sum_k C_k / rho_k. This solves step 1 for all C_k. With A_0 = -psi / (U U'),
+       U^2 d_a (psi/U) = U d_a psi - psi d_a U, so the divergence is U lap(psi) - psi lap(U).
+       Both U and psi are harmonic away from their poles, so it is zero.
+    3. Charge of hole k: Q_k = (1/4 pi) * (flux of U^2 d_n A_0 through a sphere rho = r0 around
+       x_k), with r0 -> 0. The divergence of step 1 is zero, so the flux does not depend on r0.
+       Check with the background A_0 = 1/U: U^2 d_rho (1/U) = -d_rho U = M_k / rho^2, so Q_k = M_k.
+    4. Local expansion near hole k (rho = rho_k -> 0):
+           U   = M_k / rho + u_k + O(rho),          u_k = 1 + sum_{j != k} M_j / d_jk,
+           psi = C_k / rho + s_k + O(rho),          s_k = 1/rho'_k + sum_{j != k} C_j / d_jk.
+       Then psi / U = (C_k + rho s_k) / (M_k + rho u_k) = (1/M_k) [C_k + rho (s_k - C_k u_k / M_k)]
+       + O(rho^2). The terms that depend on angle enter at order rho^2 and add nothing to the
+       flux. Put A_0 = -psi / (U U') and U^2 rho^2 -> M_k^2, and the flux gives
+           Q_k = - (M_k s_k - C_k u_k) / U'.
+       The background charge M_k stays, so the change of charge of hole k is
+           dQ_k = - (M_k s_k - C_k u_k) / U',   U' = U(x') = 1 + sum_k M_k / rho'_k.
+    5. Eq. (4.14) of the paper: C_k = M_k / rho'_k. Put it in step 4:
+           M_k s_k - C_k u_k = M_k sum_{j != k} (M_j / d_jk) (1/rho'_j - 1/rho'_k),
+           dQ_k = - (M_k / U') sum_{j != k} (M_j / d_jk) (1/rho'_j - 1/rho'_k).
+       This is zero for one hole, and when all rho'_k are equal. Otherwise it is not zero. The
+       dQ_k sum to zero, because the terms for (j, k) and (k, j) cancel in pairs (that is why the
+       total charge is right).
+    6. Hand check with two holes, M_1 = 1 and M_2 = 0.7, at x_1 = (1.5, -0.5, 1/3) and
+       x_2 = (-1.0, 0.5, -0.25), charge at x' = (0.2, -1/3, 0.5). Then rho'_1 = 1.32119,
+       rho'_2 = 1.64224, d_12 = 2.75505, U' = 1 + 1/1.32119 + 0.7/1.64224 = 2.18314, and
+           dQ_1 = - (1 * 0.7 / (2.18314 * 2.75505)) * (1/1.64224 - 1/1.32119) = +0.01722.
+    7. Condition dQ_k = 0 for every k, with general C_k (step 4: M_k s_k = C_k u_k):
+           u_i C_i - M_i sum_{j != i} C_j / d_ij = M_i / rho'_i       (i = 1 ... N).
+       For N = 1 it gives C_1 = M_1 / rho'_1, the paper's value. Sum the N equations. The
+       terms M_j C_i / d_ij and M_i C_j / d_ij cancel in pairs, so sum_k C_k = sum_k M_k / rho'_k
+       = U' - 1. Then psi -> U' / r at infinity, A_0 -> -1/r, and the charge at infinity is
+       exactly e' = 1. That is the check that the paper's other equations also hold.
+    8. Numbers for three holes (the test in tests/python/test_examples_physics.py uses them):
+       M = (1, 0.7, 0.5) at x_1 = (1.5, -0.5, 1/3), x_2 = (-1.0, 0.5, -0.25), x_3 = (0.2, 1.6, 0.9),
+       charge at x' = (0.2, -1/3, 0.5).
+           rho'     = 1.32119  1.64224  1.97428        d_12, d_13, d_23 = 2.7550  2.5340  1.9931
+           u        = 1.4514   1.61383  1.74584        U' = 2.43640
+           C paper  = 0.75689  0.42625  0.25326        (sum 1.43640 = U' - 1)
+           dQ paper = +0.03571 -0.00805 -0.02766       (sum 0)
+           C fixed  = 0.70955  0.43857  0.28828        (sum 1.43640; dQ = 0 for all three)
+    9. Numerical check of the flux, independent of steps 3 to 5. Take the field of this
+       function (the same code as the figure). For each hole, sum U^2 d_n A_0 over a sphere of
+       radius r0 around x_k (Gauss-Legendre in cos(theta), 80 points; uniform in phi, 160 points),
+       divide by 4 pi, and subtract M_k. The result is the dQ_k of step 8 for the C paper values
+       and zero for the C fixed values, with the same digits for r0 = 0.002 to 0.2.
+
+    Script that reproduces steps 5 to 8 (numpy only; run it after the import below):
+
+        import numpy as np
+        M = np.array([1.0, 0.7, 0.5])
+        X = np.array([[1.5, -0.5, 1/3], [-1.0, 0.5, -0.25], [0.2, 1.6, 0.9]])
+        Y = np.array([0.2, -1/3, 0.5])
+        rp = np.linalg.norm(X - Y, axis=1)                       # rho'_k
+        d = np.linalg.norm(X[:, None] - X[None], axis=2); np.fill_diagonal(d, np.inf)
+        Up = 1 + np.sum(M / rp)                                  # U'
+        u = 1 + (M[None, :] / d).sum(axis=1)                     # u_k
+        dQ = lambda C: -(M * (1 / rp + (C[None, :] / d).sum(axis=1)) - C * u) / Up
+        C_paper = M / rp                                         # Eq. (4.14)
+        A = np.diag(u) - M[:, None] / d                          # step 7
+        C_fixed = np.linalg.solve(A, M / rp)
+        print(rp, d[0, 1], d[0, 2], d[1, 2], u, Up)
+        print(C_paper, dQ(C_paper), dQ(C_paper).sum())
+        print(C_fixed, dQ(C_fixed))
+
+    The function below solves the system of step 7 for each charge.
     """
     holes = np.asarray(holes, float)
     pos, mass = holes[:, :3], holes[:, 3]
@@ -226,18 +298,20 @@ def black_hole_charges():
     the plot. The dashed line is Phi = 0, the cross is a point where E = 0 (a saddle of Phi), and
     the contours are labelled in units of e' / M.
 
-    A correction to the paper. Eq. (4.14) gives C_k = M_k / rho'_k (rho'_k = |x' - x_k|, b = 0) and
-    states that then the charges of the holes do not change. That holds for one hole, or when all
-    the rho'_k are equal. For several holes the printed C_k give hole k the extra charge
+    A correction to the paper. Eq. (4.14) gives C_k = M_k / rho'_k and states that then the
+    charges of the holes do not change. That holds for one hole, or when all the rho'_k are equal.
+    For several holes the printed C_k give hole k the extra charge
         dQ_k = - (M_k / U(x')) sum_{j != k} (M_j / d_jk) (1 / rho'_j - 1 / rho'_k)  (units of e'),
-    with d_jk = |x_j - x_k|, and these dQ_k sum to zero. For three holes with M = 1, 0.7 and 0.5
-    and a charge at the point (0.2, -1/3, 0.5), the flux of U^2 grad A_0 through a small sphere
-    gives
-    +0.036, -0.008 and -0.028 (both from the flux and from this formula, and the same at every
-    radius). This code takes the C_k that make every dQ_k zero. They solve the linear system
+    and these dQ_k sum to zero. For three holes with M = 1, 0.7 and 0.5 and a charge at
+    (0.2, -1/3, 0.5), the flux of U^2 grad A_0 through a small sphere gives +0.036, -0.008 and
+    -0.028 (both from the flux and from this formula, and the same at every radius). This code
+    takes the C_k that make every dQ_k zero. They solve the linear system
         u_i C_i - M_i sum_{j != i} C_j / d_ij = M_i / rho'_i,   u_i = 1 + sum_{j != i} M_j / d_ij.
-    That is the condition that Eq. (4.12) of the paper expresses. For one hole it gives the paper's
-    C_k. The C_k then sum to U(x') - 1, which gives exactly the charge e' at infinity.
+    For one hole it gives the paper's C_k. The C_k then sum to U(x') - 1, which gives exactly the
+    charge e' at infinity. The full derivation, the numbers, and a script that reproduces them
+    are in the docstring of mp_test_field().
+
+    This result contradicts Eq. (4.14) of the paper. Someone must check it again.
 
     Checked independently, with sympy and not with the code below: the metric and A_0 = 1/U
     solve the Einstein-Maxwell equations (residual 6e-32 at 6 points); the potential above solves
