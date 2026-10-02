@@ -35,7 +35,7 @@ say no, the decision is final. The charter states this rule.
 - Simplified Technical English. All prose follows ASD-STE100: the documents, the code comments,
   the commit messages and what Claude writes to you. A lint in `make check` enforces the
   measurable rules.
-- One plot style, `amore`, for every figure. I developed it over the past few years for the
+- One plot style, [`amore`](https://github.com/subhodeeps/amore.mplstyle), for every figure. I developed it over the past few years for the
   figures in my own papers.
 
 <p align="center">
@@ -129,11 +129,11 @@ I use Mathematica, Python and Julia. The template has a configuration for all th
   make report FILE=README.md      # or: make report TOPIC=<topic>
   ```
 
-- Figures use `amore` (`src/python/amore/`). Labels use LaTeX. Notes inside a plot use a monospace
+- Figures use [`amore`](https://github.com/subhodeeps/amore.mplstyle) (`src/python/amore/`). Labels use LaTeX. Notes inside a plot use a monospace
   font. A colour bar sits above the plot, outside it, and the plot keeps the same size as a line
   plot. The `plotting` skill applies the style, and Claude looks at each rendered figure before it
   calls the figure done. `make check` fails if a plotting script does not use the style.
-  `make plot-examples` makes the four figures under Features and the chart below again, from
+  `make plot-examples` makes the seven figures under Features and the chart below again, from
   `src/python/amore/examples.py`.
 - `amore` has eight palettes of four tones, 32 colours in total. It also has a diverging
   red-to-green map and a pastel parula map, `fakeparulapastel`. The palettes go round the colour
@@ -207,6 +207,8 @@ Other repositories contributed parts:
 
 - [hosilva/physrev_mplstyle](https://github.com/hosilva/physrev_mplstyle) — its Physical Review
   style sheet was a starting point for `amore`.
+- [subhodeeps/amore.mplstyle](https://github.com/subhodeeps/amore.mplstyle) — the home of the `amore` style itself. This
+  template carries a copy.
 - [BIDS/colormap](https://github.com/BIDS/colormap) — the "fake parula" values (CC0) behind the
   pastel parula map of `amore`.
 

@@ -21,7 +21,7 @@ Copyright (c) 2026 Subhodeep Sarkar. Licence: MIT (LICENSE-MIT.txt in the reposi
     Affiliation:  IIT Gandhinagar
     Contact:      subhodeep.sarkar1@gmail.com
     Date:         August 2026
-    GitHub:       https://github.com/subhodeeps/amore
+    GitHub:       https://github.com/subhodeeps/amore.mplstyle
     Website:      https://subhodeeps.github.io/
 """
 from pathlib import Path
