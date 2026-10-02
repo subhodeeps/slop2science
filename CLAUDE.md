@@ -45,6 +45,8 @@ Claude must not:
 - present an extension as a result of the source, or a result of the source as a derivation
   of this project (§2)
 - delete scientific work because it looks redundant
+- choose or change the licence or the copyright holder of the project (`README.md`, section
+  Copying)
 
 ## 2. Objective
 

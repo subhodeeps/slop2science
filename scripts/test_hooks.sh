@@ -49,6 +49,9 @@ expect "blocks Write over an existing stage"   2 "$G" "$(payload Write symbolic/
 expect "blocks Write over an existing export"  2 "$G" "$(payload Write symbolic/_hooktest/export_01_fixture.py)"
 expect "allows Edit of an existing stage"      0 "$G" "$(payload Edit  symbolic/_hooktest/stage_01_fixture.wls)"
 expect "allows Write of a NEW stage"           0 "$G" "$(payload Write symbolic/_hooktest/stage_02_new.jl)"
+expect "blocks Write over an existing licence file" 2 "$G" "$(payload Write LICENSE-MIT.txt)"
+expect "allows Edit of a licence file"         0 "$G" "$(payload Edit  LICENSE-MIT.txt)"
+expect "allows Write of a NEW licence file"    0 "$G" "$(payload Write LICENSE-NEW-FIXTURE.txt)"
 rm -f symbolic/_hooktest/stage_01_fixture.wls symbolic/_hooktest/export_01_fixture.py
 rmdir symbolic/_hooktest 2>/dev/null || true
 

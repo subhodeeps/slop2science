@@ -28,11 +28,9 @@ the line to avoid. The line to avoid is failing to say what you looked at.
 ## Licence
 
 - Check the licence **before** you read the code in detail. Record it.
-- Copyleft code (GPL, AGPL) cannot go into a project that has the MIT licence, because the
-  copy would need the licence of the code. Do not copy or adapt it. Consult it only, and write
-  your own version. If the PI wants to copy it, the PI decides, and the decision names the
-  licence. You can still cite its *published results* as a benchmark. That is a literature
-  matter. It is not a code matter.
+- Copyleft code (GPL, AGPL) can force its licence on this project. Do not copy or adapt it.
+  Consult it, and write your own version. Only the PI can decide to copy it, and the decision
+  names the licence. You can still cite its *published results* as a benchmark.
 - You can use code that has no licence, as fair use. Record it as "no licence, fair use", with
   what you used and how much. Keep it small, and rewrite when you can. For a large copy, ask
   the PI.

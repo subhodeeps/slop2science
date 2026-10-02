@@ -127,6 +127,10 @@ subtly wrong.
      the licences of the template, and that the licence of the other files is not decided. Put
      the open question in `handoff.md` and in `docs/STATUS.md`.
 
+   Set `license` in `src/python/pyproject.toml` to the SPDX identifier of the licence (`MIT` for
+   the policy). For "no licence yet", delete that line. Use Edit on the licence files, because
+   the path guard blocks Write over an existing one.
+
    Write decision `D-004` in `docs/decision_log.md`: "policy adopted (chosen)", "another licence
    (chosen)" or "no licence yet (applied: the PI did not choose)".
 2. `docs/toolchain.md`. Fill the ownership registry between the `REGISTRY-START/END` markers. Use

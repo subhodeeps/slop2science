@@ -46,6 +46,10 @@
     {
       "glob": "symbolic/*/export_*",
       "reason": "Export scripts are the permanent record of a tool hand-off. Add a new numbered export rather than replacing this one."
+    },
+    {
+      "glob": "LICENSE-*.txt",
+      "reason": "A licence file states a grant of the PI. Do not overwrite it. Use Edit to add a line, and ask the PI before you change the terms (CLAUDE.md section 1)."
     }
   ]
 }

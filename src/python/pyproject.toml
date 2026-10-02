@@ -6,6 +6,7 @@
 name = "{{PROJECT_PACKAGE}}"
 version = "0.1.0"
 description = "Production code for {{PROJECT_NAME}}"
+license = "MIT"                 # SPDX identifier. /init-paper sets it from the answer of the PI.
 requires-python = ">=3.10"
 # Filled in by `make setup` from the PI's list in packages.txt (shown and edited at
 # /init-paper). Add one later with `uv add`, and record why in docs/decision_log.md.
@@ -15,7 +16,7 @@ dependencies = []
 dev = ["pytest>=7", "ruff>=0.5"]
 
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]    # 77 is the first version that reads the SPDX licence string
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
