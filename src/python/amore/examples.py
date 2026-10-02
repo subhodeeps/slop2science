@@ -1,6 +1,7 @@
-"""Regenerate the four example figures and the palette chart of the amore style (in README.md).
+"""Regenerate the seven example figures and the palette chart of the amore style (in README.md).
 
-The four example figures have one plot area (amore.figure), saved with exact_size=True.
+The line plots and the colour maps have one plot area (amore.figure), saved with exact_size=True.
+The corner plot, the standard map and the pendulum strip have their own sizes.
 
 Run: make plot-examples
 """
@@ -17,6 +18,8 @@ import amore  # noqa: E402
 
 OUT = Path(__file__).resolve().parents[3] / "docs" / "figures"
 README_DPI = 200          # small PNGs for the README; amore.save() without dpi gives 600
+
+
 def example_tag(feature):
     """The text of the tag on an example figure: "Example:" and a short note on what the figure
     shows of the amore style, for instance a palette or a feature."""
