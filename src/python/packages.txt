@@ -9,3 +9,4 @@ scipy        # solvers, special functions, sparse and dense eigenproblems
 mpmath       # arbitrary-precision arithmetic, for precision studies and cross-checks
 sympy        # a labelled cross-check on an algebra result, never the record (docs/toolchain.md)
 matplotlib   # figures, regenerated from records by code
+corner       # corner plots of samples (the amore corner example, `make plot-examples`)

@@ -47,6 +47,10 @@ say no, the decision is final. The charter states this rule.
   <img src="docs/figures/amore_parula.png" width="49%" alt="Example density plot with contours in the fakeparulapastel map: the curvature invariant of a Kerr black hole near its ring singularity">
 </p>
 
+<p align="center">
+  <img src="docs/figures/amore_corner.png" width="60%" alt="Example corner plot in the plum, olive, teal and amber palettes: four parameters, filled 1, 2 and 3 sigma regions of all samples, dashed contours of the second mode, and the true and empirical means">
+</p>
+
 `docs/failure_modes.md` lists the failure that each feature prevents and the cost of each fix.
 
 ## Quick start
@@ -91,7 +95,7 @@ I use Mathematica, Python and Julia. The template has a configuration for all th
   `Manifest.toml`. Python uses a virtual environment that [uv](https://docs.astral.sh/uv/) creates
   from `pyproject.toml` and `uv.lock`. A language that you do not use has no environment.
 - `/init-paper` asks which libraries you need. It starts from a short default list. For Python the
-  list is numpy, scipy, mpmath, sympy and matplotlib. For Julia it is the linear algebra,
+  list is numpy, scipy, mpmath, sympy, matplotlib and corner. For Julia it is the linear algebra,
   extended-precision and JSON packages. The project installs only the libraries that you choose.
 - Any of the three tools can own any topic. If you do not choose, the default profile applies.
   Mathematica does algebra, in plain `.wls` scripts. Julia does numerics. Python does plotting and

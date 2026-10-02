@@ -136,7 +136,7 @@ and `src/julia/packages.txt`, one name on each line, with a reason. `/init-paper
 default and asks what to add or remove. It records the answer as decision `D-003`. If the PI does
 not answer, the default applies, and the record says so.
 
-- **Default (the minimum).** Python: numpy, scipy, mpmath, sympy, matplotlib. Julia:
+- **Default (the minimum).** Python: numpy, scipy, mpmath, sympy, matplotlib, corner. Julia:
   LinearAlgebra, SparseArrays, Printf, JSON, DoubleFloats, GenericLinearAlgebra, GenericSchur.
   The file gives the reason for each package. The Julia list has no plotting package, because
   figures are Python's by default.

@@ -88,7 +88,7 @@ Context:      Each language that the project uses gets its own environment (`src
               nobody checked.
 Options:      (a) install what turns out to be necessary, when it is necessary. (b) Install
               the default minimum stack in `src/<lang>/packages.txt`, plus what the PI names.
-Decision:     (b), chosen. Python: numpy, scipy, mpmath, sympy, matplotlib, plus {{PI_PYTHON}}.
+Decision:     (b), chosen. Python: numpy, scipy, mpmath, sympy, matplotlib, corner, plus {{PI_PYTHON}}.
               Julia: the default seven, plus {{PI_JULIA}}. (If the PI had not answered, this
               entry would say "applied: the PI did not choose".)
 Consequences: `make setup` installs the lists and writes `uv.lock` and `Manifest.toml`. Commit

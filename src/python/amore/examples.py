@@ -548,6 +548,98 @@ def kerr_curvature():
     plt.close(fig)
 
 
+def corner_plot():
+    """Corner plot of four parameters with the amore colours: the samples in plum, the second
+    mode in olive, the true mean of that mode in teal and the sample mean in amber.
+
+    This is the example of the corner.py documentation ("Customizing the plot", the section on
+    overplotting values): 50 000 samples in four dimensions, a mixture of 80 % of a unit
+    Gaussian at the origin and 20 % of a unit Gaussian whose mean is 4 u, with u drawn from
+    numpy's generator seeded with 1234. The parameters theta_1 to theta_4 are synthetic and
+    have no physical meaning. Plum fills are the 1, 2 and 3 sigma regions of the samples (the
+    2D mass fractions 0.393, 0.865 and 0.989) and the plum step line on the diagonal is the
+    histogram of all samples. The dashed olive lines are the same for the second mode alone (1
+    and 2 sigma), with the counts of its 10 000 samples. The teal square and lines are the true
+    mean of the second mode, the amber ones the empirical mean of all samples. They sit apart
+    because the mean of a mixture is not at a mode.
+
+    Source: D. Foreman-Mackey, "corner.py: Scatterplots in Python", J. Open Source Softw. 1, 24
+    (2016), doi:10.21105/joss.00024, https://corner.readthedocs.io/en/latest/pages/custom/. The
+    library corner.py has a BSD 2-clause licence; the code here is an independent version that
+    uses its documented options. Every colour is from amore.palette().
+
+    How the colours were chosen. Hues are the HSV hue angles of the main tones, and L* is their
+    CIELAB lightness (amore.lab()): plum 288 deg (L* 52), olive 66 deg (L* 64), teal 181 deg
+    (L* 60), amber 38 deg (L* 68).
+    1. The data of the plot is the one thing that gets a full palette: plum, in all four tones.
+       The light tone draws the sample points, the main tone the fills, and the ink tone the
+       outlines and the histogram.
+    2. The second mode is a part of the same data, so it needs the strongest contrast to the
+       plum fills. Olive is the nearest palette hue to the opposite side of the wheel: it is 138
+       deg from plum (180 deg is the exact opposite). It is also lighter than plum, so the
+       dashed olive lines show on the dark fills. The lines are dashed to separate them from
+       the solid lines of the means.
+    3. The two means are reference values, not data. They get the other two colours of the triad
+       that amore names (plum, teal and amber, in the docstring of PALETTES): teal is 107 deg
+       and amber 110 deg from plum (120 deg is an exact triad), and they are 143 deg apart from
+       each other. Teal is cool and amber is warm, so the two lines are easy to tell apart where
+       they cross. Amber is the one colour that is near olive (28 deg and L* 68 against 64), so
+       the olive lines are dashed and the amber lines are solid with square markers.
+    4. Each marker has the ink tone of its own colour as its edge, so the squares show on the
+       plum fills. No colour outside the palettes is used, and no grey.
+    The hue numbers come from the main tones in amore.PALETTES; run colorsys.rgb_to_hsv on them
+    to check.
+    """
+    import corner
+    from matplotlib.lines import Line2D
+    from matplotlib.patches import Patch
+    ndim, nsamples = 4, 50000
+    rng = np.random.RandomState(1234)
+    mode1 = rng.randn(4 * nsamples // 5, ndim)
+    mean = 4 * rng.rand(ndim)
+    mode2 = mean[None, :] + rng.randn(nsamples // 5, ndim)
+    samples = np.vstack([mode1, mode2])
+    plum, olive, teal, amber = (amore.palette(n) for n in ("plum", "olive", "teal", "amber"))
+    fig = plt.figure(figsize=(7.0, 7.0))
+    common = dict(fig=fig, bins=40, smooth=1.0, smooth1d=1.0, plot_density=False)
+    # The second mode first, so that the larger histogram of all samples sets the axis limits.
+    corner.corner(mode2, color=olive["main"], levels=(0.393, 0.865), plot_datapoints=False,
+                  contour_kwargs=dict(colors=olive["main"], linewidths=1.0, linestyles="--",
+                                      zorder=6),
+                  hist_kwargs=dict(color=olive["main"], linewidth=1.0, linestyle="--", zorder=6),
+                  **common)
+    corner.corner(samples, color=plum["main"], levels=(0.393, 0.865, 0.989), fill_contours=True,
+                  plot_datapoints=True, data_kwargs=dict(alpha=0.25, color=plum["light"]),
+                  contour_kwargs=dict(colors=plum["ink"], linewidths=0.6),
+                  hist_kwargs=dict(color=plum["ink"], linewidth=1.0),
+                  labels=[r"$\theta_%d$" % (i + 1) for i in range(ndim)],
+                  show_titles=True, title_fmt=".2f", title_kwargs=dict(fontsize=9), **common)
+    axes = np.array(fig.axes).reshape((ndim, ndim))
+    truth, empirical = (mean, teal), (samples.mean(axis=0), amber)
+    for value, tones in (truth, empirical):
+        colour = tones["main"]
+        for i in range(ndim):
+            axes[i, i].axvline(value[i], color=colour, lw=1.0)
+        for yi in range(ndim):
+            for xi in range(yi):
+                ax = axes[yi, xi]
+                ax.axvline(value[xi], color=colour, lw=0.9)
+                ax.axhline(value[yi], color=colour, lw=0.9)
+                ax.plot(value[xi], value[yi], "s", color=colour, mec=tones["ink"], mew=0.6, ms=5)
+    for ax in fig.axes:
+        ax.grid(False)
+    handles = [Patch(facecolor=plum["main"], edgecolor=plum["ink"], label=r"all samples"),
+               Line2D([], [], color=olive["main"], ls="--", label=r"second mode"),
+               Line2D([], [], color=teal["main"], marker="s", mec=teal["ink"], mew=0.6, ms=5,
+                      label=r"true mean of second mode"),
+               Line2D([], [], color=amber["main"], marker="s", mec=amber["ink"], mew=0.6, ms=5,
+                      label=r"mean of all samples")]
+    fig.legend(handles=handles, loc="upper right", bbox_to_anchor=(0.97, 0.93), fontsize=10)
+    fig.text(0.97, 0.66, TAG, ha="right", va="bottom", fontsize=8)
+    amore.save(fig, OUT / "amore_corner", dpi=README_DPI, formats=("pdf", "png"), exact_size=True)
+    plt.close(fig)
+
+
 def palette_chart():
     """Every colour of amore: one row for each palette, one swatch for each tone with its hex
     code and its lightness L*, and the colour map of the palette. Shown in README.md."""
@@ -606,5 +698,6 @@ if __name__ == "__main__":
     potential_with_bump()
     black_hole_charges()
     kerr_curvature()
+    corner_plot()
     palette_chart()
-    print(f"wrote {OUT}/amore_blue.png, amore_teal.png, amore_green.png, amore_parula.png and amore_palettes.png")
+    print(f"wrote the example figures and the palette chart in {OUT}")
